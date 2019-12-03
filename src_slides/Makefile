@@ -1,9 +1,10 @@
 X = Slides_Installation
 Y = Slides_Tutorial
+Z = Slides_Tutorial_2
 
 FIGS = Figures/Fig_Installation_Overview.png
 
-all: X Y
+all: X Y Z
 
 .PHONY: X
 X: $(FIGS)
@@ -16,6 +17,12 @@ Y: $(FIGS)
 	mkdir -p Aux_files
 	pdflatex  -output-directory=Aux_files  $(Y).tex
 	cp -p Aux_files/$(Y).pdf  ..
+
+.PHONY: Z
+Z: $(FIGS)
+	mkdir -p Aux_files
+	pdflatex  -output-directory=Aux_files  $(Z).tex
+	cp -p Aux_files/$(Z).pdf  ..
 
 Figures/Fig_Installation_Overview.png:  Figures/Fig_Installation_Overview.svg
 	inkscape --file=Figures/Fig_Installation_Overview.svg \

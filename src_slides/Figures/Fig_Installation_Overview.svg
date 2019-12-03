@@ -31,7 +31,7 @@
        inkscape:isstock="true">
       <path
          id="path6987"
-         style="fill-rule:evenodd;stroke-width:0.625;stroke-linejoin:round;stroke:#8a8a8a;stroke-opacity:1;fill:#8a8a8a;fill-opacity:1"
+         style="fill-rule:evenodd;stroke-width:0.625;stroke-linejoin:round;stroke:#000000;stroke-opacity:1;fill:#000000;fill-opacity:1"
          d="M 8.7185878,4.0337352 L -2.2072895,0.016013256 L 8.7185884,-4.0017078 C 6.9730900,-1.6296469 6.9831476,1.6157441 8.7185878,4.0337352 z "
          transform="scale(0.3) rotate(180) translate(-2.3,0)" />
     </marker>
@@ -101,8 +101,8 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="2.0147059"
-     inkscape:cx="505.16788"
+     inkscape:zoom="2.0906863"
+     inkscape:cx="528"
      inkscape:cy="408"
      inkscape:document-units="in"
      inkscape:current-layer="layer1"
@@ -277,23 +277,23 @@
          style="font-size:4.23333311px;text-align:center;text-anchor:middle;stroke-width:0.26458332"
          id="tspan4637">(RISC-V exes)</tspan></text>
     <rect
-       style="fill:none;stroke:#2b98b9;stroke-width:1.29540002;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       style="fill:none;stroke:#2b98b9;stroke-width:1.35784614;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="rect4639"
-       width="86.675179"
-       height="81.64167"
-       x="55.914013"
-       y="171.3132" />
+       width="95.255341"
+       height="81.622643"
+       x="49.950855"
+       y="171.32271" />
     <text
        id="text4645"
        y="225.30684"
-       x="57.78278"
+       x="53.020275"
        style="font-style:normal;font-weight:normal;font-size:4.93888903px;line-height:1.25;font-family:sans-serif;text-align:start;letter-spacing:0px;word-spacing:0px;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
        xml:space="preserve"><tspan
          style="font-size:4.23333311px;text-align:start;text-anchor:start;stroke-width:0.26458332"
          y="225.30684"
-         x="57.78278"
+         x="53.020275"
          sodipodi:role="line"
-         id="tspan4657">Build simulators to run test programs:</tspan></text>
+         id="tspan4657">B.4 Build simulators to run test programs:</tspan></text>
     <ellipse
        ry="4.8130836"
        rx="12.692644"
@@ -405,24 +405,24 @@
     <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:4.93888903px;line-height:1.25;font-family:sans-serif;text-align:start;letter-spacing:0px;word-spacing:0px;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
-       x="194.50435"
-       y="208.35109"
+       x="188.2007"
+       y="209.00772"
        id="text4727"><tspan
          id="tspan4725"
          sodipodi:role="line"
-         x="194.50435"
-         y="208.35109"
-         style="font-size:4.23333311px;text-align:start;text-anchor:start;stroke-width:0.26458332">Install Opam,</tspan><tspan
+         x="188.2007"
+         y="209.00772"
+         style="font-size:4.23333311px;text-align:start;text-anchor:start;stroke-width:0.26458332">B.1 Install Opam,</tspan><tspan
          sodipodi:role="line"
-         x="194.50435"
-         y="214.5247"
+         x="188.2007"
+         y="215.18134"
          style="font-size:4.23333311px;text-align:start;text-anchor:start;stroke-width:0.26458332"
-         id="tspan9691">Install OCaml,</tspan><tspan
+         id="tspan9691">B.2 Install OCaml,</tspan><tspan
          sodipodi:role="line"
-         x="194.50435"
-         y="220.69832"
+         x="188.2007"
+         y="221.35495"
          style="font-size:4.23333311px;text-align:start;text-anchor:start;stroke-width:0.26458332"
-         id="tspan9693">Install SAIL</tspan></text>
+         id="tspan9693">B.3 Install SAIL</tspan></text>
     <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:4.93888903px;line-height:1.25;font-family:sans-serif;text-align:center;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
@@ -440,12 +440,12 @@
          style="font-size:4.23333311px;text-align:center;text-anchor:middle;stroke-width:0.26458332"
          id="tspan4739">computer</tspan></text>
     <rect
-       y="171.18188"
-       x="167.48671"
-       height="81.64167"
-       width="80.240211"
+       y="171.1329"
+       x="177.86035"
+       height="81.739647"
+       width="58.884174"
        id="rect4741"
-       style="fill:none;stroke:#2b98b9;stroke-width:1.29540002;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+       style="fill:none;stroke:#2b98b9;stroke-width:1.11036968;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
     <path
        style="fill:none;stroke:#8a8a8a;stroke-width:2.79399991;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#Arrow2Send)"
        d="m 230.19789,148.64528 v 17.54569"
@@ -464,30 +464,30 @@
     <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:4.93888903px;line-height:1.25;font-family:sans-serif;text-align:center;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
-       x="107.15553"
-       y="153.36087"
+       x="83.439613"
+       y="166.05684"
        id="text6967"><tspan
          id="tspan6965"
          sodipodi:role="line"
-         x="107.15553"
-         y="153.36087"
-         style="font-size:4.23333311px;text-align:center;text-anchor:middle;stroke-width:0.26458332">clone</tspan></text>
+         x="83.439613"
+         y="166.05684"
+         style="font-size:4.23333311px;text-align:center;text-anchor:middle;stroke-width:0.26458332">A: Clone</tspan></text>
     <path
-       style="fill:none;stroke:#8a8a8a;stroke-width:2.79399991;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#marker6989)"
-       d="m 139.84184,224.38259 h 23.00332"
+       style="fill:none;stroke:#000000;stroke-width:1.50812817;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;marker-end:url(#marker6989)"
+       d="M 182.66618,224.11994 H 150.22777"
        id="path6985"
        inkscape:connector-curvature="0" />
     <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:4.93888903px;line-height:1.25;font-family:sans-serif;text-align:center;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
-       x="154.81525"
-       y="219.52895"
+       x="204.06252"
+       y="229.77237"
        id="text8985"><tspan
          id="tspan8983"
          sodipodi:role="line"
-         x="154.81525"
-         y="219.52895"
-         style="font-size:4.23333311px;text-align:center;text-anchor:middle;stroke-width:0.26458332">needs</tspan></text>
+         x="204.06252"
+         y="229.77237"
+         style="font-size:4.23333311px;text-align:center;text-anchor:middle;stroke-width:0.26458332">(needed for B.4)</tspan></text>
     <rect
        y="111.36294"
        x="60.900528"
