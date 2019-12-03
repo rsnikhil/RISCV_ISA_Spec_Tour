@@ -23,12 +23,12 @@ knowledge of SAIL is assumed in this tutorial.
 ----------------------------------------------------------------
 ## Contents of this repo
 
-`Slides/Slides_Installation.pdf`: This describes how to download and optionally
+`Slides_Installation.pdf`: This describes how to download and optionally
 how to build an executable version of the spec.  For use-case (1)
 above, it's a simple one-step git-clone.  For use case (2) above, you
 will need to install some software and take some build steps.
 
-`Slides/Slides_Tutorial.pdf`: This is the tutorial itself.  It assumes you
+`Slides_Tutorial.pdf`: This is the tutorial itself.  It assumes you
 have gone through the download/installation process.
 
 ----------------------------------------------------------------

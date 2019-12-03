@@ -9,13 +9,13 @@ all: X Y
 X: $(FIGS)
 	mkdir -p Aux_files
 	pdflatex  -output-directory=Aux_files  $(X).tex
-	cp -p Aux_files/$(X).pdf .
+	cp -p Aux_files/$(X).pdf  ..
 
 .PHONY: Y
 Y: $(FIGS)
 	mkdir -p Aux_files
 	pdflatex  -output-directory=Aux_files  $(Y).tex
-	cp -p Aux_files/$(Y).pdf .
+	cp -p Aux_files/$(Y).pdf  ..
 
 Figures/Fig_Installation_Overview.png:  Figures/Fig_Installation_Overview.svg
 	inkscape --file=Figures/Fig_Installation_Overview.svg \
