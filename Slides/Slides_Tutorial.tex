@@ -1,0 +1,136 @@
+\documentclass[aspectratio=169]{beamer}
+
+% \usetheme{Frankfurt}
+\usetheme{Warsaw}
+
+\usecolortheme{seahorse}
+\usecolortheme{rose}
+
+\setbeamertemplate{footline}[frame number]
+\setbeamertemplate{navigation symbols}[vertical]
+
+% ****************************************************************
+% Nikhil's defs
+
+% ----------------
+% EMPTY BOXES OF VARIOUS WIDTHS, FOR INDENTATION
+\newcommand{\hm}{\hspace*{1em}}
+\newcommand{\hmm}{\hspace*{2em}}
+\newcommand{\hmmm}{\hspace*{3em}}
+\newcommand{\hmmmm}{\hspace*{4em}}
+
+\newcommand{\tinytt}{\tiny\tt}
+\newcommand{\scripttt}{\scriptsize\tt}
+
+% ****************************************************************
+
+\title{A Tour of the RISC-V ISA Formal Specification}
+
+\author{RISC-V Foundation ISA Formal Spec Technical Committee}
+
+\date{At RISC-V Summit, San Jose \\ December 12, 2019}
+
+% ****************************************************************
+% ****************************************************************
+% ****************************************************************
+
+\begin{document}
+
+% ----------------------------------------------------------------
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\begin{frame}
+  \frametitle{Abstract}
+
+  \scriptsize
+
+  In this hands-on tutorial, we would like to familiarize a broad
+  RISC-V community with the RISC-V ISA Formal Specification, with a
+  view to encouraging its use on a daily basis.  We hope to cover the
+  following: (1) A reading tour of the spec, so people are
+  subsequently able to consult the spec on their own; (2) How to build
+  and execute the spec on RISC-V binaries (from ISA tests to operating
+  systems) to produce reference executions; (3) How to build and
+  execute the spec on the Compliance Suite.  If there is time and
+  interest, additional topics are: (4) How to extend the spec for new
+  and custom ISA extensions; and (5) A description of how the spec is
+  being used for formal proofs of compiler and OS correctness, and
+  hardware implementation correctness.  The target audience for this
+  tutorial are people who are NOT specialists in formal methods, but
+  who wish to use the spec in daily practice (e.g. use cases 1-3
+  above).  Attendees who can run Linux on their laptops (natively, in
+  a VM, or remotely) will be able to follow the speaker in a hands-on
+  manner.
+
+\end{frame}
+
+
+% ----------------------------------------------------------------
+
+% \begin{frame}
+%   \frametitle{Outline}
+%   \tableofcontents
+% \end{frame}
+
+% ****************************************************************
+
+\begin{frame}
+  \frametitle{Under Construction}
+
+  \begin{block}{Under Construction}
+
+    \begin{itemize}
+
+    \item The slides for this tutorial are in preparation, and will be
+      made available in time for the tutorial presentation on December
+      12, 2019 at the RISC-V Summit.
+
+    \item Please prepare for the tutorial in advance by following the
+      instructions in the separate slide deck {\tt
+        Slides\_Installation.pdf} on how to download the spec, and
+      optionally to build an executable version of the spec.
+
+    \end{itemize}
+  \end{block}
+
+\end{frame}
+
+
+% ****************************************************************
+
+\section{Intro}
+
+% ****************************************************************
+
+\section{Reading the ISA to understand semantics of each RISC-V instruction}
+
+% ****************************************************************
+
+\section{Executing ISA and Compliance tests}
+
+% ================================================================
+
+\subsection{Executing standard RISC-V ISA tests}
+
+% ================================================================
+
+\subsection{Executing Compliance tests}
+
+% ****************************************************************
+
+\section{Extra material}
+
+% ================================================================
+
+\subsection{Extending the spec with new ISA extensions}
+
+% ================================================================
+
+\subsection{How the spec is being used with formal methods}
+
+% ****************************************************************
+
+\end{document}
