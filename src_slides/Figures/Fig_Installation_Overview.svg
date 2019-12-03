@@ -405,22 +405,22 @@
     <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:4.93888903px;line-height:1.25;font-family:sans-serif;text-align:start;letter-spacing:0px;word-spacing:0px;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
-       x="188.2007"
-       y="209.00772"
+       x="192.96313"
+       y="219.59091"
        id="text4727"><tspan
          id="tspan4725"
          sodipodi:role="line"
-         x="188.2007"
-         y="209.00772"
+         x="192.96313"
+         y="219.59091"
          style="font-size:4.23333311px;text-align:start;text-anchor:start;stroke-width:0.26458332">B.1 Install Opam,</tspan><tspan
          sodipodi:role="line"
-         x="188.2007"
-         y="215.18134"
+         x="192.96313"
+         y="225.76453"
          style="font-size:4.23333311px;text-align:start;text-anchor:start;stroke-width:0.26458332"
          id="tspan9691">B.2 Install OCaml,</tspan><tspan
          sodipodi:role="line"
-         x="188.2007"
-         y="221.35495"
+         x="192.96313"
+         y="231.93814"
          style="font-size:4.23333311px;text-align:start;text-anchor:start;stroke-width:0.26458332"
          id="tspan9693">B.3 Install SAIL</tspan></text>
     <text
@@ -477,17 +477,6 @@
        d="M 182.66618,224.11994 H 150.22777"
        id="path6985"
        inkscape:connector-curvature="0" />
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:4.93888903px;line-height:1.25;font-family:sans-serif;text-align:center;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
-       x="204.06252"
-       y="229.77237"
-       id="text8985"><tspan
-         id="tspan8983"
-         sodipodi:role="line"
-         x="204.06252"
-         y="229.77237"
-         style="font-size:4.23333311px;text-align:center;text-anchor:middle;stroke-width:0.26458332">(needed for B.4)</tspan></text>
     <rect
        y="111.36294"
        x="60.900528"
@@ -527,5 +516,21 @@
          y="141.60474"
          style="font-size:4.23333311px;text-align:center;text-anchor:middle;stroke-width:0.26458332"
          id="tspan9707">cloud</tspan></text>
+    <text
+       id="text904"
+       y="230.67986"
+       x="162.93393"
+       style="font-style:normal;font-weight:normal;font-size:4.93888903px;line-height:1.25;font-family:sans-serif;text-align:center;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.26458332"
+       xml:space="preserve"><tspan
+         id="tspan902"
+         style="font-size:4.23333311px;text-align:center;text-anchor:middle;stroke-width:0.26458332"
+         y="230.67986"
+         x="162.93393"
+         sodipodi:role="line">Prerequisites</tspan><tspan
+         style="font-size:4.23333311px;text-align:center;text-anchor:middle;stroke-width:0.26458332"
+         y="236.85347"
+         x="162.93393"
+         sodipodi:role="line"
+         id="tspan908">for</tspan></text>
   </g>
 </svg>
