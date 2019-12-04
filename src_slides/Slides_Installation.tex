@@ -94,7 +94,7 @@
 
 % ****************************************************************
 
-\section{Installation for reading the spec}
+\section{Step A: Installation for reading the spec}
 
 % ----------------
 \begin{frame}
@@ -131,7 +131,7 @@
 
 % ****************************************************************
 
-\section{Installing for building executable version of the spec}
+\section{Step B: Installing for building executable version of the spec}
 
 % ----------------
 \begin{frame}
@@ -148,7 +148,7 @@
       \item You could install a virtual machine running Debian/Linux and follow these instructions.
 
 
-      \item OCaml and SAIL will also install on other OSes.  See the ``Safety
+      \item Opam, OCaml and SAIL will also install on other OSes.  See the ``Safety
         net'' websites (below) for more information.
 
     \end{itemize}
@@ -184,15 +184,15 @@
 
 % ================================================================
 
-\subsection{Installing Opam}
+\subsection{B.1: Installing Opam}
 
 % ----------------
 \begin{frame}
   \frametitle{Step B.1: Installing Opam, the package manager for OCaml}
 
   \begin{block}{Step B.1: Download the install script and run it}
-    {\scriptsize Download {\tt https://raw.githubusercontent.com/ocaml/opam/master/shell/install.sh}}
-    {\scripttt Run the script: \\
+    {\scriptsize \emph{Download:} {\tt https://raw.githubusercontent.com/ocaml/opam/master/shell/install.sh}} \\
+    {\scriptsize \emph{Run the script:} \\
       \hm{}\$ sudo sh install.sh \\
       \hm{}\#\# Downloading opam 2.0.5 for linux on x86\_64... \\
       \hm{}\#\# ... \\
@@ -201,9 +201,9 @@
   \end{block}
 
   \begin{block}{Or: Combine the above download-and-run into one line}
-    {\scriptsize Install curl if you don't already have it:} \\
+    {\scriptsize \emph{Install curl if you don't already have it:}} \\
     {\scripttt\hm{}\$ sudo apt-get install curl} \\
-    {\scriptsize Then, one line:} \\
+    {\scriptsize \emph{Then, one line:}} \\
     {\scripttt\hm{}\$ sudo sh <(curl -sL https://raw.githubusercontent.com/ocaml/opam/master/shell/install.sh)}
   \end{block}
 \end{frame}
@@ -224,7 +224,7 @@
 
 % ================================================================
 
-\subsection{Installing OCaml using Opam}
+\subsection{B.2: Installing OCaml using Opam}
 
 % ----------------
 \begin{frame}
@@ -236,10 +236,10 @@
     {\scripttt
       \hm{}\# Environment setup \\
       \hm{}\$ opam init \\
-      \hm{}\$ eval `opam env` \\
+      \hm{}\$ eval \$(opam env) \\
       \hm{}\# Install specific version of OCaml \\
       \hm{}\$ opam switch create ocaml-base-compiler.4.06.1 \\
-      \hm{}\$ eval `opam config env`
+      \hm{}\$ eval \$(opam config env)
     }
   \end{block}
 
@@ -259,7 +259,7 @@
 
 % ================================================================
 
-\subsection{Installing SAIL using Opam}
+\subsection{B.3: Installing SAIL using Opam}
 
 % ----------------
 \begin{frame}
@@ -312,42 +312,55 @@
 
 % ================================================================
 
-\subsection{Building RISC-V simulators from the SAIL spec}
+\subsection{B.4: Building RISC-V simulators from the SAIL spec}
 
 % ----------------
 
 \begin{frame}
   \frametitle{Step B.4: Building RISC-V simulators from the SAIL spec}
 
-  A simulator can be used to execute RISC-V binaries.
+  {\small Simulators can be used to execute RISC-V binaries.}
 
-  \begin{block}{Step B.4: Building RISC-V simulators from the SAIL spec:}
+  \begin{block}{Building an RV64 RISC-V simulator from the SAIL spec:}
     \scriptsize
     \begin{tabular}{ll}
-      \tt \$ cd sail-riscv \hmmm & \emph{i.e.,} be in the git-cloned directory \\
-      \tt \$ make  csim \\
+      \tt \$ cd sail-riscv \hmmm & \emph{i.e.,} be in the git-cloned directory for sail-riscv \\
+      \tt \$ make  csim          & \emph{RV64 is the default} \\
+      or \\
+      \tt \$ make  ARCH=RV64  csim
+    \end{tabular}
+
+    \vspace*{1ex}
+
+    Creates executabe: \hm {\tt c\_emulator/riscv\_sim\_RV64}
+  \end{block}
+
+  \begin{block}{Building an RV32 RISC-V simulator from the SAIL spec:}
+    \scriptsize
+    \begin{tabular}{ll}
+      \tt \$ cd sail-riscv \hmmm & \emph{i.e.,} be in the git-cloned directory for sail-riscv \\
       \tt \$ make  ARCH=RV32  csim
     \end{tabular}
+
+    \vspace*{1ex}
+
+    Creates executable: \hm {\tt c\_emulator/riscv\_sim\_RV32}
   \end{block}
 
-  \begin{block}{Creates the following executable RISC-V RV64 simulators:}
-    \scriptsize
-    \begin{tabular}{l}
-      \tt c\_emulator/riscv\_sim\_RV64 \\
-      \tt c\_emulator/riscv\_sim\_RV32
-    \end{tabular}
-  \end{block}
+  {\tiny Note: During these builds, you may get some messages about
+    incomplete pattern matches; you can ignore them.}
 
-  {\tiny Note: Omitting the '{\tt csim}' argument will also build an OCaml-based
-  simulator, and stuff for Coq, Isabelle, HOL4, ... (not necessary for
-  this tutorial).}
+  {\tiny Note: Omitting the '{\tt csim}' makefile target will also
+    build all the targets, which include an OCaml-based simulator and
+    material for Coq, Isabelle, HOL4, ... (not necessary for this
+    tutorial).}
 
 \end{frame}
 
 % ----------------
 
 \begin{frame}
-  \frametitle{Step B.4: Test-drive your RV64 simulator (a smoke-test)}
+  \frametitle{Step B.4: Test-drive your RV64 simulator (a smoke test)}
   \begin{block}{Example: executing the {\scripttt rv64ui-p-add} standard ISA test in the simulator}
     \tiny\tt
     \begin{tabular}{l}
@@ -375,7 +388,7 @@
 \end{frame}
 
 \begin{frame}
-  \frametitle{Step B.4: Test-drive your RV32 simulator (a smoke-test)}
+  \frametitle{Step B.4: Test-drive your RV32 simulator (a smoke test)}
   \begin{block}{Example: executing the {\scripttt rv32ui-p-add} standard ISA test in the simulator}
     \tiny\tt
     \begin{tabular}{l}
@@ -386,13 +399,13 @@
       Running file test/riscv-tests/rv32ui-p-add.elf. \\
       ELF Entry @ 0x80000000 \\
       ... \\\relax
-      [0] [M]: 0x00001000 (0x00000297) auipc t0, 0
+      [0] [M]: 0x00001000 (0x00000297) auipc t0, 0 \\
       ... \\\relax
-      [1] [M]: 0x00001004 (0x02028593) addi a1, t0, 32
+      [1] [M]: 0x00001004 (0x02028593) addi a1, t0, 32 \\
       ... \\\relax
-      [2] [M]: 0x00001008 (0xF1402573) csrrs a0, zero, mhartid
+      [2] [M]: 0x00001008 (0xF1402573) csrrs a0, zero, mhartid \\
       ... \\\relax
-      [472] [M]: 0x80000044 (0xFC3F2023) sw gp, 4032(t5)
+      [472] [M]: 0x80000044 (0xFC3F2023) sw gp, 4032(t5) \\
       ... \\
       SUCCESS
     \end{tabular}
