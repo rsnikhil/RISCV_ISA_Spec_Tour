@@ -1,25 +1,27 @@
 X = Slides_Installation
 Y = Slides_Tutorial
-Z = Slides_Tutorial_2
+Z = Slides_Tutorial_dev
 
-FIGS = Figures/Fig_Installation_Overview.png
+FIGS1 = Figures/Fig_Installation_Overview.png
 
-all: X Y Z
+FIGS2 = Figures/riscvspecdeps.png
+
+all: X Y
 
 .PHONY: X
-X: $(FIGS)
+X: $(FIGS1)
 	mkdir -p Aux_files
 	pdflatex  -output-directory=Aux_files  $(X).tex
 	cp -p Aux_files/$(X).pdf  ..
 
 .PHONY: Y
-Y: $(FIGS)
+Y: $(FIGS1)
 	mkdir -p Aux_files
 	pdflatex  -output-directory=Aux_files  $(Y).tex
 	cp -p Aux_files/$(Y).pdf  ..
 
 .PHONY: Z
-Z: $(FIGS)
+Z: $(FIGS2)
 	mkdir -p Aux_files
 	pdflatex  -output-directory=Aux_files  $(Z).tex
 	cp -p Aux_files/$(Z).pdf  ..
@@ -27,6 +29,12 @@ Z: $(FIGS)
 Figures/Fig_Installation_Overview.png:  Figures/Fig_Installation_Overview.svg
 	inkscape --file=Figures/Fig_Installation_Overview.svg \
 		--export-png=Figures/Fig_Installation_Overview.png \
+		--export-area-drawing \
+		-d 300 -y 0.0
+
+Figures/riscvspecdeps.png:  Figures/riscvspecdeps.svg
+	inkscape --file=Figures/riscvspecdeps.svg \
+		--export-png=Figures/riscvspecdeps.png \
 		--export-area-drawing \
 		-d 300 -y 0.0
 
