@@ -94,7 +94,7 @@
 
 % ****************************************************************
 
-\section{Step A: Installation for reading the spec}
+\section{Step A: Installing for just reading the spec}
 
 % ----------------
 \begin{frame}
@@ -131,15 +131,16 @@
 
 % ****************************************************************
 
-\section{Step B: Installing for building executable version of the spec}
+\section{Step B: Installing for also building executable version of the spec}
 
 % ----------------
 \begin{frame}
   \frametitle{Step B Installation: to create an executable version of the spec}
 
-  {\scriptsize Reminder: Step B is not necessary if you're only
-    reading and consulting the spec.  It's necessary for building an
-    executable version of the spec that can execute RISC-V binaries.}
+  {\scriptsize Reminder: Step A is sufficient if you are only
+    reading/consulting the spec.  Step B is only necessary if you also
+    want to build an executable version of the spec that can execute
+    RISC-V binaries.}
 
   \begin{block}{OS requirements}
     \scriptsize
@@ -269,9 +270,13 @@
 
   \begin{block}{On Linux (Debian, Ubuntu, ...)}
     \scripttt
-    \begin{tabular}{l}
-      \$ sudo apt-get install build-essential libgmp-dev z3 m4 pkg-config zlib1g-dev \\
-      \$ sudo apt-get install device-tree-compiler \hmmm {\it Needed by simulator}
+    \begin{tabular}{ll}
+      \$ sudo apt-get install build-essential libgmp-dev \\
+      \$ sudo apt-get install z3 m4 pkg-config zlib1g-dev \\
+      \$ sudo apt-get install git  rsync  unzip \\
+      \$ sudo apt-get install device-tree-compiler \hm & {\it Needed by simulator} \\
+      \\
+      \$ sudo apt-get install bubblewrap \hm & {\it Maybe (some people reported needing this)}
     \end{tabular}
   \end{block}
 
