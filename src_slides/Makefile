@@ -7,7 +7,7 @@ FIGS1 = Figures/Fig_Installation_Overview.png
 FIGS2 = Figures/riscvspecdeps.png
 
 # all: X Y
-all: Z
+all: Y
 
 .PHONY: X
 X: $(FIGS1)
