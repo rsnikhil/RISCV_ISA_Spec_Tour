@@ -78,6 +78,33 @@
   \end{tabular}}
 \end{frame}
 
+% ----------------
+
+\begin{frame}
+  \frametitle{Location of these slides and additional material}
+
+  These slides are in ``{\tt Slides\_Tutorial.pdf}'' in this GitHub repository:
+
+  \hmm {\tt https://github.com/rsnikhil/RISCV\_ISA\_Spec\_Tour}
+
+  \vspace{3ex}
+
+  The repository also contains ``{\tt Slides\_Installation.pdf}'' which describes
+
+  \hmm Step A that is sufficient for reading the ISA formal spec, and
+
+  \hmm Step B that is needed to create an executable version of the spec.
+
+
+  \vspace{1ex}
+
+  Please at least perform Step A, which is just to clone the following repository:
+
+  \hmm {\tt https://github.com/rems-project/sail-riscv}
+
+  This is sufficient for most of this tutorial.
+
+\end{frame}
 
 % ----------------
 
@@ -167,6 +194,18 @@
 \begin{frame}
   \frametitle{Downloading and Installing}
 
+  Although the slides in this deck are self-contained, containing code
+  fragments, we recommend that, in parallel, you view the actual code
+  from the repository in a text viewer or editor.  The fragments here
+  are excerpts, contain elisions, and cannot show their larger
+  context.
+
+  \vspace{1ex}
+
+  {\footnotesize \emph{Each code fragment in this deck shows the file from which it is taken.}}
+
+  \vspace{1ex}
+
   \begin{block}{Downloading and Installing}
     Please see the separate slide deck {\tt Slides\_Installation.pdf}
     for instructions on how to download the spec, and optionally to
@@ -184,7 +223,7 @@
 
 % ================================================================
 
-\subsection{Preliminaries}
+\subsection{Preliminaries; Registers and values; ``Scattered'' organization of instruction specs}
 
 % ----------------
 
@@ -342,7 +381,7 @@ type xlenbits         = bits(xlen)
 
 % ================================================================
 
-\subsection{Registers and values}
+% \subsection{Registers and values}
 
 % ----------------
 
@@ -581,7 +620,7 @@ overload X = {..., rX, wX}
 
 % ================================================================
 
-\subsection{``Scattered'' organization of instruction specs}
+% \subsection{``Scattered'' organization of instruction specs}
 
 % ----------------
 
@@ -766,7 +805,7 @@ type imm20  = bits(20)
 % ----------------
 
 \begin{frame}[fragile]
-  \frametitle{Decoded view of LUI and AUIPC}
+  \frametitle{LUI and AUIPC: decoded view}
 
   \slidefont
 
@@ -815,7 +854,7 @@ union clause ast = UTYPE : (bits(20), regidx, uop)
 % ----------------
 
 \begin{frame}[fragile]
-  \frametitle{Decoding LUI and AUIPC}
+  \frametitle{LUI and AUIPC: Decoding}
 
   \slidefont
 
@@ -861,7 +900,7 @@ mapping clause encdec = UTYPE(imm, rd, op)
 % ----------------
 
 \begin{frame}[fragile]
-  \frametitle{Executing LUI and AUIPC}
+  \frametitle{LUI and AUIPC: execution}
 
   \slidefont
 
@@ -885,7 +924,7 @@ mapping clause encdec = UTYPE(imm, rd, op)
 % ----------------
 
 \begin{frame}[fragile]
-  \frametitle{Executing LUI and AUIPC (contd.)}
+  \frametitle{LUI and AUIPC: execution (contd.)}
 
   \slidefont
 
@@ -922,7 +961,7 @@ function clause execute UTYPE(imm, rd, op) = {
 % ----------------
 
 \begin{frame}[fragile]
-  \frametitle{Executing LUI and AUIPC (contd.)}
+  \frametitle{LUI and AUIPC: execution (contd.)}
 
   \slidefont
 
@@ -953,7 +992,7 @@ function clause execute UTYPE(imm, rd, op) = {
 % ----------------
 
 \begin{frame}[fragile]
-  \frametitle{Executing LUI and AUIPC (contd.)}
+  \frametitle{LUI and AUIPC: execution (contd.)}
 
   \slidefont
 
@@ -993,7 +1032,7 @@ function clause execute UTYPE(imm, rd, op) = {
 % ----------------
 
 \begin{frame}[fragile]
-  \frametitle{Assembly language parsing and printing for LUI and AUIPC}
+  \frametitle{LUI and AUIPC: assembly language parsing and printing}
 
   \slidefont
 
