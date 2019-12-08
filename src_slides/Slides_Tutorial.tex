@@ -63,6 +63,8 @@
 \end{frame}
 
 
+% ----------------
+
 \begin{frame}
   \begin{tabular}[c]{l}
     \includegraphics[height=1.2in]{Figures/Fig_Under_Construction.png}
@@ -138,8 +140,60 @@
  \vspace{1ex}
 
  This tutorial may not be suitable for afficionados of formal methods,
- except as an initial familiarization with SAIL and the RISC-V formal
+ except as an initial familiarization with Sail and the RISC-V formal
  spec.
+
+\end{frame}
+
+% ----------------
+
+\begin{frame}
+  \frametitle{Credits}
+
+  \slidefont
+
+  The RISC-V ISA Formal Spec, in the Sail language, was written by:
+
+  \begin{quote}
+    Prashanth Mundkur,
+    Jon French,
+    Brian Campbell,
+    Robert Norton-Wright,
+    Alasdair Armstrong,
+    Thomas Bauereiss,
+    Shaked Flur,
+    Christopher Pulte,
+    Peter Sewell,
+    Rishiyur Nikhil
+  \end{quote}
+
+  \vspace{4ex}
+
+  The Sail language itself was principally designed and implemented by
+  the authors of this paper:
+
+  \vspace{1ex}
+
+  \hfill \begin{minipage}{0.95\textwidth}
+    \emph{ISA Semantics for ARMv8-A, RISC-V, and Cheri-MIPS}, \\
+    Alasdair Armstrong,
+    Thomas Bauereiss,
+    Brian Campbell,
+    Alastair Reid,
+    Kathryn E. Gray,
+    Robert M. Norton,
+    Prashanth Mundkur,
+    Mark Wassell,
+    Jon French,
+    Christopher Pulte,
+    Shaked Flur,
+    Ian Stark,
+    Neel Krishnaswami,
+    Peter Sewell \\
+    in \emph{Proc. 46th ACM SIGPLAN Symp. on Principles of Programming
+    Languages (POPL), Cascais/Lisbon, Portugal, Jan 13-19, 2019},
+    pp. 71:1--71:31.
+  \end{minipage}
 
 \end{frame}
 
@@ -151,7 +205,24 @@
 \end{frame}
 
 % ****************************************************************
-\section{Intro}
+
+\section{Introduction}
+
+% ----------------
+
+\begin{frame}
+
+  \slidefont
+
+  \vfill
+
+  \begin{center}\LARGE
+    Introduction
+  \end{center}
+
+  \vfill
+
+\end{frame}
 
 % ----------------
 
@@ -219,7 +290,21 @@
 
 \section{Reading the ISA to understand semantics of each RISC-V instruction}
 
-\label{sec_reading}
+% ----------------
+
+\begin{frame}
+
+  \slidefont
+
+  \vfill
+
+  \begin{center}\LARGE
+    Reading the ISA to understand semantics of each RISC-V instruction
+  \end{center}
+
+  \vfill
+
+\end{frame}
 
 % ================================================================
 
@@ -228,31 +313,72 @@
 % ----------------
 
 \begin{frame}
-  \small
+  \scriptsize
 
-  \begin{block}{About SAIL, and the RISC-V ISA Formal Spec written in SAIL}
+  \begin{block}{About Sail, and the RISC-V ISA Formal Spec written in Sail}
     \begin{itemize}
 
       \item The RISC-V ISA Formal Spec is written in the language
-        SAIL, which is a DSL (Domain-Specific Language) designed for
+        Sail, which is a DSL (Domain-Specific Language) designed for
         purpose, i.e., for writing ISA specs.
 
-      \item SAIL has been used to describe ISAs for RISC-V, ARMv8
+      \item Sail has been used to describe ISAs for RISC-V, ARMv8
         (complete spec!), MIPS, parts of x86 and IBM POWER, and more.
 
-      \item The SAIL manual can be found in the main SAIL repository \\
+      \item The Sail manual can be found in the main Sail repository \\
         \hmm {\tt https://github.com/rems-project/sail}
 
-      \item In this tutorial we won't study SAIL separately; we'll
-        jump into studying the RISC-V Spec written in SAIL, explaining
-        the SAIL notation as we go along.
+      \item In this tutorial we won't study Sail separately; we'll
+        jump into studying the RISC-V Spec written in Sail, explaining
+        the Sail notation as we go along.
 
-      \item The RISC-V spec in SAIL has its own repository: \\
+      \item The RISC-V spec in Sail has its own repository: \\
         \hmm {\tt https://github.com/rems-project/sail-riscv} \\
         We will be studying the code in the {\tt model/} directory.
 
     \end{itemize}
   \end{block}
+
+\end{frame}
+
+% ----------------
+
+\begin{frame}[fragile]
+  \frametitle{A first taste of the semantics}
+
+  \scriptsize
+
+  \begin{Verbatim}[frame=single, label = File riscv\_insts\_base.sail]
+function clause execute (RTYPE(rs2, rs1, rd, op)) = {
+  let rs1_val = X(rs1);
+  let rs2_val = X(rs2);
+  let result : xlenbits = match op {
+    RISCV_ADD  => rs1_val + rs2_val,
+    RISCV_SLL  => if   sizeof(xlen) == 32
+                  then rs1_val << (rs2_val[4..0])
+                  else rs1_val << (rs2_val[5..0]),
+    ... };
+  X(rd) = result;
+  RETIRE_SUCCESS
+}
+  \end{Verbatim}
+
+  \begin{itemize}
+  \item
+    The semantics of each instruction is given by an ``{\cf execute}''
+    instruction, a fragment of which is shown above.
+
+  \item
+    The function argument says that it is an ``R-format'' instruction
+    containing source register fields rs1 and rs2, destination
+    register field rd, and an ``op'' sub-opcode identifying the
+    specific operation within the group of ``R-format'' instructions.
+
+  \item
+    It shows reading the two source registers rs1 and rs2, performing
+    the operation specified by ``op'', and writing the result to
+    register rd (here showing the ADD and SLL sub-opcodes).
+  \end{itemize}
 
 \end{frame}
 
@@ -286,7 +412,7 @@ riscv_fetch.sail               riscv_pc_access.sail     riscv_termination_common
   \slidefont
 
   \begin{minipage}{\textwidth}
-    SAIL does not have a package/module structure--the full SAIL
+    Sail does not have a package/module structure--the full Sail
     program is just the concatenation of the source files.
 
     \vspace{1ex}
@@ -308,7 +434,7 @@ riscv_fetch.sail               riscv_pc_access.sail     riscv_termination_common
   
   \begin{itemize}\slidefont
 
-    \item SAIL is a strongly-typed language, and does its
+    \item Sail is a strongly-typed language, and does its
       type-checking statically (i.e., on the source code, without
       running the code).
 
@@ -327,13 +453,13 @@ riscv_fetch.sail               riscv_pc_access.sail     riscv_termination_common
 
         \item Moreover, sizes of various entities are often related.
           E.g., the shift amount in RV32 (respectively, RV64) should
-          be a 5-bit value (respectively, a 6-bit value).  In SAIL,
+          be a 5-bit value (respectively, a 6-bit value).  In Sail,
           such relationships can be expressed in types, and are
           type-checked.
 
       \end{itemize}
 
-    \item SAIL also statically keeps track of \emph{effects} (for
+    \item Sail also statically keeps track of \emph{effects} (for
       example, does a certain expression read any registers, write any
       registers, ...).  More about this later.
 
@@ -407,7 +533,7 @@ let zero_reg : regtype = EXTZ(0x0)
     In line 5 we're defining a specific \emph{value} of this type,
     using the library function {\cf EXTZ} to zero-extend the constant
     0x0 to the appropriate length.  Because of strong type-checking
-    (including some amount of type inference), SAIL knows exactly how
+    (including some amount of type inference), Sail knows exactly how
     much extension is needed.
 
     \vspace{1ex}
@@ -554,14 +680,14 @@ function rX r = {
 
     \vspace{1ex}
 
-    In SAIL, a block is a series of expressions in in braces, and the
+    In Sail, a block is a series of expressions in in braces, and the
     value of the last expression is treated as the value of the whole
     block; here, that is also the result of the function.
 
     \vspace{1ex}
 
     Observation: improved type-checking and pattern analysis in the
-    SAIL compiler should allow us to omit the {\cf assert} statement.
+    Sail compiler should allow us to omit the {\cf assert} statement.
     This, in turn, should allow us to omit the {\cf escape} effect.
   \end{minipage}
 
@@ -603,7 +729,7 @@ function wX (r, in_v) = {
 % ----------------
 
 \begin{frame}[fragile]
-  \frametitle{Using SAIL overloading to simplify notation}
+  \frametitle{Using Sail overloading to simplify notation}
 
   \slidefont
 
@@ -654,7 +780,7 @@ overload X = {..., rX, wX}
 
   \vspace{1ex}
 
-  SAIL supports the latter more traditional, familiar organization.
+  Sail supports the latter more traditional, familiar organization.
   For each type of instruction, all its relevant information is
   collected in one place.
 
@@ -836,14 +962,14 @@ union clause ast = UTYPE : (bits(20), regidx, uop)
 
     \vspace{1ex}
 
-    Note: SAIL unions are similar to ``algebraic types'' or ``tagged
+    Note: Sail unions are similar to ``algebraic types'' or ``tagged
     unions'' in other programming langauges.  Each value of a tagged
     union carries a way (a ``tag'') by which we can query which
     variant this value encodes.
 
     \vspace{1ex}
 
-    In SAIL, as is common in functional programming languages, values
+    In Sail, as is common in functional programming languages, values
     of union type are usually analyzed in ``pattern-matching''
     statements, which are like case/switch statements where each
     clause matches a variant of the union.
@@ -888,7 +1014,7 @@ mapping clause encdec = UTYPE(imm, rd, op)
     Lines 6-7 add a scattered clause to the ``{\cf encdec}'' mapping.
     The left-hand-side of ``{\cf <->}'' in Line shows the decoded
     view.  The right-hand side shows a bit-concatenation.  The prior
-    declarations allow SAIL to infer that ``{\cf imm}'', ``{\cf rd}'',
+    declarations allow Sail to infer that ``{\cf imm}'', ``{\cf rd}'',
     and ``{\cf encddec\_op(op)}'' are are 20-bit, 5-bit and 7-bit
     fields, respectively, and that the concatenation is a 32-bit
     value,
@@ -1178,7 +1304,7 @@ function clause execute (BTYPE(imm, rs2, rs1, op)) = {
       branch is taken or not.  It does a pattern-match on the
       sub-opcode {\cf op}.  Note that BLT and BLTU are supposed to
       interpret their argument as signed and unsigned values,
-      respectively.  This is encoded by using different SAIL
+      respectively.  This is encoded by using different Sail
       pre-defined comparison operators {\cf <\_s} and {\cf <\_u},
       respectively.
     \item Line 9 computes the branch target, adding a sign-extension of the immediate to the PC.
@@ -1336,6 +1462,180 @@ mapping clause assembly = BTYPE(imm, rs2, rs1, op)
 
 \end{frame}
 
+% ----------------
+
+\begin{frame}[fragile]
+  \frametitle{LOAD instructions: execution}
+
+  \slidefont
+
+  Memory-access instructions involve many more steps, since they can
+  involve alignment checks, virtual address-to-physical address
+  translation, physical memory protection checks, ordering
+  relationships with other memory accesses, and so on.  Many of these
+  can trap (raise an exception).
+
+  \vspace{1ex}
+
+  The header of a memory-load instruction:
+
+  \vspace{1ex}
+
+  \begin{Verbatim}[frame=single, numbers=left, label = File riscv\_insts\_base.sail]
+function clause execute(LOAD(imm, rs1, rd, is_unsigned, width, aq, rl)) = {
+  \end{Verbatim}
+
+  \begin{minipage}{\textwidth}
+    The arguments are the
+    \begin{itemize}
+    \item the immediate, rs1 and rd fields from the instruction;
+
+    \item whether the loaded value is treated as signed or unsigned,
+      i.e., whether the loaded value should be sign-extended or
+      zero-extended to the width of the destination register;
+
+    \item the width: byte, halfword (2 bytes), word (4 bytes) or double (8 bytes);
+
+    \item the acquire/release semantics for memory ordering.
+    \end{itemize}
+  \end{minipage}
+
+\end{frame}
+
+% ----------------
+
+\begin{frame}[fragile]
+  \frametitle{LOAD instructions: execution (contd.)}
+
+  \slidefont
+
+  The next step is to compute the actual (virtual) address to be accessed:
+
+  \begin{Verbatim}[frame=single, numbers=left, label = File riscv\_insts\_base.sail]
+  let offset : xlenbits = EXTS(imm);
+  match ext_data_get_addr(rs1, offset, Read(Data), width) {
+    Ext_DataAddr_Error(e)  => { ext_handle_data_check_error(e); RETIRE_FAIL },
+    Ext_DataAddr_OK(vaddr) =>
+        ...
+  \end{Verbatim}
+
+  \begin{minipage}{\textwidth}
+    After computing the offset by sign-extending the immediate value,
+    it invokes the function ``{\cf ext\_data\_get\_addr}'' to perform
+    a signed addition to the contents of rs1.  This function is
+    defined in ``{\cf riscv\_addr\_checks.sail}''.  By encapsulating
+    this addition in a function, we allow future extensibility to new
+    ISA extensions that may peform additional checks/transformations
+    on the address.
+
+    \vspace{1ex}
+
+    This function can return an error, but in the normal simple case
+    without additional ISA extensions it returns ``{\cf
+      Ext\_DataAddr\_OK(vaddr)} containing the effective virtual
+    address.  We use a {\cf match} expression to distinguish these two
+    outcomes.
+  \end{minipage}
+
+
+\end{frame}
+
+% ----------------
+
+\begin{frame}[fragile]
+  \frametitle{LOAD instructions: execution (contd.)}
+
+  \slidefont
+
+  Next:
+
+  \begin{Verbatim}[frame=single, numbers=left, label = File riscv\_insts\_base.sail]
+      if   check_misaligned(vaddr, width)
+      then { handle_mem_exception(vaddr, E_Load_Addr_Align()); RETIRE_FAIL }
+      else match translateAddr(vaddr, Read(Data)) {
+          ...
+  \end{Verbatim}
+
+  \begin{minipage}{\textwidth}
+    The function ``{\cf check\_misaligned(vaddr, width)}'' optionally
+    checks if the access is aligned for the requested width.  This
+    function is defined a little earlier in the file and returns true
+    it is misaligned \emph{and if we've configured the model to
+      disallow misaligned accesses}.
+
+    \vspace{1ex}
+
+    If ok, it invokes ``{\cf translateAddr(vaddr, Read(Data)}'' to
+    optionally translate virtual addresses to physical addresses.
+    This function is defined in a collection of files: \\
+    \hm {\cf riscv\_vmem\_rv32.sail}, {\cf riscv\_vmem\_sv32.sail} \\
+    \hm {\cf riscv\_vmem\_rv64.sail}, {\cf riscv\_vmem\_sv39.sail}, {\cf riscv\_vmem\_sv48.sail} \\
+    \hm {\cf riscv\_vmem\_tlb.sail} \\
+    different subsets of which are used depending on whether we're
+    modeling RV32 or RV64, and the Sv32, Sv39 or Sv48 virtual memory
+    schemes.
+
+    \vspace{1ex}
+
+    The function simply returns the address as-is if not running with
+    virtual memory.
+
+    \vspace{1ex}
+
+    In the virtual-memory translation functions, you'll notice that
+    they also model a TLB (Translation Lookaside Buffer).  This is
+    because TLBs are visible in the semantics via the SFENCE.VMA
+    instruction.
+
+  \end{minipage}
+
+
+\end{frame}
+
+% ----------------
+
+\begin{frame}[fragile]
+  \frametitle{LOAD instructions: execution (contd.)}
+
+  \slidefont
+
+  Finally:
+
+  \begin{Verbatim}[frame=single, numbers=left, label = File riscv\_insts\_base.sail]
+      else match translateAddr(vaddr, Read(Data)) {
+        TR_Failure(e, _) => { handle_mem_exception(vaddr, e); RETIRE_FAIL },
+        TR_Address(addr, _) =>
+          match (width, sizeof(xlen)) {
+            (BYTE, _)   =>
+               process_load(rd, vaddr, mem_read(Read(Data), addr, 1, aq, rl, false), is_unsigned),
+            (HALF, _)   =>
+               process_load(rd, vaddr, mem_read(Read(Data), addr, 2, aq, rl, false), is_unsigned),
+            (WORD, _)   =>
+               process_load(rd, vaddr, mem_read(Read(Data), addr, 4, aq, rl, false), is_unsigned),
+            (DOUBLE, 64) =>
+               process_load(rd, vaddr, mem_read(Read(Data), addr, 8, aq, rl, false), is_unsigned)
+  \end{Verbatim}
+
+  \begin{minipage}{\textwidth}
+    If the virtual-to-physical translation was successful, we invoke
+    ``{\cf mem\_read}'' to perform the raw memory read, and pass the
+    result to ``{\cf process\_load}'' to process the result (which
+    could be an exception, e.g, if there is no memory at that
+    address).
+
+    \vspace{1ex}
+
+    The first three clauses of the ``{\cf match}'' expression use the
+    wildcard pattern ``{\cf \_}'' in the second component, since these
+    sizes are valid in RV32 and RV64.  The fourth clause will only
+    match when the second component is 64, i.e., it restricts it to
+    RV64.
+
+  \end{minipage}
+
+
+\end{frame}
+
 % ================================================================
 
 \subsection{Exceptions}
@@ -1420,7 +1720,7 @@ function exceptionType_to_bits(e) = match (e) { E_Fetch_Addr_Align()   => 0x00,
 
   \slidefont
 
-  Some traps may carry additional information.  In SAIL (and OCaml),
+  Some traps may carry additional information.  In Sail (and OCaml),
   optional information is usually expressed using the ``{\cf option}''
   predefined type:
 
@@ -1543,7 +1843,7 @@ function trap_handler(del_priv : Privilege, intr : bool, c : exc_code,
                  prepare_trap_vector(del_priv, mcause) },
     Supervisor => { ... }
     User => { ... }
-\end{Verbatim}
+  \end{Verbatim}
 
   \begin{minipage}{\textwidth}
     This is an intricate but otherwise unremarkable assignment of certain values to certain CSRs.
@@ -1558,31 +1858,159 @@ function trap_handler(del_priv : Privilege, intr : bool, c : exc_code,
 
 \end{frame}
 
-% ================================================================
-
 % ----------------
 
-\begin{frame}[fragile]
-  \frametitle{TEMPLATE}
+\begin{frame}
 
   \slidefont
 
-  We'd use one of these two files, depending on whether we are considering RV32 or RV64.
+  \vfill
 
-  \begin{Verbatim}[frame=single, numbers=left, label = File filename.sail]
-    foo
-  \end{Verbatim}
+  \begin{center}\LARGE
+    Executing complete programs
+  \end{center}
 
-  \begin{minipage}{\textwidth}
-    General text
-  \end{minipage}
+  \vfill
 
 \end{frame}
 
 % ----------------
 
-\begin{frame}
+\begin{frame}[fragile]
+  \frametitle{Executing complete programs}
+
+  \slidefont
+
+  \begin{itemize}
+  \item So far, we've only talked about the decode and execute
+    function for individual instructions.  We've said nothing about
+    how and when these get invoked, nor about how instructions are
+    fetched.
+
+  \item This separation is deliberate.  We may wish to build several
+    different processor models: pipelined, superscalar, multi-hart,
+    and so on.  Each of these would be a different top-level system,
+    with its own system-level semantics, but they can all share the
+    individual instruction semantics discussed so far.
+
+  \item In the slides that follow, we'll sketch one such encapsulating
+    model, which is used in the default simulators built from the
+    model.  This model, shown in files ``{\cf main.sail}'' and ``{\cf
+      riscv\_step.sail}'' implement a simple, sequential, unpipelined,
+    one-instruction-at-a-time fetch-execute loop ().
+  \end{itemize}
+
+\end{frame}
+
+% ----------------
+
+\begin{frame}[fragile]
+  \frametitle{Executing complete programs (contd.)}
+
+  \slidefont
+
+  The top-level function initializes the PC, initializes the model as
+  a whole (including certain CSRs and registers), and performs the
+  fetch-execute loop:
+
+  \vspace{1ex}
+
+  \begin{Verbatim}[frame=single, numbers=left, label = File main.sail]
+function main () : unit -> unit = {
+  PC = sail_zero_extend(0x1000, sizeof(xlen));
+  init_model();
+  loop()
+}
+  \end{Verbatim}
+
+  The loop, in turn, repeatedly performs a fetch-execute step:
+
+  \vspace{1ex}
+
+  \begin{Verbatim}[frame=single, numbers=left, label = File riscv\_step.sail]
+function loop () : unit -> unit = {
+  while (...) do {
+    let stepped = step(step_no);
+    ...
+  }
+}
+  \end{Verbatim}
+
+\end{frame}
+
+% ----------------
+
+\begin{frame}[fragile]
+  \frametitle{Executing complete programs (contd.)}
+
+  \slidefont
+
+  \begin{Verbatim}[frame=single, numbers=left, label = File riscv\_step.sail]
+function step(step_no : int) -> bool = {
+  let (retired, stepped) : (Retired, bool) =
+    match dispatchInterrupt(cur_privilege) {
+      Some(intr, priv) => { handle_interrupt(intr, priv); (RETIRE_FAIL, false) },
+      None() => {
+        let f : FetchResult = ext_fetch_hook(fetch());
+        match f {
+          F_RVC(h) => { let ast = decodeCompressed(h);
+                        (execute(ext_post_decode_hook(ast)), true) ... }
+          F_Base(w) => { let ast = decode(w);
+                         nextPC = PC + 4;
+                         (execute(ext_post_decode_hook(ast)), true) ... }
+}
+  \end{Verbatim}
+
+  \begin{minipage}{\textwidth}
+    \begin{itemize}
+    \item The step first checks for interrupts and handles it if there is one.
+    \item If not, it fetches and instruction and decides whether its
+      an RVC (compressed) instruction or a base instruction.
+    \item In each case, it decodes it and executes it.
+    \end{itemize}
+  \end{minipage}
+\end{frame}
+
+% ****************************************************************
+
+% ----------------
+
+\begin{frame}[fragile]
+  \frametitle{Taking stock ...}
+
+  \slidefont
+
+  By this time we hope you're getting the hang of reading the Sail
+  code that expresses the semantics of RISC-V instructions.  Some
+  observations:
+  
+  \begin{itemize}
+    \item In many senses, Sail is ``just another'' programming
+      language.  Many of its notations and features are taken from or
+      inspired by the functional programming language OCaml (which, in
+      turn, was inspired by SML).
+
+    \item Expressing the semantics of RISC-V instructions is an
+      exercise in coding in this programming language.
+
+    \item Features like numeric types with type-checking, scattered
+      definitions, mappings, bit-vectors with type-encoded lengths all
+      make it into a DSL (Domain Specific Language) for expressing
+      ISAs.
+
+    \item Sail's simple, clean, semantics make it suitable for
+      connecting to well-known formal-method tools (such as Coq,
+      Isabelle, HOL4).
+
+  \end{itemize}
+
+\end{frame}
+
+% ----------------
+
+\begin{frame}[fragile]
   % \frametitle{Overview of spec module dependencies}
+
   \slidefont
 
   \begin{tabular}[c]{l}
@@ -1591,7 +2019,7 @@ function trap_handler(del_priv : Privilege, intr : bool, c : exc_code,
   \hmmm
   \begin{tabular}[c]{l}
     Overview of module dependencies in the \\
-    SAIL RISC-V spec. \\
+    Sail RISC-V spec. \\
     \\
     \tiny (Original: {\tt doc/figs/riscvspecdeps.svg} in repo \\
     \hm\tiny\tt https://github.com/rems-project/sail-riscv )
@@ -1602,6 +2030,22 @@ function trap_handler(del_priv : Privilege, intr : bool, c : exc_code,
 % ****************************************************************
 
 \section{Executing ISA and Compliance tests}
+
+% ----------------
+
+\begin{frame}
+
+  \slidefont
+
+  \vfill
+
+  \begin{center}\LARGE
+    Executing ISA Tests
+  \end{center}
+
+  \vfill
+
+\end{frame}
 
 % ================================================================
 
@@ -1701,6 +2145,22 @@ function trap_handler(del_priv : Privilege, intr : bool, c : exc_code,
 % ----------------
 
 \begin{frame}
+
+  \slidefont
+
+  \vfill
+
+  \begin{center}\LARGE
+    Executing Compliance Tests
+  \end{center}
+
+  \vfill
+
+\end{frame}
+
+% ----------------
+
+\begin{frame}
   \frametitle{Executing Compliance tests}
 
   ... to be written ...
@@ -1713,6 +2173,185 @@ function trap_handler(del_priv : Privilege, intr : bool, c : exc_code,
 % ----------------
 
 \begin{frame}
+
+  \slidefont
+
+  \vfill
+
+  \begin{center}\LARGE
+    Extra Material
+  \end{center}
+
+  \vfill
+
+\end{frame}
+
+% ================================================================
+
+\subsection{A word about concurrency}
+
+% ----------------
+
+\begin{frame}
+  \frametitle{A word about concurrency}
+
+  \slidefont
+
+  \begin{itemize}
+
+  \item
+    In this introductory tutorial we have deliberately stayed away
+    from questions of concurrency, which is a more advanced topic.
+
+  \item
+    Each instruction semantics can be regarded as a small sequential
+    thread performing that instruction's semantics.  There are various
+    ``events'' during this thread's progress: reading a register,
+    computing an effective address (for memory accesses), requesting
+    memory, getting a response from memory, writing a register, etc.
+
+  \item
+    In our simple one-instruction-at-a-time fetch-execute loop model
+    shown earlier, these threads are simply concatenated into an
+    overall single sequential thread.
+
+  \item
+    A parallel model can overlap these threads: a pipeline model may
+    launch the next instruction's thread before the current one has
+    finished; a superscalar model may launch two or more of these
+    threads together; an out-of-order model may have many of these
+    threads running concurrently; and so on.
+
+  \item
+    Such a parallel model can capture all the complexities of modern,
+    sophisticated, high-performance, parallel CPU implementations. In
+    particular, such a model can exercise interesting interactions
+    with weak memory models.
+
+  \end{itemize}
+
+\end{frame}
+
+% ----------------
+
+\begin{frame}
+  \frametitle{Relationship with the official RISC-V Memory Model}
+
+  \slidefont
+
+  \begin{itemize}
+  \item
+    RISC-V's Weak Memory Model was developed by a separate RISC-V
+    Foundation Technical Group, chaired by Dan Lustig of NVidia.
+
+  \item 
+    One of their formalizations was indeed using this Sail model.  As
+    mentioned in the previous slide, this uses a concurrent
+    fetch-execute model where multiple instructions may be in flight
+    concurrently, with concurrent interactions with the weak memory
+    model.
+
+  \item
+    (These details should be covered in another, more advanced tutorial.)
+
+  \end{itemize}
+
+\end{frame}
+
+% ================================================================
+
+\begin{frame}
+  \frametitle{Status and Plans}
+
+  \slidefont
+
+  \begin{itemize}
+  \item
+    The RISC-V Foundation set up a Technical Group (TG) in 2017 to
+    develop a Formal Specifcation for the RISC-V ISA, which will
+    become the \emph{definitive} specification of the ISA.  There are
+    currently 110 members, of which 15-20 were regular attendees of
+    weekly con-calls.
+
+  \item 
+    The group encompassed 6 different, parallel, efforts, including
+    this one in Sail.  In March/April 2019 we put out a public review
+    of these efforts.  Based on the feedback and discussions in the
+    TG, we decided to move forward with Sail as the main canonical
+    spec. It is also the most advanced of the 6 efforts in terms of
+    feature coverage and modeling concurrency.  The other 5 efforts
+    continue, and over time could achieve peer status with this Sail
+    spec.
+
+  \item
+    The immediate priority is to clean up, polish, document, and make
+    it easily accessible to the community (of which this tutorial is a
+    part).
+
+  \end{itemize}
+
+\end{frame}
+
+% ----------------
+
+\begin{frame}
+  \frametitle{Sail: the larger picture}
+
+  \slidefont
+
+  In addition to RISC-V, Sail has also been used to specify other
+  ISAs.  In addition to the so-called ``C-based'' back-end we've seen
+  in this tutorial, it has more back-ends to create an OCaml-based
+  simulator, and to connect to various formal environments such as
+  Coq, Isabelle, HOL4, etc.
+
+  \vspace{2ex}
+
+  Recommended reference with more details:
+  
+  \vspace{2ex}
+
+  \hfill \begin{minipage}{0.95\textwidth}
+    \emph{ISA Semantics for ARMv8-A, RISC-V, and Cheri-MIPS}, \\
+    Alasdair Armstrong,
+    Thomas Bauereiss,
+    Brian Campbell,
+    Alastair Reid,
+    Kathryn E. Gray,
+    Robert M. Norton,
+    Prashanth Mundkur,
+    Mark Wassell,
+    Jon French,
+    Christopher Pulte,
+    Shaked Flur,
+    Ian Stark,
+    Neel Krishnaswami,
+    Peter Sewell \\
+    in \emph{Proc. 46th ACM SIGPLAN Symp. on Principles of Programming
+    Languages (POPL), Cascais/Lisbon, Portugal, Jan 13-19, 2019},
+    pp. 71:1--71:31.
+  \end{minipage}
+
+  \vspace{2ex}
+
+  See also the figure on the next slide.
+\end{frame}
+
+% ----------------
+
+\begin{frame}
+  \frametitle{Sail: the larger picture (contd.)}
+
+  \begin{figure}[htbp]
+    \centerline{\includegraphics[height=2.3in]{Figures/overview-sail.png}}
+    {\scriptsize (from: {\tt https://github.com/rems-project/sail})}
+  \end{figure}
+
+\end{frame}
+
+% ----------------
+
+\begin{frame}
   \frametitle{Adding new ISA Extensions}
 
   ... to be written ...
@@ -1721,9 +2360,38 @@ function trap_handler(del_priv : Privilege, intr : bool, c : exc_code,
 % ----------------
 
 \begin{frame}
-  \frametitle{How people are using the spec in formal methods}
+  \frametitle{How people use ISA formal specs}
 
-  ... to be written ...
+  \slidefont
+
+  People are already using and will use the ISA formal spec in various ways.
+
+  \begin{itemize}
+    \item As a reference to clarify the intended semantics of each type of instruction.
+
+    \item As a ``golden reference model'' against which to compare
+      other implementations (simulation to hardware designs) for
+      correctness.  Specific examples include official Compiance
+      Tests, and Tandem Verification.
+
+    \item In a tool to generate ISA tests automatically.
+
+    \item In a tool to measure instruction coverage automatically.
+
+    \item In a tool to formally prove a separately-written
+      implementation correct, by directly correlating the ISA formal
+      semantics with the sematics of the language of the
+      implementation (C, C++, SystemVerilog, ...).  Implementations
+      may be complex: pipelined, superscalar, out of order,
+      speculative, ...
+
+    \item In a tool to formally and systematically derive an
+      implementation from the ISA formal spec using a series of
+      derivations, each formally proved correct
+      (``correct-by-construction implementation'').
+
+  \end{itemize}
+
 \end{frame}
 
 % ****************************************************************
