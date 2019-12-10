@@ -195,6 +195,14 @@
     pp. 71:1--71:31.
   \end{minipage}
 
+  \vspace{2ex}
+
+  Thanks also to all members of the Technical Group for the ISA Formal
+  Spec in the RISC-V Foundation who volunteered their time for
+  discussions paced by weekly con-calls.  And to the Technical
+  Committee of the RISC-V Foundation who provided feedback and
+  guidance on process, based on our monthly status updates.
+
 \end{frame}
 
 % ----------------
@@ -2050,9 +2058,11 @@ function step(step_no : int) -> bool = {
 \begin{frame}[fragile]
   \frametitle{Ensure you have downloaded/built/installed executable versions of the formal spec}
 
+  \label{reminder-download-install}
+
   \slidefont
 
-  If you have not already dones so, please follow both Step A and Step B described in slide deck ``{\tt
+  If you have not already done so, please follow both Step A and Step B described in slide deck ``{\tt
     Slides\_Installation.pdf}'' in the repository:
 
   \vspace{1ex}
@@ -2080,11 +2090,9 @@ function step(step_no : int) -> bool = {
   \vspace{1ex}
 
   \begin{Verbatim}[frame=single, numbers=left, label = in your sail-riscv repository clone]
-    $ pwd
-    /home/nikhil/git_clones/sail-riscv
-
-    $ ./c emulator/riscv_sim_RV64
-    $ ./c emulator/riscv_sim_RV32
+$ pwd; ls c_emulator/riscv_sim_RV*
+/home/nikhil/git_clones/sail-riscv
+c_emulator/riscv_sim_RV32*  c_emulator/riscv_sim_RV64*
   \end{Verbatim}
 
 \end{frame}
@@ -2252,9 +2260,183 @@ SUCCESS
 % ----------------
 
 \begin{frame}[fragile]
-  \frametitle{Executing Compliance tests}
+  \frametitle{Ensure you have downloaded/built/installed executable versions of the formal spec}
 
-  ... to be written ...
+  \slidefont
+
+  \emph{[This is a repeat of Slide \pageref{reminder-download-install}]}
+
+  If you have not already done so, please follow both Step A and Step B described in slide deck ``{\tt
+    Slides\_Installation.pdf}'' in the repository:
+
+  \vspace{1ex}
+
+  \hmm {\tt https://github.com/rsnikhil/RISCV\_ISA\_Spec\_Tour}
+
+  \vspace{1ex}
+
+  Step A clones {\tt https://github.com/rems-project/sail-riscv}, with
+  the Sail RISC-V spec in the ``{\tt model}'' directory (we've been
+  studying this code so far in this tutorial).
+
+  \vspace{1ex}
+
+  Step B takes you through these steps:
+  \begin{itemize}
+  \item Install Opam, the package manager for OCaml
+  \item Using Opam, install OCaml
+  \item Using Opam, install Sail
+  \item Using Ocaml and Sail, build executable versions of the Sail RISC-V spec.
+  \end{itemize}
+
+  As a result, you should now have the following executables in your sail-riscv repository:
+
+  \vspace{1ex}
+
+  \begin{Verbatim}[frame=single, numbers=left, label = in your sail-riscv repository clone]
+$ pwd; ls c_emulator/riscv_sim_RV*
+/home/nikhil/git_clones/sail-riscv
+c_emulator/riscv_sim_RV32*  c_emulator/riscv_sim_RV64*
+  \end{Verbatim}
+
+\end{frame}
+
+% ----------------
+
+\begin{frame}[fragile]
+  \frametitle{Executing Compliance tests: preparation}
+
+  \slidefont
+
+  Clone a copy of the RISC-V Foundation's ``Compliance'' repository:
+
+  \vspace{1ex}
+
+  \begin{Verbatim}[frame=single]
+$ git clone  https://github.com/riscv/riscv-compliance
+  \end{Verbatim}
+
+  \vspace{1ex}
+
+  Set up your environment for RISC-V compiler tools (the Compliance
+  scripts will use this to re-compile compliance tests).
+
+  \begin{Verbatim}[frame=single]
+$ export RISCV=<your toolchain_installation_dir>/riscv64
+$ export PATH=$RISCV/bin:$PATH
+  \end{Verbatim}
+
+  Spot check that we've got the toolchain setup:
+  \begin{Verbatim}[frame=single]
+$ which riscv64-unknown-elf-gcc
+/home/nikhil/Projects/RISCV/Tests/RISCV_Gnu_Toolchain/riscv64/bin/riscv64-unknown-elf-gcc
+
+$ riscv64-unknown-elf-gcc  --version
+riscv64-unknown-elf-gcc (GCC) 8.3.0
+Copyright (C) 2018 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  \end{Verbatim}
+
+\end{frame}
+
+% ----------------
+
+\begin{frame}[fragile]
+  \frametitle{Executing Compliance tests: preparation (contd.)}
+
+  \slidefont
+
+  Setup up your PATH environment variable to include a your
+  clone-directory of the ``{\tt sail-riscv}'' repository, so that the
+  Compliance scripts know where to find the executable versions of the
+  Sail RISC-V spec:
+
+  \vspace{1ex}
+
+  \begin{Verbatim}[frame=single, numbers=left]
+
+$ export SAIL_RISCV=<path to your clone of sail-riscv repository>/sail-riscv
+$ export PATH=$SAIL_RISCV/c_emulator:${PATH}
+  \end{Verbatim}
+
+  Check:
+
+  \vspace{1ex}
+
+  \begin{Verbatim}[frame=single, numbers=left]
+$ which riscv_sim_RV32  riscv_sim_RV64 
+/home/nikhil/git_clones/sail-riscv/c_emulator/riscv_sim_RV32
+/home/nikhil/git_clones/sail-riscv/c_emulator/riscv_sim_RV64
+  \end{Verbatim}
+
+\end{frame}
+
+% ----------------
+
+\begin{frame}[fragile]
+  \frametitle{Executing Compliance tests (contd.)}
+
+  \slidefont
+
+  Finally, the following will execute all relevant variants of the Compliance test suite:
+
+  \vspace{1ex}
+
+  \begin{Verbatim}[frame=single, numbers=left, label = In your riscv-compliance repository clone]
+$ pwd
+/home/nikhil/git_clones/riscv-compliance
+
+$ make RISCV_TARGET=sail-riscv-c all_variant
+for isa in rv32i rv32im rv32imc rv32mi rv32si rv32ua rv32uc rv32ui rv64i rv64im; do \
+    ...
+...
+riscv64-unknown-elf-gcc -march=rv32i -mabi=ilp32 ...
+riscv_sim_RV32  --test-signature=...  ....elf 2>  ....log 1>&2
+...
+Compare to reference files ... 
+
+Check         I-ADD-01 ... OK
+Check        I-ADDI-01 ... OK
+...
+--------------------------------
+OK: 48/48
+...
+  \end{Verbatim}
+
+\end{frame}
+
+% ----------------
+
+\begin{frame}[fragile]
+  \frametitle{Executing Compliance tests (contd.)}
+
+  \slidefont
+
+  If you examine the transcript, you will see the results for each of
+  the ISA groups mentioned in the ``{for isa in rv32i, rv32im, ...}'' line at the top:
+
+  \vspace{1ex}
+
+  \begin{Verbatim}[frame=single, numbers=left, label = In your riscv-compliance repository clone]
+$ make RISCV_TARGET=sail-riscv-c all_variant
+for isa in rv32i rv32im rv32imc rv32mi rv32si rv32ua rv32uc rv32ui rv64i rv64im; do \
+... OK: 48/48
+... OK: 8/8
+... OK: 25/25
+... OK: 9/9
+... OK: 6/6
+... OK: 10/10
+... OK: 1/1
+... OK: 39/39
+... OK: 9/9
+... OK: 4/4
+  \end{Verbatim}
+
+(One test, ``{\tt lrsc}'', is marked IGNORE instead of OK. I'm not sure why;
+perhaps because it is uninteresting in this single-hart sequential
+execution?)
+
 \end{frame}
 
 % ****************************************************************
@@ -2279,7 +2461,68 @@ SUCCESS
 
 % ================================================================
 
-\subsection{A word about concurrency}
+\subsection{About Sail}
+
+% ----------------
+
+\begin{frame}[fragile]
+  \frametitle{Sail: the larger picture}
+
+  \slidefont
+
+  In addition to RISC-V, Sail has also been used to specify other
+  ISAs.  In addition to the so-called ``C-based'' back-end we've seen
+  in this tutorial, it has more back-ends to create an OCaml-based
+  simulator, and to connect to various formal environments such as
+  Coq, Isabelle, HOL4, etc.
+
+  \vspace{2ex}
+
+  Recommended reference with more details:
+  
+  \vspace{2ex}
+
+  \hfill \begin{minipage}{0.95\textwidth}
+    \emph{ISA Semantics for ARMv8-A, RISC-V, and Cheri-MIPS}, \\
+    Alasdair Armstrong,
+    Thomas Bauereiss,
+    Brian Campbell,
+    Alastair Reid,
+    Kathryn E. Gray,
+    Robert M. Norton,
+    Prashanth Mundkur,
+    Mark Wassell,
+    Jon French,
+    Christopher Pulte,
+    Shaked Flur,
+    Ian Stark,
+    Neel Krishnaswami,
+    Peter Sewell \\
+    in \emph{Proc. 46th ACM SIGPLAN Symp. on Principles of Programming
+    Languages (POPL), Cascais/Lisbon, Portugal, Jan 13-19, 2019},
+    pp. 71:1--71:31.
+  \end{minipage}
+
+  \vspace{2ex}
+
+  See also the figure on the next slide.
+\end{frame}
+
+% ----------------
+
+\begin{frame}[fragile]
+  \frametitle{Sail: the larger picture (contd.)}
+
+  \begin{figure}[htbp]
+    \centerline{\includegraphics[height=2.3in]{Figures/overview-sail.png}}
+    {\scriptsize (from: {\tt https://github.com/rems-project/sail})}
+  \end{figure}
+
+\end{frame}
+
+% ================================================================
+
+\subsection{A word about concurrency and connection to RISC-V Weak Memory Model}
 
 % ----------------
 
@@ -2380,63 +2623,6 @@ SUCCESS
     part).
 
   \end{itemize}
-
-\end{frame}
-
-% ----------------
-
-\begin{frame}[fragile]
-  \frametitle{Sail: the larger picture}
-
-  \slidefont
-
-  In addition to RISC-V, Sail has also been used to specify other
-  ISAs.  In addition to the so-called ``C-based'' back-end we've seen
-  in this tutorial, it has more back-ends to create an OCaml-based
-  simulator, and to connect to various formal environments such as
-  Coq, Isabelle, HOL4, etc.
-
-  \vspace{2ex}
-
-  Recommended reference with more details:
-  
-  \vspace{2ex}
-
-  \hfill \begin{minipage}{0.95\textwidth}
-    \emph{ISA Semantics for ARMv8-A, RISC-V, and Cheri-MIPS}, \\
-    Alasdair Armstrong,
-    Thomas Bauereiss,
-    Brian Campbell,
-    Alastair Reid,
-    Kathryn E. Gray,
-    Robert M. Norton,
-    Prashanth Mundkur,
-    Mark Wassell,
-    Jon French,
-    Christopher Pulte,
-    Shaked Flur,
-    Ian Stark,
-    Neel Krishnaswami,
-    Peter Sewell \\
-    in \emph{Proc. 46th ACM SIGPLAN Symp. on Principles of Programming
-    Languages (POPL), Cascais/Lisbon, Portugal, Jan 13-19, 2019},
-    pp. 71:1--71:31.
-  \end{minipage}
-
-  \vspace{2ex}
-
-  See also the figure on the next slide.
-\end{frame}
-
-% ----------------
-
-\begin{frame}[fragile]
-  \frametitle{Sail: the larger picture (contd.)}
-
-  \begin{figure}[htbp]
-    \centerline{\includegraphics[height=2.3in]{Figures/overview-sail.png}}
-    {\scriptsize (from: {\tt https://github.com/rems-project/sail})}
-  \end{figure}
 
 \end{frame}
 
