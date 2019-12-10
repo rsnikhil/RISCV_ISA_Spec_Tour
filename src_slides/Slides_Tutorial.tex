@@ -1436,6 +1436,8 @@ mapping clause assembly = BTYPE(imm, rs2, rs1, op)
 \begin{frame}[fragile]
   \frametitle{Taking stock ...}
 
+  \label{slide-taking-stock-1}
+
   \slidefont
 
   The general scheme for adding a new instruction, or new class of instructions, should be clear by now:
@@ -2461,7 +2463,208 @@ execution?)
 
 % ================================================================
 
-\subsection{About Sail}
+\subsection{Adding new ISA extensions to the Formal Spec}
+
+% ----------------
+
+\begin{frame}[fragile]
+  \frametitle{Adding new ISA Extensions}
+
+  \slidefont
+
+  \emph{This slide repeats information from Slide \pageref{slide-taking-stock-1}}
+
+  The general scheme for adding a new instruction, or new class of instructions, should be clear by now:
+  \begin{itemize}
+    \item Define an enum and mapping for any sub-opcodes in the class
+      (if the class contains more than one instruction)
+    \item Augment the ``{\cf ast}'' type by adding a scattered clause to describe this new class
+    \item Augment the ``{\cf encdec}'' mapping by adding a scattered clause to describe this new class
+    \item Augment the ``{\cf execute}'' function by adding a scattered clause to describe this new class
+    \item Augment the ``{\cf assembly}'' mapping by adding a scattered clause to describe this new class
+  \end{itemize}
+
+  \vspace{1ex}
+
+  It is a stylistic judgement call whether you define a class with
+  sub-opcodes, or just define a separate clause for each instruction
+  in the class.  E.g., we could have defined separate ``{\cf ast}'' ,
+  ``{\cf encdec}'', ``{\cf execute}'' and ``{\cf assembly}'' clauses
+  for BEQ, BNE, BLT, ...
+
+  \vspace{1ex}
+
+  A class with sub-opcodes makes sense when the instructions share
+  structure and semantics.  For example, BEQ/BNE/BLT/... differ only
+  in the particular comparison operator; using a class with
+  sub-opcodes captures this similarity.
+
+  \vspace{1ex}
+
+\end{frame}
+
+% ----------------
+
+\begin{frame}[fragile]
+  \frametitle{Case study: adding ISA Extensions F and D (single and double-precision floating point)}
+
+  \slidefont
+
+  \emph{This is still in a branch of the repo, nearing final development, will be merged into the main master soon.}
+
+  You can view the source files by switching to the development branch:
+
+  \vspace{1ex}
+
+  \begin{Verbatim}[frame=single, numbers=left, label = In your riscv-compliance repository clone]
+$ git branch --all
+* master
+  ...
+  remotes/origin/rsnikhil
+
+$ git checkout  remotes/origin/rsnikhil
+$ git branch
+* (HEAD detached at origin/rsnikhil)
+  master
+  \end{Verbatim}
+
+\end{frame}
+
+% ----------------
+
+\begin{frame}[fragile]
+  \frametitle{Case study: adding ISA Extensions F and D (contd.)}
+
+  \slidefont
+
+  Since F,D define a new register width ``{\tt FLEN}'', we created two new files
+  by analogy with ``{\tt riscv\_xlen32.sail}'' and ``{\tt
+    riscv\_xlen64.sail}''.  (Not necessary for extensions that don't define new widths).
+
+  \vspace{1ex}
+
+  \begin{Verbatim}[frame=single, numbers=left, label = In sail-riscv/model]
+riscv_flen_F.sail    riscv_flen_D.sail
+  \end{Verbatim}
+
+  Since F,D define new registers, we created two new files
+  by analogy with ``{\tt riscv\_reg\_type.sail}'' and ``{\tt
+    riscv\_regs.sail}''.  (Not necessary for extensions that don't define new registers).
+
+  \vspace{1ex}
+
+  \begin{Verbatim}[frame=single, numbers=left, label = In sail-riscv/model]
+riscv_freg_type.sail
+riscv_fdext_regs.sail
+  \end{Verbatim}
+
+  Since F,D define new CSRs, we created a new file
+  by analogy with ``{\tt riscv\_sys\_control.sail}''.  (Not necessary for extensions that don't define new CSRs).
+
+  \vspace{1ex}
+
+  \begin{Verbatim}[frame=single, numbers=left, label = In sail-riscv/model]
+riscv_fdext_control.sail
+  \end{Verbatim}
+
+\end{frame}
+
+% ----------------
+
+\begin{frame}[fragile]
+  \frametitle{Case study: adding ISA Extensions F and D (contd.)}
+
+  \slidefont
+
+  Finally, the semantics of F and D instructions are in two new files:
+
+  \vspace{1ex}
+
+  \begin{Verbatim}[frame=single, numbers=left, label = In your riscv-compliance repository clone]
+riscv_insts_fext.sail
+riscv_insts_dext.sail
+  \end{Verbatim}
+
+  They follow the standard pattern:
+  \begin{itemize}
+    \item Define an enum and mapping for any sub-opcodes in the class
+      (if the class contains more than one instruction)
+    \item Augment the ``{\cf ast}'' type by adding a scattered clause to describe this new class
+    \item Augment the ``{\cf encdec}'' mapping by adding a scattered clause to describe this new class
+    \item Augment the ``{\cf execute}'' function by adding a scattered clause to describe this new class
+    \item Augment the ``{\cf assembly}'' mapping by adding a scattered clause to describe this new class
+  \end{itemize}
+
+\end{frame}
+
+% ----------------
+
+\begin{frame}[fragile]
+  \frametitle{Case study: adding ISA Extensions F and D (contd.)}
+
+  \slidefont
+
+  In addition to writing the Sail code, you have to update the
+  Makefiles so that your new files are included.  They look something like this:
+
+  \vspace{1ex}
+
+  \begin{Verbatim}[frame=single, numbers=left, label = In your riscv-compliance repository clone]
+$ git diff Makefile
+
++# Currently, we only have F with RV32, and both F and D with RV64.
+ ifeq ($(ARCH),RV32)
+   SAIL_XLEN := riscv_xlen32.sail
++  SAIL_FLEN := riscv_flen_F.sail
+ else ifeq ($(ARCH),RV64)
+   SAIL_XLEN := riscv_xlen64.sail
++  SAIL_FLEN := riscv_flen_D.sail
+ else
+   $(error '$(ARCH)' is not a valid architecture, must be one of: RV32, RV64)
+ endif
+
+...
+  \end{Verbatim}
+
+\end{frame}
+
+% ----------------
+
+\begin{frame}[fragile]
+  \frametitle{Case study: adding ISA Extensions F and D (contd.)}
+
+  \slidefont
+
+  In addition to writing the Sail code, you have to update the
+  Makefiles so that your new files are included.  They look something like this:
+
+  \vspace{1ex}
+
+  \begin{Verbatim}[frame=single, numbers=left, label = In your riscv-compliance repository clone]
+$ git diff Makefile
+
+...
+
++SAIL_DEFAULT_INST += riscv_softfloat_interface.sail  riscv_insts_fext.sail
++ifeq ($(ARCH),RV64)
++SAIL_DEFAULT_INST +=riscv_insts_dext.sail
++endif
+
+
++SAIL_SYS_SRCS += riscv_fdext_regs.sail riscv_fdext_control.sail
+
++PRELUDE = prelude.sail prelude_mapping.sail $(SAIL_XLEN) $(SAIL_FLEN) ...
+
++SAIL_REGS_SRCS = riscv_reg_type.sail riscv_freg_type.sail riscv_regs.sail ...
+
++SAIL_ARCH_SRCS += $(SAIL_FD_SRCS)
+  \end{Verbatim}
+
+\end{frame}
+
+% ================================================================
+
+\subsection{Sail: the larger picture}
 
 % ----------------
 
@@ -2624,14 +2827,6 @@ execution?)
 
   \end{itemize}
 
-\end{frame}
-
-% ----------------
-
-\begin{frame}[fragile]
-  \frametitle{Adding new ISA Extensions}
-
-  ... to be written ...
 \end{frame}
 
 % ----------------
