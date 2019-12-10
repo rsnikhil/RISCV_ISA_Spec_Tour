@@ -58,14 +58,14 @@
 
 % ----------------
 
-\begin{frame}
+\begin{frame}[fragile]
   \titlepage
 \end{frame}
 
 
 % ----------------
 
-\begin{frame}
+\begin{frame}[fragile]
   \begin{tabular}[c]{l}
     \includegraphics[height=1.2in]{Figures/Fig_Under_Construction.png}
   \end{tabular}
@@ -82,7 +82,7 @@
 
 % ----------------
 
-\begin{frame}
+\begin{frame}[fragile]
   \frametitle{Location of these slides and additional material}
 
   These slides are in ``{\tt Slides\_Tutorial.pdf}'' in this GitHub repository:
@@ -110,7 +110,7 @@
 
 % ----------------
 
-\begin{frame}
+\begin{frame}[fragile]
   \frametitle{Objectives for this tutorial}
 
   \slidefont
@@ -147,7 +147,7 @@
 
 % ----------------
 
-\begin{frame}
+\begin{frame}[fragile]
   \frametitle{Credits}
 
   \slidefont
@@ -199,7 +199,7 @@
 
 % ----------------
 
-\begin{frame}
+\begin{frame}[fragile]
   \frametitle{Outline}
   \tableofcontents
 \end{frame}
@@ -210,7 +210,7 @@
 
 % ----------------
 
-\begin{frame}
+\begin{frame}[fragile]
 
   \slidefont
 
@@ -226,7 +226,7 @@
 
 % ----------------
 
-\begin{frame}
+\begin{frame}[fragile]
   \frametitle{Context, briefly}
 
   \slidefont
@@ -262,7 +262,7 @@
 
 % ----------------
 
-\begin{frame}
+\begin{frame}[fragile]
   \frametitle{Downloading and Installing}
 
   Although the slides in this deck are self-contained, containing code
@@ -292,7 +292,7 @@
 
 % ----------------
 
-\begin{frame}
+\begin{frame}[fragile]
 
   \slidefont
 
@@ -312,7 +312,7 @@
 
 % ----------------
 
-\begin{frame}
+\begin{frame}[fragile]
   \scriptsize
 
   \begin{block}{About Sail, and the RISC-V ISA Formal Spec written in Sail}
@@ -1860,7 +1860,7 @@ function trap_handler(del_priv : Privilege, intr : bool, c : exc_code,
 
 % ----------------
 
-\begin{frame}
+\begin{frame}[fragile]
 
   \slidefont
 
@@ -2033,9 +2033,7 @@ function step(step_no : int) -> bool = {
 
 % ----------------
 
-\begin{frame}
-
-  \slidefont
+\begin{frame}[fragile]
 
   \vfill
 
@@ -2047,18 +2045,65 @@ function step(step_no : int) -> bool = {
 
 \end{frame}
 
+% ----------------
+
+\begin{frame}[fragile]
+  \frametitle{Ensure you have downloaded/built/installed executable versions of the formal spec}
+
+  \slidefont
+
+  If you have not already dones so, please follow both Step A and Step B described in slide deck ``{\tt
+    Slides\_Installation.pdf}'' in the repository:
+
+  \vspace{1ex}
+
+  \hmm {\tt https://github.com/rsnikhil/RISCV\_ISA\_Spec\_Tour}
+
+  \vspace{1ex}
+
+  Step A clones {\tt https://github.com/rems-project/sail-riscv}, with
+  the Sail RISC-V spec in the ``{\tt model}'' directory (we've been
+  studying this code so far in this tutorial).
+
+  \vspace{1ex}
+
+  Step B takes you through these steps:
+  \begin{itemize}
+  \item Install Opam, the package manager for OCaml;
+  \item Using Opam, install OCaml
+  \item Using Opam, install Sail
+  \item Using Ocaml and Sail, build executable versions of the Sail RISC-V spec.
+  \end{itemize}
+
+  As a result, you should now have the following executables in your sail-riscv repository:
+
+  \vspace{1ex}
+
+  \begin{Verbatim}[frame=single, numbers=left, label = in your sail-riscv repository clone]
+    $ pwd
+    /home/nikhil/git_clones/sail-riscv
+
+    $ ./c emulator/riscv_sim_RV64
+    $ ./c emulator/riscv_sim_RV32
+  \end{Verbatim}
+
+\end{frame}
+
 % ================================================================
 
 \subsection{Executing standard RISC-V ISA tests}
 
 % ----------------
 
-\begin{frame}
+\begin{frame}[fragile]
   \frametitle{Executing standard RISC-V ISA tests}
 
-  {\scripttt sail-riscv/test/riscv-tests/} has a full suite of
-  pre-compiled standard RISC-V ISA tests.  Each has an ELF file
-  (RISC-V binary) and a disassembly (text file) of the test:
+  \slidefont
+
+  The directory ``{\tt sail-riscv/test/riscv-tests/}'' has a full
+  suite of pre-compiled standard RISC-V ISA tests.  Each has an ELF
+  file (RISC-V binary) and a disassembly (text file) of the test.
+  Examples:
 
   \begin{block}{Example of ISA test ELF file and disassembly text file}
     \slidefont
@@ -2079,62 +2124,108 @@ function step(step_no : int) -> bool = {
 
 % ----------------
 
-\begin{frame}
+\begin{frame}[fragile]
   \frametitle{Executing standard RISC-V ISA tests (contd.)}
 
-  Using the C-based simulator:
+  \slidefont
 
-  \begin{block}{Example: executing the {\scripttt rv64ui-p-add} standard ISA test}
-    \tiny\tt
-    \begin{tabular}{l}
-      \$ ./c\_emulator/riscv\_sim\_RV64  rv64ui-p-add \\
-      ... \\
-      tohost located at 0x80001000 \\
-      ... \\
-      Running file test/riscv-tests/rv64ui-p-add.elf. \\
-      ELF Entry @ 0x80000000 \\
-      ... \\\relax
-      [0] [M]: 0x0000000000001000 (0x00000297) auipc t0, 0 \\
-      ... \\\relax
-      [1] [M]: 0x0000000000001004 (0x02028593) addi a1, t0, 32 \\
-      ... \\\relax
-      [2] [M]: 0x0000000000001008 (0xF1402573) csrrs a0, zero, mhartid \\
-      ... \\\relax
-      [477] [M]: 0x0000000080000044 (0xFC3F2023) sw gp, 4032(t5) \\
-      ... \\
-      SUCCESS
-    \end{tabular}
-  \end{block}
+  Using the C-based simulator we can execute, for example, the ``{\tt
+    rv64ui-p-add}'' ISA test for the ADD instruction:
 
-  During execution of the RISC-V binary, it prints out a trace of instructions executed.
+  \vspace{1ex}
+
+  \tiny
+  \begin{Verbatim}[frame=single, numbers=left, label = in your sail-riscv repository clone]
+$ pwd
+/home/nikhil/git_clones/sail-riscv
+
+$ ./c_emulator/riscv_sim_RV64  test/riscv-tests/rv64ui-p-add.elf
+Tue Dec 10 07:37:05 2019
+...
+Running file test/riscv-tests/rv64ui-p-add.elf.
+ELF Entry @ 0x80000000
+CSR mstatus <- 0x0000000A00000000 (input: 0x0000000000000000)
+mem[X,0x0000000000001000] -> 0x0297
+mem[X,0x0000000000001002] -> 0x0000
+[0] [M]: 0x0000000000001000 (0x00000297) auipc t0, 0
+...
+[1] [M]: 0x0000000000001004 (0x02028593) addi a1, t0, 32
+...
+[2] [M]: 0x0000000000001008 (0xF1402573) csrrs a0, zero, mhartid
+...
+[477] [M]: 0x0000000080000044 (0xFC3F2023) sw gp, 4032(t5)
+htif[0x0000000080001000] <- 0x00000001
+htif-syscall-proxy cmd: 0x000000000001
+SUCCESS
+  \end{Verbatim}
+
+  \slidefont
+  During execution of the RISC-V binary, it prints out a trace of instructions executed (PC, instruction, assembly).
 
 \end{frame}
 
 % ----------------
 
-\begin{frame}
+\begin{frame}[fragile]
   \frametitle{Executing standard RISC-V ISA tests (contd.)}
 
-  Using the OCaml-based simulator:
+  \slidefont
 
-  \begin{block}{Example: executing the {\scripttt rv64ui-p-add} standard ISA test}
+  Another example: the ``{\tt rv32um-v-mulhsu}'' test for the MULHSU
+  instruction in virtual-memory mode:
 
-    \tiny\tt
-    \begin{tabular}{l}
-      \$ ./ocaml\_emulator/riscv\_ocaml\_sim\_RV64  rv64ui-p-add \\
-      Sail/RISC-V: running ELF file test/riscv-tests/rv64ui-p-add.elf \\
-      ... \\\relax
-      [0] [M]: 0x0000000000001000 (0x00000297) auipc t0, 0 \\
-      ... \\\relax
-      [1] [M]: 0x0000000000001004 (0x02028593) addi a1, t0, 32 \\
-      ... \\\relax
-      [2] [M]: 0x0000000000001008 (0xF1402573) csrrs a0, zero, mhartid \\
-      ... \\\relax
-      [477] [M]: 0x0000000080000044 (0xFC3F2023) sw gp, 4032(t5) \\
-      ... \\
-      SUCCESS
-    \end{tabular}
-  \end{block}
+  \vspace{1ex}
+
+  \tiny
+  \begin{Verbatim}[frame=single, numbers=left, label = in your sail-riscv repository clone]
+Tue Dec 10 07:46:33 2019
+Running file test/riscv-tests/rv32um-v-mulhsu.elf.
+ELF Entry @ 0x80000000
+[0] [M]: 0x00001000 (0x00000297) auipc t0, 0
+...
+[20652] [S]: 0xFFC02270 (0x0106A023) sw a6, 0(a3)
+htif[0x80001000] <- 0x00000001
+htif-syscall-proxy cmd: 0x000000000001
+
+SUCCESS
+  \end{Verbatim}
+
+  \slidefont
+  During execution of the RISC-V binary, it prints out a trace of instructions executed (PC, instruction, assembly).
+
+  \vspace{1ex}
+
+  You can execute any of the ``{\tt *.elf}'' tests in directory ``{\tt
+    sail-riscv/test/riscv-tests/}'' in the same way.
+
+\end{frame}
+
+% ----------------
+
+\begin{frame}[fragile]
+  \frametitle{Executing standard RISC-V ISA tests (contd.)}
+
+  \slidefont
+
+  FYI, for those who wish to explore the OCaml-based simulators and/or
+  connections to various formal tools.
+
+  \vspace{5ex}
+
+  The ``{\cf make}'' commmand in Step B.4 of the
+  ``{\tt Slides\_Installation.pdf}'' (without the ``{\tt csim}''
+  argument) also makes:
+
+  \begin{itemize}
+    \item OCaml-based executable versions of the spec, in directory
+      ``{\tt ./ocaml\_emulator/}''.  These are run in the same way as
+      the C-based simulators of the previous examples.
+
+    \item Material to connect to formal tools Coq, Isabelle, HOL4,
+      etc.  Please see documentation in the repository about these
+      options.
+
+  \end{itemize}
 
 \end{frame}
 
@@ -2144,7 +2235,7 @@ function step(step_no : int) -> bool = {
 
 % ----------------
 
-\begin{frame}
+\begin{frame}[fragile]
 
   \slidefont
 
@@ -2160,7 +2251,7 @@ function step(step_no : int) -> bool = {
 
 % ----------------
 
-\begin{frame}
+\begin{frame}[fragile]
   \frametitle{Executing Compliance tests}
 
   ... to be written ...
@@ -2172,7 +2263,7 @@ function step(step_no : int) -> bool = {
 
 % ----------------
 
-\begin{frame}
+\begin{frame}[fragile]
 
   \slidefont
 
@@ -2192,7 +2283,7 @@ function step(step_no : int) -> bool = {
 
 % ----------------
 
-\begin{frame}
+\begin{frame}[fragile]
   \frametitle{A word about concurrency}
 
   \slidefont
@@ -2234,7 +2325,7 @@ function step(step_no : int) -> bool = {
 
 % ----------------
 
-\begin{frame}
+\begin{frame}[fragile]
   \frametitle{Relationship with the official RISC-V Memory Model}
 
   \slidefont
@@ -2260,7 +2351,7 @@ function step(step_no : int) -> bool = {
 
 % ================================================================
 
-\begin{frame}
+\begin{frame}[fragile]
   \frametitle{Status and Plans}
 
   \slidefont
@@ -2294,7 +2385,7 @@ function step(step_no : int) -> bool = {
 
 % ----------------
 
-\begin{frame}
+\begin{frame}[fragile]
   \frametitle{Sail: the larger picture}
 
   \slidefont
@@ -2339,7 +2430,7 @@ function step(step_no : int) -> bool = {
 
 % ----------------
 
-\begin{frame}
+\begin{frame}[fragile]
   \frametitle{Sail: the larger picture (contd.)}
 
   \begin{figure}[htbp]
@@ -2351,7 +2442,7 @@ function step(step_no : int) -> bool = {
 
 % ----------------
 
-\begin{frame}
+\begin{frame}[fragile]
   \frametitle{Adding new ISA Extensions}
 
   ... to be written ...
@@ -2359,7 +2450,7 @@ function step(step_no : int) -> bool = {
 
 % ----------------
 
-\begin{frame}
+\begin{frame}[fragile]
   \frametitle{How people use ISA formal specs}
 
   \slidefont
