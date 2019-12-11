@@ -89,6 +89,8 @@
 
   \hmm {\tt https://github.com/rsnikhil/RISCV\_ISA\_Spec\_Tour}
 
+  \emph{Please feel free to download them now (yes, now!).}
+
   \vspace{3ex}
 
   The repository also contains ``{\tt Slides\_Installation.pdf}'' which describes
@@ -129,7 +131,12 @@
       the implementation's behavior matches the formal spec
       accurately.
 
+    \item \emph{Tertiary objective (if there is time)}: Briefly
+      discuss how to extend the spec for a newly developed ISA
+      extension; concurrency and weak memory models, etc.
  \end{itemize}
+
+\vspace{1ex}
 
  \emph{Target audience}: Working RISC-V engineers (e.g., CPU
  designers, compiler writers, simulator/emulator writers, ...) who
@@ -137,7 +144,7 @@
  We do not assume any prior experience with formal languages or formal
  methods.
 
- \vspace{1ex}
+ \vspace{2ex}
 
  This tutorial may not be suitable for afficionados of formal methods,
  except as an initial familiarization with Sail and the RISC-V formal
@@ -235,36 +242,85 @@
 % ----------------
 
 \begin{frame}[fragile]
-  \frametitle{Context, briefly}
+  \frametitle{What is an ISA Formal Specification?}
 
   \slidefont
 
-  \begin{block}{What is it?}
+  \begin{block}{The formal spec of the RISC-V ISA is intended to be:}
     \begin{itemize}
 
-      \item The formal spec of the RISC-V ISA is intended to be the
-          \emph{definitive} reference for RISC-V instructions:
+      \item the \emph{definitive} reference for RISC-V instructions:
         \begin{itemize}\slidefont
           \item Encoding
           \item Execution semantics (what executing each instruction is supposed to do)
         \end{itemize}
-        More authoritative than the English prose spec (complete, precise, unambiguous).
+        and intended to be more authoritative than the English prose
+        spec (completeness, precision, unambiguity).
 
-      \item Excutable: can be run as a simulator executing RISC-V
+      \item excutable: can be run as a simulator executing RISC-V
         binaries, providing definitive execution behaviors
 
-      \item Readable and usable by, and useful to, ordinary mortals who don't do formal stuff for a living.
+      \item readable and usable by, and useful to, ordinary mortals who don't do formal stuff for a living.
         \begin{itemize}\slidefont
           \item Casual reading, as a reference guide to RISC-V instructions.
           \item Executable ``golden reference model'' to check implementation correctness.
         \end{itemize}
 
-      \item For those who \emph{do} formal stuff for a living, usable
+      \item for those who \emph{do} formal stuff for a living, usable
         with formal tools for proofs of correctness of compilers, CPU
         implementations, automatic generation of tests, test coverage,
         etc.
     \end{itemize}
   \end{block}
+
+\end{frame}
+
+% ----------------
+
+\begin{frame}[fragile]
+  \frametitle{How people use ISA formal specs}
+
+  \slidefont
+
+  People are already using and will use the ISA formal spec in various ways.
+
+  \begin{itemize}
+
+    \item As a reading reference to clarify the intended semantics of
+      each type of instruction (enabling this is the primary goal of
+      this tutorial).
+
+    \item As a ``golden reference model'' against which to compare
+      other implementations (simulation to hardware designs) for
+      correctness.  Specific examples include:
+
+      \begin{itemize}\slidefont
+      \item the official Compliance Tests and Compliance testing framework
+      \item Tandem Verification (which is a kind of dynamic instruction-by-instruction compliance testing).
+      \end{itemize}
+
+    \item In a tool to generate ISA tests automatically.
+
+    \item In a tool to measure instruction coverage automatically.
+
+    \item In a tool to formally prove a separately-written
+      implementation correct, by directly correlating the ISA formal
+      semantics with the sematics of the language of the
+      implementation:
+      
+      \begin{itemize}\slidefont
+      \item Simulators (written in C, C++, SystemVerilog, ...)
+      \item Actual CPU hardware, designed in SystemVerilog, Bluespec, Chisel, ...)
+      \end{itemize}
+
+
+    \item In a tool to formally and systematically \emph{derive} an
+      implementation from the ISA formal spec using a series of
+      derivations, each formally proved correct
+      (``correct-by-construction implementation'').
+
+    \item ... and so on.
+  \end{itemize}
 
 \end{frame}
 
@@ -321,7 +377,8 @@
 % ----------------
 
 \begin{frame}[fragile]
-  \scriptsize
+
+  \slidefont
 
   \begin{block}{About Sail, and the RISC-V ISA Formal Spec written in Sail}
     \begin{itemize}
@@ -2905,40 +2962,19 @@ $ git diff Makefile
 
 \end{frame}
 
-% ----------------
+% ****************************************************************
 
 \begin{frame}[fragile]
-  \frametitle{How people use ISA formal specs}
 
   \slidefont
 
-  People are already using and will use the ISA formal spec in various ways.
+  \vfill
 
-  \begin{itemize}
-    \item As a reference to clarify the intended semantics of each type of instruction.
+  \begin{center}\LARGE
+    Thank you!
+  \end{center}
 
-    \item As a ``golden reference model'' against which to compare
-      other implementations (simulation to hardware designs) for
-      correctness.  Specific examples include official Compiance
-      Tests, and Tandem Verification.
-
-    \item In a tool to generate ISA tests automatically.
-
-    \item In a tool to measure instruction coverage automatically.
-
-    \item In a tool to formally prove a separately-written
-      implementation correct, by directly correlating the ISA formal
-      semantics with the sematics of the language of the
-      implementation (C, C++, SystemVerilog, ...).  Implementations
-      may be complex: pipelined, superscalar, out of order,
-      speculative, ...
-
-    \item In a tool to formally and systematically derive an
-      implementation from the ISA formal spec using a series of
-      derivations, each formally proved correct
-      (``correct-by-construction implementation'').
-
-  \end{itemize}
+  \vfill
 
 \end{frame}
 
