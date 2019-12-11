@@ -2,7 +2,7 @@ X = Slides_Installation
 Y = Slides_Tutorial
 Z = Slides_Tutorial_dev
 
-FIGS1 = Figures/Fig_Installation_Overview.png
+FIGS1 = Figures/Fig_Installation_Overview.png  Figures/Fig_sequential.png  Figures/Fig_concurrency.png
 
 FIGS2 = Figures/riscvspecdeps.png
 
@@ -30,6 +30,18 @@ Z: $(FIGS2)
 Figures/Fig_Installation_Overview.png:  Figures/Fig_Installation_Overview.svg
 	inkscape --file=Figures/Fig_Installation_Overview.svg \
 		--export-png=Figures/Fig_Installation_Overview.png \
+		--export-area-drawing \
+		-d 300 -y 0.0
+
+Figures/Fig_sequential.png:  Figures/Fig_sequential.svg
+	inkscape --file=Figures/Fig_sequential.svg \
+		--export-png=Figures/Fig_sequential.png \
+		--export-area-drawing \
+		-d 300 -y 0.0
+
+Figures/Fig_concurrency.png:  Figures/Fig_concurrency.svg
+	inkscape --file=Figures/Fig_concurrency.svg \
+		--export-png=Figures/Fig_concurrency.png \
 		--export-area-drawing \
 		-d 300 -y 0.0
 

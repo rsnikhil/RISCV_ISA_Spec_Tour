@@ -2443,7 +2443,11 @@ execution?)
 
 % ****************************************************************
 
-\section{Extra material}
+\section{Extra topics and Conclusion}
+
+% ================================================================
+
+\subsection{Adding new ISA extensions to the Formal Spec}
 
 % ----------------
 
@@ -2454,16 +2458,12 @@ execution?)
   \vfill
 
   \begin{center}\LARGE
-    Extra Material
+    Extra Topic: Adding new ISA extensions to the Formal Spec
   \end{center}
 
   \vfill
 
 \end{frame}
-
-% ================================================================
-
-\subsection{Adding new ISA extensions to the Formal Spec}
 
 % ----------------
 
@@ -2664,12 +2664,28 @@ $ git diff Makefile
 
 % ================================================================
 
-\subsection{Sail: the larger picture}
+\subsection{The larger context of Sail usage}
 
 % ----------------
 
 \begin{frame}[fragile]
-  \frametitle{Sail: the larger picture}
+
+  \slidefont
+
+  \vfill
+
+  \begin{center}\LARGE
+    Extra Topic: The larger context of Sail usage
+  \end{center}
+
+  \vfill
+
+\end{frame}
+
+% ----------------
+
+\begin{frame}[fragile]
+  \frametitle{The larger context of Sail usage}
 
   \slidefont
 
@@ -2725,54 +2741,94 @@ $ git diff Makefile
 
 % ================================================================
 
-\subsection{A word about concurrency and connection to RISC-V Weak Memory Model}
+\subsection{Concurrency and connection to RISC-V Weak Memory Model}
 
 % ----------------
 
 \begin{frame}[fragile]
-  \frametitle{A word about concurrency}
 
   \slidefont
 
-  \begin{itemize}
+  \vfill
 
-  \item
-    In this introductory tutorial we have deliberately stayed away
-    from questions of concurrency, which is a more advanced topic.
+  \begin{center}\LARGE
+    Extra Topic: Concurrency and connection to RISC-V Weak Memory Model
+  \end{center}
 
-  \item
-    Each instruction semantics can be regarded as a small sequential
-    thread performing that instruction's semantics.  There are various
-    ``events'' during this thread's progress: reading a register,
-    computing an effective address (for memory accesses), requesting
-    memory, getting a response from memory, writing a register, etc.
-
-  \item
-    In our simple one-instruction-at-a-time fetch-execute loop model
-    shown earlier, these threads are simply concatenated into an
-    overall single sequential thread.
-
-  \item
-    A parallel model can overlap these threads: a pipeline model may
-    launch the next instruction's thread before the current one has
-    finished; a superscalar model may launch two or more of these
-    threads together; an out-of-order model may have many of these
-    threads running concurrently; and so on.
-
-  \item
-    Such a parallel model can capture all the complexities of modern,
-    sophisticated, high-performance, parallel CPU implementations. In
-    particular, such a model can exercise interesting interactions
-    with weak memory models.
-
-  \end{itemize}
+  \vfill
 
 \end{frame}
 
 % ----------------
 
 \begin{frame}[fragile]
-  \frametitle{Relationship with the official RISC-V Memory Model}
+  \frametitle{Concurrency}
+
+  \slidefont
+
+  \begin{itemize}
+
+  \item
+    In this introductory tutorial we deliberately stayed away from
+    questions of concurrency, which is a more advanced topic.
+
+  \item
+    Each instruction semantics can be regarded as a small sequential
+    thread performing that instruction's semantics.  There are various
+    ``events'' during this thread's progress.
+
+  \item
+    In our simple one-instruction-at-a-time fetch-execute loop model
+    shown in this tutorial (and in the default simulators built),
+    these threads are simply concatenated into an overall single
+    sequential thread.
+
+  \end{itemize}
+
+  \vfill
+
+  \begin{figure}[htbp]
+    \centerline{\includegraphics[height=1.7in]{Figures/Fig_sequential.png}}
+  \end{figure}
+
+\end{frame}
+
+% ----------------
+
+\begin{frame}[fragile]
+  \frametitle{Concurrency (contd.)}
+
+  \slidefont
+
+  \begin{itemize}
+
+  \item
+    A parallel model can overlap these threads:
+    \begin{itemize}\slidefont
+    \item a pipeline model may launch the next instruction's thread before the current one has
+      finished; in fact can launch it speculatively based only on PC of previous instruction;
+    \item a superscalar model may launch two or more of these threads together;
+    \item an out-of-order model may have many of these threads running concurrently;
+    \item register read/write events can model renamed registers;
+    \item memory address/read/write events can interact with a model of weakly orderer memory;
+    \item and so on.
+    \end{itemize}
+
+  \item The RMEM concurrency tool is meant for these purposes ({\tt https://github.com/rems-project/rmem})
+  \end{itemize}
+
+  \vfill
+
+  \begin{figure}[htbp]
+    \centerline{\includegraphics[height=1.3in]{Figures/Fig_concurrency.png}}
+  \end{figure}
+
+\end{frame}
+
+% ----------------
+
+\begin{frame}[fragile]
+  \frametitle{Connection to official RISC-V Memory Model}
 
   \slidefont
 
@@ -2782,20 +2838,40 @@ $ git diff Makefile
     Foundation Technical Group, chaired by Dan Lustig of NVidia.
 
   \item 
-    One of their formalizations was indeed using this Sail model.  As
-    mentioned in the previous slide, this uses a concurrent
-    fetch-execute model where multiple instructions may be in flight
-    concurrently, with concurrent interactions with the weak memory
-    model.
+    One of their formalizations was indeed using these Sail and RMEM
+    system and models.  As mentioned in the previous slide, this uses
+    a concurrent fetch-execute model where multiple instructions may
+    be in flight concurrently, with concurrent interactions with the
+    weak memory model.
 
   \item
-    (These details should be covered in another, more advanced tutorial.)
+    (These should be covered in another, more advanced tutorial.)
 
   \end{itemize}
 
 \end{frame}
 
 % ================================================================
+
+\subsection{Status and Plans}
+
+% ----------------
+
+\begin{frame}[fragile]
+
+  \slidefont
+
+  \vfill
+
+  \begin{center}\LARGE
+    Status and Plans
+  \end{center}
+
+  \vfill
+
+\end{frame}
+
+% ----------------
 
 \begin{frame}[fragile]
   \frametitle{Status and Plans}
@@ -2807,8 +2883,8 @@ $ git diff Makefile
     The RISC-V Foundation set up a Technical Group (TG) in 2017 to
     develop a Formal Specifcation for the RISC-V ISA, which will
     become the \emph{definitive} specification of the ISA.  There are
-    currently 110 members, of which 15-20 were regular attendees of
-    weekly con-calls.
+    currently 110 members in the TG, of which 15-20 were regular
+    attendees of weekly con-calls.
 
   \item 
     The group encompassed 6 different, parallel, efforts, including
