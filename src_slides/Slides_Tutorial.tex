@@ -39,12 +39,15 @@
 
 \title{A Tour of the RISC-V ISA Formal Specification}
 
-\author{RISC-V Foundation ISA Formal Spec Technical Committee}
+\author{Rishiyur Nikhil \\ and the RISC-V Foundation ISA Formal Spec
+  Technical Committee\footnote{Thanks especially to Alasdair
+    Armstrong, Robert Norton-Wright, Prashant Mundkur and Peter Sewell
+    for guidance and feedback in preparing this tutorial.}}
 
 \date{
-  \begin{tabular}[c]{l}
-    \includegraphics[height=1in]{Figures/Fig_Under_Construction.png}
-  \end{tabular}
+%  \begin{tabular}[c]{l}
+%    \includegraphics[height=0.5in]{Figures/Fig_Under_Construction.png}
+%  \end{tabular}
   \begin{tabular}[c]{l}
     At RISC-V Summit, San Jose \\
     December 12, 2019
@@ -65,20 +68,20 @@
 
 % ----------------
 
-\begin{frame}[fragile]
-  \begin{tabular}[c]{l}
-    \includegraphics[height=1.2in]{Figures/Fig_Under_Construction.png}
-  \end{tabular}
-  \fbox{
-  \begin{tabular}[c]{l}
-    Dear reader, \emph{Caveat!} we must confess, \\
-    This slide deck remains a work in progress, \\
-    We suggest, until the target date, please take a recess, \\
-    Your cognitive serenity so as not to distress. \\
-    \\
-    Please come back on December 12, 2019.
-  \end{tabular}}
-\end{frame}
+% \begin{frame}[fragile]
+%   \begin{tabular}[c]{l}
+%     \includegraphics[height=1.2in]{Figures/Fig_Under_Construction.png}
+%   \end{tabular}
+%   \fbox{
+%   \begin{tabular}[c]{l}
+%     Dear reader, \emph{Caveat!} we must confess, \\
+%     This slide deck remains a work in progress, \\
+%     We suggest, until the target date, please take a recess, \\
+%     Your cognitive serenity so as not to distress. \\
+%     \\
+%     Please come back on December 12, 2019.
+%   \end{tabular}}
+% \end{frame}
 
 % ----------------
 
@@ -113,7 +116,7 @@
 % ----------------
 
 \begin{frame}[fragile]
-  \frametitle{Objectives for this tutorial}
+  \frametitle{Objectives for this tutorial/ Target audience}
 
   \slidefont
 
@@ -149,6 +152,23 @@
  This tutorial may not be suitable for afficionados of formal methods,
  except as an initial familiarization with Sail and the RISC-V formal
  spec.
+
+\end{frame}
+
+% ----------------
+
+\begin{frame}[fragile]
+  \frametitle{Objectives for this tutorial/ Target audience (contd.)}
+
+  \slidefont
+
+  \begin{block}{}
+    \include{Poem2}
+  \end{block}
+
+  \vspace{2ex}
+
+  And with apologies to our politicians, we chant: ``ISA! ISA! ISA! ISA! ...''
 
 \end{frame}
 
@@ -202,7 +222,7 @@
     pp. 71:1--71:31.
   \end{minipage}
 
-  \vspace{2ex}
+  \vspace{4ex}
 
   Thanks also to all members of the Technical Group for the ISA Formal
   Spec in the RISC-V Foundation who volunteered their time for
@@ -257,7 +277,7 @@
         and intended to be more authoritative than the English prose
         spec (completeness, precision, unambiguity).
 
-      \item excutable: can be run as a simulator executing RISC-V
+      \item executable: can be run as a simulator executing RISC-V
         binaries, providing definitive execution behaviors
 
       \item readable and usable by, and useful to, ordinary mortals who don't do formal stuff for a living.
@@ -305,7 +325,7 @@
 
     \item In a tool to formally prove a separately-written
       implementation correct, by directly correlating the ISA formal
-      semantics with the sematics of the language of the
+      semantics with the semantics of the language of the
       implementation:
       
       \begin{itemize}\slidefont
@@ -337,14 +357,24 @@
 
   \vspace{1ex}
 
-  {\footnotesize \emph{Each code fragment in this deck shows the file from which it is taken.}}
+  \emph{Each code fragment in this deck shows the file from which it is taken.}
 
   \vspace{1ex}
 
-  \begin{block}{Downloading and Installing}
-    Please see the separate slide deck {\tt Slides\_Installation.pdf}
-    for instructions on how to download the spec, and optionally to
-    build an executable version of the spec.
+  \begin{block}{}
+    Please visit this repository: \\
+    \hmm {\tt https://github.com/rsnikhil/RISCV\_ISA\_Spec\_Tour} \\
+    and clone it or download the two PDFs there.
+
+    \vspace{1ex}
+
+    These slides are in:  {\tt Slides\_Tutorial.pdf}
+
+    \vspace{1ex}
+
+    {\tt Slides\_Installation.pdf} has instructions on how to download
+    the spec, and optionally to build an executable version of the
+    spec.
   \end{block}
 
 \end{frame}
@@ -1028,7 +1058,7 @@ union clause ast = UTYPE : (bits(20), regidx, uop)
     \vspace{1ex}
 
     Note: Sail unions are similar to ``algebraic types'' or ``tagged
-    unions'' in other programming langauges.  Each value of a tagged
+    unions'' in other programming languages.  Each value of a tagged
     union carries a way (a ``tag'') by which we can query which
     variant this value encodes.
 
@@ -1213,7 +1243,7 @@ function clause execute UTYPE(imm, rd, op) = {
 
     \vspace{1ex}
 
-    Finally, Line 8 is the constant expresssion {\cf RETIRE\_SUCCESS}.
+    Finally, Line 8 is the constant expression {\cf RETIRE\_SUCCESS}.
     Being the last expression in the block, and the block being the
     body of the function, this is the value returned by the function.
   \end{minipage}
@@ -1592,7 +1622,7 @@ function clause execute(LOAD(imm, rs1, rd, is_unsigned, width, aq, rl)) = {
     a signed addition to the contents of rs1.  This function is
     defined in ``{\cf riscv\_addr\_checks.sail}''.  By encapsulating
     this addition in a function, we allow future extensibility to new
-    ISA extensions that may peform additional checks/transformations
+    ISA extensions that may perform additional checks/transformations
     on the address.
 
     \vspace{1ex}
@@ -1716,7 +1746,7 @@ function clause execute(LOAD(imm, rs1, rd, is_unsigned, width, aq, rl)) = {
 
   RISC-V has
   \begin{itemize}
-  \item interrupts (asyncnronous exceptions, conceptually ``between'' any two instructions)
+  \item interrupts (asynchronous exceptions, conceptually ``between'' any two instructions)
   \item traps (synchronous exceptions, due to execution of an instruction)
   \end{itemize}
 
@@ -2245,6 +2275,10 @@ SUCCESS
 
   \tiny
   \begin{Verbatim}[frame=single, numbers=left, label = in your sail-riscv repository clone]
+$ pwd
+/home/nikhil/git_clones/sail-riscv
+
+$ ./c_emulator/riscv_sim_RV32  test/riscv-tests/rv32um-v-mulhsu.elf
 Tue Dec 10 07:46:33 2019
 Running file test/riscv-tests/rv32um-v-mulhsu.elf.
 ELF Entry @ 0x80000000
@@ -2279,7 +2313,7 @@ SUCCESS
 
   \vspace{5ex}
 
-  The ``{\cf make}'' commmand in Step B.4 of the
+  The ``{\cf make}'' command in Step B.4 of the
   ``{\tt Slides\_Installation.pdf}'' (without the ``{\tt csim}''
   argument) also makes:
 
@@ -2867,7 +2901,7 @@ $ git diff Makefile
     \item a superscalar model may launch two or more of these threads together;
     \item an out-of-order model may have many of these threads running concurrently;
     \item register read/write events can model renamed registers;
-    \item memory address/read/write events can interact with a model of weakly orderer memory;
+    \item memory address/read/write events can interact with a model of weakly ordered memory;
     \item and so on.
     \end{itemize}
 
@@ -2938,7 +2972,7 @@ $ git diff Makefile
   \begin{itemize}
   \item
     The RISC-V Foundation set up a Technical Group (TG) in 2017 to
-    develop a Formal Specifcation for the RISC-V ISA, which will
+    develop a Formal Specification for the RISC-V ISA, which will
     become the \emph{definitive} specification of the ISA.  There are
     currently 110 members in the TG, of which 15-20 were regular
     attendees of weekly con-calls.
@@ -2975,6 +3009,10 @@ $ git diff Makefile
   \end{center}
 
   \vfill
+
+  \begin{block}{}
+    \include{Poem2}
+  \end{block}
 
 \end{frame}
 
