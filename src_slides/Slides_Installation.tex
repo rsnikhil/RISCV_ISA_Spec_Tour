@@ -271,7 +271,7 @@
 
   First, please install certain prerequisite libraries needed by SAIL (if not already installed on your system):
 
-  \begin{block}{On Linux (Debian, Ubuntu, ...)}
+  \begin{block}{On .deb based Linux (Debian, Ubuntu, ...)}
     \scripttt
     \begin{tabular}{ll}
       \$ sudo apt-get install build-essential libgmp-dev \\
@@ -280,6 +280,18 @@
       \$ sudo apt-get install device-tree-compiler \hm & {\it Needed by simulator} \\
       \\
       \$ sudo apt-get install bubblewrap \hm & {\it Maybe (some people reported needing this)}
+    \end{tabular}
+  \end{block}
+
+  \begin{block}{On .rpm based Linux (Fedora, CentOS, ...)}
+    \tinytt
+    \begin{tabular}{ll}
+      \$ sudo dnf install @development-tools gmp-devel \\
+      \$ sudo dnf install z3 m4 pkg-config zlib-devel \\
+      \$ sudo dnf install git rsync unzip \\
+      \$ sudo dnf install dtc \hm & {\it Needed by simulator} \\
+      \\
+      \$ sudo dnf install bubblewrap \hm & {\it Maybe (some people reported needing this)}
     \end{tabular}
   \end{block}
 
