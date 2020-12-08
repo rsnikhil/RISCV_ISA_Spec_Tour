@@ -1,0 +1,323 @@
+= A Tour of the RISC-V ISA Formal Specification: Installation instructions
+Rishiyur S. Nikhil, Bluespec, Inc. (c) 2020
+:revnumber: v0.2
+:revdate: 2020-12-02
+:revremark: Converted to Asciidoc from LaTeX Beamer
+:sectnums:
+:toc:
+:toclevels: 4
+:toc: left
+:toc-title: Contents
+:description: Tutorial on RISC-V ISA Formal Specs in the SAIL
+:keywords: RISC-V, ISA, Formal Specifications, SAIL
+:imagesdir: Figures
+:data-uri:
+
+// ================================================================
+== About this document
+
+This is a standalone document that accompanies the main document for
+the tutorial, focusing just on the installation steps needed before
+starting the tutorial.
+
+We recommend taking either Step A, or Steps A and B, depending on your
+objectives, before starting the tutorial.
+
+*Step A*: Take this step if you just want to learn how to _read and
+consult the spec_.  This merely git-clones a certain repository which
+contains the SAIL source code for the RISC-V ISA Formal Spec.
+
+*Step B*: Take this step if you also want to learn how to _execute the
+spec_.  This step will compile a RISC-V ISA simulator from the SAIL
+formal spec, which you can use to execute:
+
+* The standard suite of RISC-V ISA tests
+* The standard RISC-V Compliance Test suite
+* RISC-V ELF binaries that you create from other source codes
+
+// ================================================================
+== Installation Overview
+
+This diagram provides an overview of the various components to be installed.
+
+image::Fig_Installation_Overview.png[align="center", width=800]
+
+// ================================================================
+== Step A: Installing for just reading the spec
+
+Ensure you have `git` installed on your system.
+
+Clone the following repository, as follows:
+
+----
+    $ git clone https://github.com/rems-project/sail-riscv
+----
+
+What you get:
+
+----
+    $ sail-riscv
+    $ tree -d
+    ├── ...
+    ├── ...
+    ├── model
+    ├── ...
+    └── ...
+----
+
+The `model` directory contains all the spec files.
+
+That's all you need, for just reading and consulting (not executing)
+the spec (other than a text editor to view source code)!
+
+// ================================================================
+== Step B: Installing for also building executable version of the spec
+
+[NOTE]
+====
+Step A is sufficient if you are only reading/consulting the spec. + 
+Step B is only necessary if you also want to build an executable
+version of the spec that can execute RISC-V binaries.
+====
+
+*OS requirements*
+
+These instructions are for Debian/Ubuntu Linux.  If you are running some other OS:
+
+* You could install a virtual machine running Debian/Linux and follow these instructions.
+
+* Opam, OCaml and SAIL will also install on other OSes.  See the _Safety net_ websites (below)
+  for more information.
+
+
+*Safety net, in case things go wrong, and for installation instructions for non-Linux OSs*
+
+The instructions in these slides are collected here from various
+sources for your convenience. In case of trouble, the original full
+instructions can be found at:
+
+* Installing Opam: https://opam.ocaml.org/doc/Install.html[]
+
+* Installing Ocaml for SAIL, and installing SAIL: https://github.com/rems-project/sail/blob/sail2/INSTALL.md[]
+
+// WAS:  {\scripttt\hm https://github.com/rems-project/sail/wiki/OPAMInstall}
+
+// ================================================================
+== Step B.1: Install Opam, the package manager for OCaml
+
+// ----------------------------------------------------------------
+=== Download the install script and run it
+
+Download: https://raw.githubusercontent.com/ocaml/opam/master/shell/install.sh[]
+
+Run the script:
+----
+    $ sudo sh install.sh
+    ## Downloading opam 2.0.5 for linux on x86_64...
+    ## ...
+    ## opam 2.0.5 installed to /usr/local/bin
+    ## Run this script again with '--restore ' to revert.}
+----
+
+// ----------------------------------------------------------------
+=== Or, Combine the above download-and-run into one line
+
+Install curl if you don't already have it
+----
+    $ sudo apt-get install curl
+----
+
+Then, one line:
+----
+    $ sudo sh <(curl -sL https://raw.githubusercontent.com/ocaml/opam/master/shell/install.sh)
+----
+
+// ----------------------------------------------------------------
+=== Verify successful opam installation
+----
+    $ which opam
+    /usr/local/bin/opam
+
+    $ opam --version
+    2.0.5
+----
+
+// ================================================================
+== Step B.2: Install OCaml using Opam
+
+Use Opam to install OCaml.
+
+// ----------------------------------------------------------------
+=== Install OCaml
+
+Environment setup
+
+    $ opam init
+    $ eval $(opam env)
+
+Install specific version of OCaml
+
+    $ opam switch create ocaml-base-compiler.4.06.1
+    $ eval $(opam config env)
+
+// ----------------------------------------------------------------
+=== Verify you've got OCaml
+
+    $ which ocaml
+    /home/nikhil/.opam/ocaml-base-compiler.4.06.1/bin/ocaml
+
+    $ ocaml -version
+    The OCaml toplevel, version 4.06.1
+
+[NOTE]
+====
+4.06.1 is not the latest version of OCaml, but it is known to be
+suitable for SAIL (it is the version used during CI of SAIL).
+====
+
+// ================================================================
+== Step B.3: Install SAIL using Opam
+
+Use Opam to SAIL.
+
+// ----------------------------------------------------------------
+=== Install SAIL
+
+First, please install certain prerequisite libraries needed by SAIL (if not already installed on your system):
+
+On Linux (Debian, Ubuntu, ...):
+----
+    $ sudo apt-get install build-essential libgmp-dev
+    $ sudo apt-get install z3 m4 pkg-config zlib1g-dev
+    $ sudo apt-get install git  rsync  unzip
+    $ sudo apt-get install device-tree-compiler
+
+    $ sudo apt-get install bubblewrap
+----
+
+[NOTE]
+====
+The `device-tree-compiler` is needed by the simulator.
+
+Some people have reported needing `bubblewrap` on some OSs
+====
+
+Set up opam so it knows where to get SAIL:
+----
+    $ opam repository add rems https://github.com/rems-project/opam-repository.git
+----
+
+Then, install SAIL:
+----
+    $ opam install sail
+----
+
+// ----------------------------------------------------------------
+=== Verify you've got SAIL
+
+----
+    $ which sail
+    /home/nikhil/.opam/ocaml-base-compiler.4.06.1/bin/sail
+
+    $ sail --help
+    Sail 0.11 (sail2 @ opam)
+    usage: sail <options> <file1.sail> ... <fileN.sail>
+
+      -o <prefix>                              select output filename prefix
+      -i                                       start interactive interpreter
+      ...
+----
+
+// ================================================================
+== Step B.4: Build RISC-V simulators from the SAIL spec
+
+Simulators can be used to execute RISC-V binaries.
+
+// ----------------------------------------------------------------
+===  Build an RV64 RISC-V simulator from the SAIL spec
+
+----
+    $ cd sail-riscv
+    $ make  csim
+----
+or
+----
+    $ make  ARCH=RV64  csim
+----
+
+Creates executabe: `c_emulator/riscv_sim_RV64`
+
+// ----------------------------------------------------------------
+=== Build an RV32 RISC-V simulator from the SAIL spec
+
+----
+    $ cd sail-riscv
+    $ make  ARCH=RV32  csim
+----
+
+Creates executable: `c_emulator/riscv_sim_RV32`
+
+[NOTE]
+====
+During these builds, you may get some messages about incomplete pattern matches; you can ignore them.
+====
+
+[NOTE]
+====
+Omitting the `csim` makefile target will also
+build all the targets, which include an OCaml-based simulator and
+material for Coq, Isabelle, HOL4, ... (not necessary for this
+tutorial).
+====
+
+// ----------------------------------------------------------------
+=== Test-drive your RV64 simulator (a smoke test)
+
+Example: executing the `rv64ui-p-add` standard ISA test in the simulator:
+----
+      $ ./c_emulator/riscv_sim_RV64  test/riscv-tests/rv64ui-p-add.elf
+      ...
+      tohost located at 0x80001000
+      ...
+      Running file test/riscv-tests/rv64ui-p-add.elf.
+      ELF Entry @ 0x80000000
+      ...
+      [0] [M]: 0x0000000000001000 (0x00000297) auipc t0, 0
+      ...
+      [1] [M]: 0x0000000000001004 (0x02028593) addi a1, t0, 32
+      ...
+      [2] [M]: 0x0000000000001008 (0xF1402573) csrrs a0, zero, mhartid
+      ...
+      [477] [M]: 0x0000000080000044 (0xFC3F2023) sw gp, 4032(t5)
+      ...
+      SUCCESS
+----
+
+During execution of the RISC-V binary, it prints out a trace of instructions executed.
+
+// ----------------------------------------------------------------
+=== Test-drive your RV32 simulator (a smoke test)
+
+Example: executing the `rv32ui-p-add` standard ISA test in the simulator:
+----
+      $ ./c_emulator/riscv_sim_RV32  test/riscv-tests/rv32ui-p-add.elf
+      ...
+      tohost located at 0x80001000
+      ...
+      Running file test/riscv-tests/rv32ui-p-add.elf.
+      ELF Entry @ 0x80000000
+      ...
+      [0] [M]: 0x00001000 (0x00000297) auipc t0, 0
+      ...
+      [1] [M]: 0x00001004 (0x02028593) addi a1, t0, 32
+      ...
+      [2] [M]: 0x00001008 (0xF1402573) csrrs a0, zero, mhartid
+      ...
+      [472] [M]: 0x80000044 (0xFC3F2023) sw gp, 4032(t5)
+      ...
+      SUCCESS
+----
+
+During execution of the RISC-V binary, it prints out a trace of instructions executed.
+
+// ================================================================
