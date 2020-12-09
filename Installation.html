@@ -5,10 +5,10 @@
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.5">
-<meta name="description" content="Tutorial on RISC-V ISA Formal Specs in the SAIL">
-<meta name="keywords" content="RISC-V, ISA, Formal Specifications, SAIL">
+<meta name="description" content="Tutorial on RISC-V ISA Formal Specs in the Sail">
+<meta name="keywords" content="RISC-V, ISA, Formal Specifications, Sail">
 <meta name="author" content="Rishiyur S. Nikhil, Bluespec, Inc. (c) 2020">
-<title>A Tour of the RISC-V ISA Formal Specification: Installation instructions</title>
+<title>Installation Instructions for A Tour of the RISC-V ISA Formal Specification</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | http://asciidoctor.org */
@@ -423,7 +423,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </head>
 <body class="article toc2 toc-left">
 <div id="header">
-<h1>A Tour of the RISC-V ISA Formal Specification: Installation instructions</h1>
+<h1>Installation Instructions for A Tour of the RISC-V ISA Formal Specification</h1>
 <div class="details">
 <span id="author" class="author">Rishiyur S. Nikhil, Bluespec, Inc. (c) 2020</span><br>
 <span id="revnumber">version v0.2,</span>
@@ -437,31 +437,33 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_installation_overview">2. Installation Overview</a></li>
 <li><a href="#_step_a_installing_for_just_reading_the_spec">3. Step A: Installing for just reading the spec</a></li>
 <li><a href="#_step_b_installing_for_also_building_executable_version_of_the_spec">4. Step B: Installing for also building executable version of the spec</a></li>
-<li><a href="#_step_b_1_install_opam_the_package_manager_for_ocaml">5. Step B.1: Install Opam, the package manager for OCaml</a>
+<li><a href="#_step_b_1_install_opam_the_package_manager_for_ocaml">5. Step B.1: Install opam, the package manager for OCaml</a>
 <ul class="sectlevel2">
-<li><a href="#_download_the_install_script_and_run_it">5.1. Download the install script and run it</a></li>
-<li><a href="#_or_combine_the_above_download_and_run_into_one_line">5.2. Or, Combine the above download-and-run into one line</a></li>
-<li><a href="#_verify_successful_opam_installation">5.3. Verify successful opam installation</a></li>
+<li><a href="#_verify_successful_opam_installation">5.1. Verify successful opam installation</a></li>
 </ul>
 </li>
-<li><a href="#_step_b_2_install_ocaml_using_opam">6. Step B.2: Install OCaml using Opam</a>
+<li><a href="#_step_b_2_install_ocaml_using_opam">6. Step B.2: Install OCaml using opam</a>
 <ul class="sectlevel2">
-<li><a href="#_install_ocaml">6.1. Install OCaml</a></li>
-<li><a href="#_verify_you_ve_got_ocaml">6.2. Verify you&#8217;ve got OCaml</a></li>
+<li><a href="#_install_ocaml">6.1. Install OCaml</a>
+<ul class="sectlevel3">
+<li><a href="#_verify_you_ve_got_ocaml">6.1.1. Verify you&#8217;ve got OCaml</a></li>
 </ul>
 </li>
-<li><a href="#_step_b_3_install_sail_using_opam">7. Step B.3: Install SAIL using Opam</a>
-<ul class="sectlevel2">
-<li><a href="#_install_sail">7.1. Install SAIL</a></li>
-<li><a href="#_verify_you_ve_got_sail">7.2. Verify you&#8217;ve got SAIL</a></li>
 </ul>
 </li>
-<li><a href="#_step_b_4_build_risc_v_simulators_from_the_sail_spec">8. Step B.4: Build RISC-V simulators from the SAIL spec</a>
+<li><a href="#_step_b_3_install_sail_using_opam">7. Step B.3: Install Sail using opam</a>
 <ul class="sectlevel2">
-<li><a href="#_build_an_rv64_risc_v_simulator_from_the_sail_spec">8.1. Build an RV64 RISC-V simulator from the SAIL spec</a></li>
-<li><a href="#_build_an_rv32_risc_v_simulator_from_the_sail_spec">8.2. Build an RV32 RISC-V simulator from the SAIL spec</a></li>
-<li><a href="#_test_drive_your_rv64_simulator_a_smoke_test">8.3. Test-drive your RV64 simulator (a smoke test)</a></li>
-<li><a href="#_test_drive_your_rv32_simulator_a_smoke_test">8.4. Test-drive your RV32 simulator (a smoke test)</a></li>
+<li><a href="#_install_sail">7.1. Install Sail</a></li>
+<li><a href="#_verify_you_ve_got_sail">7.2. Verify you&#8217;ve got Sail</a></li>
+</ul>
+</li>
+<li><a href="#_step_b_4_build_risc_v_simulators_from_the_sail_spec">8. Step B.4: Build RISC-V simulators from the Sail spec</a>
+<ul class="sectlevel2">
+<li><a href="#_build_an_rv32_and_rv64_risc_v_c_based_simulator_from_the_sail_spec">8.1. Build an RV32 and RV64 RISC-V C-based simulator from the Sail spec</a>
+<ul class="sectlevel3">
+<li><a href="#_test_drive_your_rv64_and_rv32_simulators_a_smoke_test">8.1.1. Test-drive your RV64 and RV32 simulators (a smoke test)</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -472,24 +474,28 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <h2 id="_about_this_document">1. About this document</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>This is a standalone document that accompanies the main document for
-the tutorial, focusing just on the installation steps needed before
-starting the tutorial.</p>
+<p>This document accompanies the main document for the tutorial &#8220;A Tour
+of the RISC-V ISA Formal Specification&#8221;, focusing just on the
+installation steps needed before starting the tutorial.</p>
 </div>
 <div class="paragraph">
-<p>We recommend taking either Step A, or Steps A and B, depending on your
-objectives, before starting the tutorial.</p>
+<p>Please either take Step A, or take both Steps A and B, depending on
+your objectives, before starting the tutorial.</p>
 </div>
-<div class="paragraph">
-<p><strong>Step A</strong>: Take this step if you just want to learn how to <em>read and
-consult the spec</em>.  This merely git-clones a certain repository which
-contains the SAIL source code for the RISC-V ISA Formal Spec.</p>
-</div>
-<div class="paragraph">
-<p><strong>Step B</strong>: Take this step if you also want to learn how to <em>execute the
-spec</em>.  This step will compile a RISC-V ISA simulator from the SAIL
-formal spec, which you can use to execute:</p>
-</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Step A</dt>
+<dd>
+<p>Take this step if you just want to learn how to <em>read and
+consult the spec</em>.  This merely git-clones a certain repository
+which contains the Sail source code for the RISC-V ISA Formal
+Spec.</p>
+</dd>
+<dt class="hdlist1">Step B</dt>
+<dd>
+<p>Take this step if you also want to learn how to <em>execute the
+spec</em>.  This step will compile a RISC-V ISA simulator from the
+Sail formal spec, which you can use to execute:</p>
 <div class="ulist">
 <ul>
 <li>
@@ -499,9 +505,12 @@ formal spec, which you can use to execute:</p>
 <p>The standard RISC-V Compliance Test suite</p>
 </li>
 <li>
-<p>RISC-V ELF binaries that you create from other source codes</p>
+<p>Any RISC-V ELF binary that you create from other source codes</p>
 </li>
 </ul>
+</div>
+</dd>
+</dl>
 </div>
 </div>
 </div>
@@ -525,7 +534,7 @@ formal spec, which you can use to execute:</p>
 <p>Ensure you have <code>git</code> installed on your system.</p>
 </div>
 <div class="paragraph">
-<p>Clone the following repository, as follows:</p>
+<p>Clone the following repository, which contains the RISC-V ISA Formal Spec in Sail:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -537,7 +546,7 @@ formal spec, which you can use to execute:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>    $ sail-riscv
+<pre>    $ cd sail-riscv
     $ tree -d
     ├── ...
     ├── ...
@@ -558,21 +567,22 @@ the spec (other than a text editor to view source code)!</p>
 <div class="sect1">
 <h2 id="_step_b_installing_for_also_building_executable_version_of_the_spec">4. Step B: Installing for also building executable version of the spec</h2>
 <div class="sectionbody">
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<div class="title">Note</div>
-</td>
-<td class="content">
 <div class="paragraph">
-<p>Step A is sufficient if you are only reading/consulting the spec.<br>
-Step B is only necessary if you also want to build an executable
-version of the spec that can execute RISC-V binaries.</p>
+<p>The tool chain looks like this: opam &#8594; OCaml &#8594; Sail &#8594; Executable version of RISC-V Formal Spec.</p>
 </div>
-</td>
-</tr>
-</table>
+<div class="ulist">
+<ul>
+<li>
+<p>The RISC-V Formal Spec is written in Sail, a Domain Specific Language (DSL) for ISAs.</p>
+</li>
+<li>
+<p>The compilers that produce executable versions of the spec are
+written in OCaml, a widely used functional programming language.</p>
+</li>
+<li>
+<p>Opam is the package manager for OCaml</p>
+</li>
+</ul>
 </div>
 <div class="paragraph">
 <p><strong>OS requirements</strong></p>
@@ -586,124 +596,93 @@ version of the spec that can execute RISC-V binaries.</p>
 <p>You could install a virtual machine running Debian/Linux and follow these instructions.</p>
 </li>
 <li>
-<p>Opam, OCaml and SAIL will also install on other OSes.  See the <em>Safety net</em> websites (below)
+<p>Opam, OCaml and Sail will also install on other OSes.  See the <em>Safety net</em> websites (below)
 for more information.</p>
 </li>
 </ul>
 </div>
 <div class="paragraph">
-<p><strong>Safety net, in case things go wrong, and for installation instructions for non-Linux OSs</strong></p>
+<p><strong>Safety net: more information on installing opam, OCaml and Sail</strong></p>
 </div>
 <div class="paragraph">
-<p>The instructions in these slides are collected here from various
-sources for your convenience. In case of trouble, the original full
-instructions can be found at:</p>
+<p>The instructions below document are excerpted from:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p>Installing Opam: <a href="https://opam.ocaml.org/doc/Install.html" class="bare">https://opam.ocaml.org/doc/Install.html</a></p>
+<p>Installing opam: <a href="https://opam.ocaml.org/doc/Install.html" class="bare">https://opam.ocaml.org/doc/Install.html</a></p>
 </li>
 <li>
-<p>Installing Ocaml for SAIL, and installing SAIL: <a href="https://github.com/rems-project/sail/blob/sail2/INSTALL.md" class="bare">https://github.com/rems-project/sail/blob/sail2/INSTALL.md</a></p>
+<p>Installing Ocaml for Sail, and installing Sail: <a href="https://github.com/rems-project/sail/blob/sail2/INSTALL.md" class="bare">https://github.com/rems-project/sail/blob/sail2/INSTALL.md</a></p>
 </li>
 </ul>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_step_b_1_install_opam_the_package_manager_for_ocaml">5. Step B.1: Install Opam, the package manager for OCaml</h2>
+<h2 id="_step_b_1_install_opam_the_package_manager_for_ocaml">5. Step B.1: Install opam, the package manager for OCaml</h2>
 <div class="sectionbody">
-<div class="sect2">
-<h3 id="_download_the_install_script_and_run_it">5.1. Download the install script and run it</h3>
 <div class="paragraph">
-<p>Download: <a href="https://raw.githubusercontent.com/ocaml/opam/master/shell/install.sh" class="bare">https://raw.githubusercontent.com/ocaml/opam/master/shell/install.sh</a></p>
-</div>
-<div class="paragraph">
-<p>Run the script:</p>
+<p>Opam is the OCaml package manager.  You can install it using your
+system&#8217;s package manager. E.g., on Ubuntu or Debian:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>    $ sudo sh install.sh
-    ## Downloading opam 2.0.5 for linux on x86_64...
-    ## ...
-    ## opam 2.0.5 installed to /usr/local/bin
-    ## Run this script again with '--restore ' to revert.}</pre>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_or_combine_the_above_download_and_run_into_one_line">5.2. Or, Combine the above download-and-run into one line</h3>
-<div class="paragraph">
-<p>Install curl if you don&#8217;t already have it</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>    $ sudo apt-get install curl</pre>
+<pre>    $ sudo apt-get install opam</pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Then, one line:</p>
+<p>More detailed installation instructions are on the opam website at <a href="https://opam.ocaml.org/doc/Install.html" class="bare">https://opam.ocaml.org/doc/Install.html</a>.</p>
 </div>
-<div class="listingblock">
-<div class="content">
-<pre>    $ sudo sh &lt;(curl -sL https://raw.githubusercontent.com/ocaml/opam/master/shell/install.sh)</pre>
-</div>
-</div>
+<div class="paragraph">
+<p>Your opam version must be &gt;= 2.0.</p>
 </div>
 <div class="sect2">
-<h3 id="_verify_successful_opam_installation">5.3. Verify successful opam installation</h3>
+<h3 id="_verify_successful_opam_installation">5.1. Verify successful opam installation</h3>
 <div class="listingblock">
 <div class="content">
 <pre>    $ which opam
     /usr/local/bin/opam
 
     $ opam --version
-    2.0.5</pre>
+    2.0.7</pre>
 </div>
 </div>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_step_b_2_install_ocaml_using_opam">6. Step B.2: Install OCaml using Opam</h2>
+<h2 id="_step_b_2_install_ocaml_using_opam">6. Step B.2: Install OCaml using opam</h2>
 <div class="sectionbody">
-<div class="paragraph">
-<p>Use Opam to install OCaml.</p>
-</div>
 <div class="sect2">
 <h3 id="_install_ocaml">6.1. Install OCaml</h3>
 <div class="paragraph">
-<p>Environment setup</p>
+<p>Environment setup:</p>
 </div>
-<div class="literalblock">
+<div class="listingblock">
 <div class="content">
-<pre>$ opam init
-$ eval $(opam env)</pre>
+<pre>    $ opam init
+    $ eval $(opam env)</pre>
 </div>
 </div>
 <div class="paragraph">
 <p>Install specific version of OCaml</p>
 </div>
-<div class="literalblock">
+<div class="listingblock">
 <div class="content">
-<pre>$ opam switch create ocaml-base-compiler.4.06.1
-$ eval $(opam config env)</pre>
+<pre>    $ opam switch create ocaml-base-compiler.4.06.1
+    $ eval $(opam config env)</pre>
 </div>
 </div>
-</div>
-<div class="sect2">
-<h3 id="_verify_you_ve_got_ocaml">6.2. Verify you&#8217;ve got OCaml</h3>
-<div class="literalblock">
+<div class="sect3">
+<h4 id="_verify_you_ve_got_ocaml">6.1.1. Verify you&#8217;ve got OCaml</h4>
+<div class="listingblock">
 <div class="content">
-<pre>$ which ocaml
-/home/nikhil/.opam/ocaml-base-compiler.4.06.1/bin/ocaml</pre>
-</div>
-</div>
-<div class="literalblock">
-<div class="content">
-<pre>$ ocaml -version
-The OCaml toplevel, version 4.06.1</pre>
+<pre>    $ which ocaml
+    /home/nikhil/.opam/ocaml-base-compiler.4.06.1/bin/ocaml
+
+    $ ocaml -version
+    The OCaml toplevel, version 4.06.1</pre>
 </div>
 </div>
 <div class="admonitionblock note">
@@ -714,8 +693,8 @@ The OCaml toplevel, version 4.06.1</pre>
 </td>
 <td class="content">
 <div class="paragraph">
-<p>4.06.1 is not the latest version of OCaml, but it is known to be
-suitable for SAIL (it is the version used during CI of SAIL).</p>
+<p>According to <a href="https://github.com/rems-project/sail/blob/sail2/INSTALL.md" class="bare">https://github.com/rems-project/sail/blob/sail2/INSTALL.md</a>,
+any version of OCaml from version 4.06.1 or newer is acceptable.</p>
 </div>
 </td>
 </tr>
@@ -724,16 +703,14 @@ suitable for SAIL (it is the version used during CI of SAIL).</p>
 </div>
 </div>
 </div>
-<div class="sect1">
-<h2 id="_step_b_3_install_sail_using_opam">7. Step B.3: Install SAIL using Opam</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>Use Opam to SAIL.</p>
 </div>
+<div class="sect1">
+<h2 id="_step_b_3_install_sail_using_opam">7. Step B.3: Install Sail using opam</h2>
+<div class="sectionbody">
 <div class="sect2">
-<h3 id="_install_sail">7.1. Install SAIL</h3>
+<h3 id="_install_sail">7.1. Install Sail</h3>
 <div class="paragraph">
-<p>First, please install certain prerequisite libraries needed by SAIL (if not already installed on your system):</p>
+<p>First, please install certain prerequisite libraries needed by Sail (if not already installed on your system):</p>
 </div>
 <div class="paragraph">
 <p>On Linux (Debian, Ubuntu, &#8230;&#8203;):</p>
@@ -744,7 +721,6 @@ suitable for SAIL (it is the version used during CI of SAIL).</p>
     $ sudo apt-get install z3 m4 pkg-config zlib1g-dev
     $ sudo apt-get install git  rsync  unzip
     $ sudo apt-get install device-tree-compiler
-
     $ sudo apt-get install bubblewrap</pre>
 </div>
 </div>
@@ -766,7 +742,7 @@ suitable for SAIL (it is the version used during CI of SAIL).</p>
 </table>
 </div>
 <div class="paragraph">
-<p>Set up opam so it knows where to get SAIL:</p>
+<p>Set up opam so it knows where to get Sail:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -774,7 +750,7 @@ suitable for SAIL (it is the version used during CI of SAIL).</p>
 </div>
 </div>
 <div class="paragraph">
-<p>Then, install SAIL:</p>
+<p>Then, install Sail:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -783,14 +759,14 @@ suitable for SAIL (it is the version used during CI of SAIL).</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_verify_you_ve_got_sail">7.2. Verify you&#8217;ve got SAIL</h3>
+<h3 id="_verify_you_ve_got_sail">7.2. Verify you&#8217;ve got Sail</h3>
 <div class="listingblock">
 <div class="content">
 <pre>    $ which sail
     /home/nikhil/.opam/ocaml-base-compiler.4.06.1/bin/sail
 
     $ sail --help
-    Sail 0.11 (sail2 @ opam)
+    Sail 0.13 (sail2 @ opam)
     usage: sail &lt;options&gt; &lt;file1.sail&gt; ... &lt;fileN.sail&gt;
 
       -o &lt;prefix&gt;                              select output filename prefix
@@ -802,41 +778,55 @@ suitable for SAIL (it is the version used during CI of SAIL).</p>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_step_b_4_build_risc_v_simulators_from_the_sail_spec">8. Step B.4: Build RISC-V simulators from the SAIL spec</h2>
+<h2 id="_step_b_4_build_risc_v_simulators_from_the_sail_spec">8. Step B.4: Build RISC-V simulators from the Sail spec</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Simulators can be used to execute RISC-V binaries.</p>
+<p>The RISC-V ISA Formal Specification in Sail can be compiled into an
+executable simulator using which you can  execute RISC-V binaries.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>The RISC-V specification allows for implementations that
+simultaneously support both RV32 and RV64, including dynamic switching
+between these.  However, currently the simulators compiled from the
+Sail Formal Spec must be statically configured for either RV32 or RV64
+(this may change in the future).</p>
+</div>
+</td>
+</tr>
+</table>
 </div>
 <div class="sect2">
-<h3 id="_build_an_rv64_risc_v_simulator_from_the_sail_spec">8.1. Build an RV64 RISC-V simulator from the SAIL spec</h3>
+<h3 id="_build_an_rv32_and_rv64_risc_v_c_based_simulator_from_the_sail_spec">8.1. Build an RV32 and RV64 RISC-V C-based simulator from the Sail spec</h3>
 <div class="listingblock">
 <div class="content">
 <pre>    $ cd sail-riscv
-    $ make  csim</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>or</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre>    $ make  ARCH=RV64  csim</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Creates executabe: <code>c_emulator/riscv_sim_RV64</code></p>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_build_an_rv32_risc_v_simulator_from_the_sail_spec">8.2. Build an RV32 RISC-V simulator from the SAIL spec</h3>
-<div class="listingblock">
-<div class="content">
-<pre>    $ cd sail-riscv
+    $ make  ARCH=RV64  csim
     $ make  ARCH=RV32  csim</pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Creates executable: <code>c_emulator/riscv_sim_RV32</code></p>
+<p><code>ARCH=RV64</code> is the default; you can omit it from the command line.</p>
+</div>
+<div class="paragraph">
+<p>The <code>make csim</code> command compiles the Sail spec to C and then compiles
+the C code into the following executabes:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>    c_emulator/riscv_sim_RV64
+    c_emulator/riscv_sim_RV32</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>These simulators run fast enough to boot operating systems like
+FreeRTOS, Linux, FreeBSD, etc. in a few seconds or minutes.</p>
 </div>
 <div class="admonitionblock note">
 <table>
@@ -846,7 +836,7 @@ suitable for SAIL (it is the version used during CI of SAIL).</p>
 </td>
 <td class="content">
 <div class="paragraph">
-<p>During these builds, you may get some messages about incomplete pattern matches; you can ignore them.</p>
+<p>During the builds, you may get some messages about incomplete pattern matches; you can ignore them.</p>
 </div>
 </td>
 </tr>
@@ -860,20 +850,18 @@ suitable for SAIL (it is the version used during CI of SAIL).</p>
 </td>
 <td class="content">
 <div class="paragraph">
-<p>Omitting the <code>csim</code> makefile target will also
-build all the targets, which include an OCaml-based simulator and
-material for Coq, Isabelle, HOL4, &#8230;&#8203; (not necessary for this
-tutorial).</p>
+<p>If you omit the <code>csim</code> makefile target, it will build all the targets,
+which include an OCaml-based simulator and material for Coq, Isabelle,
+HOL4, &#8230;&#8203; (not necessary for this tutorial).</p>
 </div>
 </td>
 </tr>
 </table>
 </div>
-</div>
-<div class="sect2">
-<h3 id="_test_drive_your_rv64_simulator_a_smoke_test">8.3. Test-drive your RV64 simulator (a smoke test)</h3>
+<div class="sect3">
+<h4 id="_test_drive_your_rv64_and_rv32_simulators_a_smoke_test">8.1.1. Test-drive your RV64 and RV32 simulators (a smoke test)</h4>
 <div class="paragraph">
-<p>Example: executing the <code>rv64ui-p-add</code> standard ISA test in the simulator:</p>
+<p>Example: executing the <code>rv64ui-p-add</code> standard ISA test in the RV64 simulator:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -898,11 +886,8 @@ tutorial).</p>
 <div class="paragraph">
 <p>During execution of the RISC-V binary, it prints out a trace of instructions executed.</p>
 </div>
-</div>
-<div class="sect2">
-<h3 id="_test_drive_your_rv32_simulator_a_smoke_test">8.4. Test-drive your RV32 simulator (a smoke test)</h3>
 <div class="paragraph">
-<p>Example: executing the <code>rv32ui-p-add</code> standard ISA test in the simulator:</p>
+<p>Example: executing the <code>rv32ui-p-add</code> standard ISA test in the RV32 simulator:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -924,8 +909,6 @@ tutorial).</p>
       SUCCESS</pre>
 </div>
 </div>
-<div class="paragraph">
-<p>During execution of the RISC-V binary, it prints out a trace of instructions executed.</p>
 </div>
 </div>
 </div>
@@ -934,7 +917,7 @@ tutorial).</p>
 <div id="footer">
 <div id="footer-text">
 Version v0.2<br>
-Last updated 2020-12-08 15:59:42 EST
+Last updated 2020-12-09 12:05:56 EST
 </div>
 </div>
 </body>

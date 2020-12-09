@@ -2565,13 +2565,42 @@ options.</p>
 <h2 id="_executing_standard_risc_v_compliance_tests">5. Executing standard RISC-V Compliance Tests</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>First, please ensure you have downloaded/built/installed executable versions of the formal spec,
-as described in Section <a href="#reminder-download-install">[reminder-download-install]</a>.</p>
+<p>RISC-V International Association (RVIA) is developing a &#8220;Compliance&#8221;
+suite for checking whether an implementation (whether in hardware or
+simulation) is <em>compliant</em> with the RISC-V Formal Specification.  This
+is a work-in-progress; as of December 2020, compliance suites are
+ready only for some RV32I subsets of the ISA.  RVIA will gradually
+grow the Compliance Suite to encompass the full ISA.</p>
+</div>
+<div class="paragraph">
+<p>RVIA&#8217;s Compliance Suite is in this repository:
+<a href="https://github.com/riscv/riscv-compliance" class="bare">https://github.com/riscv/riscv-compliance</a>, where you can find
+details about the Compliance Suite, how to run it on new
+implementations, etc.</p>
+</div>
+<div class="paragraph">
+<p>Each Compliance Test program is an ELF file compiled for a particular
+RISC-V ISA configuration.  When the program is executed on a RISC-V
+implementation, it produces a certain output called a &#8220;signature&#8221;.
+This signature is compared for an exact match with a particular
+&#8220;expected value&#8221; in order to decide whether the implementation has
+passed this test or not. (Since</p>
+</div>
+<div class="paragraph">
+<p>In this section we show how to execute the tests in the Compliance
+Suite using the C simulator compiled from the RISC-V Formal Spec in
+Sail.  The process is highly automated, and should automatically
+encompass new tests as the Compliance suite grows.</p>
+</div>
+<div class="paragraph">
+<p>First, please ensure you have downloaded/built/installed executable
+versions of the RISC-V Formal Spec in Sail, as described in Section
+<a href="#reminder-download-install">[reminder-download-install]</a>.</p>
 </div>
 <div class="sect2">
 <h3 id="_executing_compliance_tests_preparation">5.1. Executing Compliance tests: preparation</h3>
 <div class="paragraph">
-<p>Clone a copy of the RISC-V Foundation&#8217;s &#8220;Compliance&#8221; repository:</p>
+<p>Clone a copy of the RISC-V International Association&#8217;s &#8220;Compliance&#8221; repository:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -2594,17 +2623,17 @@ Compliance scripts will use this to re-compile compliance tests).</p>
 <div class="listingblock">
 <div class="content">
 <pre>    $ which riscv64-unknown-elf-gcc
-    /home/nikhil/Projects/RISCV/Tests/RISCV_Gnu_Toolchain/riscv64/bin/riscv64-unknown-elf-gcc
+    /home/nikhil/git_clones/RISCV_Gnu_Toolchain/riscv64/bin/riscv64-unknown-elf-gcc
 
     $ riscv64-unknown-elf-gcc  --version
-    riscv64-unknown-elf-gcc (GCC) 8.3.0
-    Copyright (C) 2018 Free Software Foundation, Inc.
+    riscv64-unknown-elf-gcc (GCC) 9.2.0
+    Copyright (C) 2019 Free Software Foundation, Inc.
     This is free software; see the source for copying conditions.  There is NO
     warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.</pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Setup up your <code>PATH</code> environment variable to include a your
+<p>Setup up your <code>PATH</code> environment variable to include your
 clone-directory of the <code>sail-riscv</code> repository, so that the Compliance
 scripts know where to find the executable versions of the Sail RISC-V
 spec:</p>
@@ -2616,7 +2645,7 @@ spec:</p>
 </div>
 </div>
 <div class="paragraph">
-<p>Check:</p>
+<p>Spot check that you have the RISC-V Formal Spec&#8217;s C simulators:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -2637,48 +2666,55 @@ spec:</p>
 <pre>    $ pwd
     /home/nikhil/git_clones/riscv-compliance
 
-    $ make RISCV_TARGET=sail-riscv-c all_variant
-    for isa in rv32i rv32im rv32imc rv32mi rv32si rv32ua rv32uc rv32ui rv64i rv64im; do \
+    $ make RISCV_TARGET=sail-riscv-c all_variant</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Your terminal output will look something like this:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>    for isa in rv32i rv32im rv32imc rv32Zicsr rv32Zifencei; do \
         ...
     ...
-    riscv64-unknown-elf-gcc -march=rv32i -mabi=ilp32 ...
-    riscv_sim_RV32  --test-signature=...  ....elf 2&gt;  ....log 1&gt;&amp;2
+    Compile /home/nikhil/git_clones/riscv-compliance/work/rv32i/I-MISALIGN_JMP-01.elf
+    Execute /home/nikhil/git_clones/riscv-compliance/work/rv32i/I-MISALIGN_JMP-01.log
+    Running file /home/nikhil/git_clones/riscv-compliance/work/rv32i/I-MISALIGN_JMP-01.elf.
+    ELF Entry @ 0x80000000
+    begin_signature: 0x80002000
+    end_signature: 0x80002090
+    CSR mstatus &lt;- 0x00000000 (input: 0x00000000)
+    ...
+    SUCCESS
+    ...
+    Compile /home/nikhil/git_clones/riscv-compliance/work/rv32i/I-ADD-01.elf
+    Execute /home/nikhil/git_clones/riscv-compliance/work/rv32i/I-ADD-01.log
+    Running file /home/nikhil/git_clones/riscv-compliance/work/rv32i/I-ADD-01.elf.
+    ELF Entry @ 0x80000000
+    begin_signature: 0x80002000
+    end_signature: 0x80002090
+    CSR mstatus &lt;- 0x00000000 (input: 0x00000000)
+    ...
+    SUCCESS
+    ...
+    riscv-test-env/verify.sh
     ...
     Compare to reference files ...
 
-    Check         I-ADD-01 ... OK
-    Check        I-ADDI-01 ... OK
+    Check                 I-ADD-01 ... OK
+    Check                I-ADDI-01 ... OK
     ...
+    Check                I-XORI-01 ... OK
     --------------------------------
-    OK: 48/48
+    OK: 48/48 RISCV_TARGET=sail-riscv-c RISCV_DEVICE=rv32i RISCV_ISA=rv32i
     ...</pre>
 </div>
 </div>
 <div class="paragraph">
-<p>If you examine the transcript, you will see the results for each of
-the ISA groups mentioned in the <code>for isa in rv32i, rv32im, &#8230;&#8203;</code> line at the top:</p>
-</div>
-<div class="listingblock">
-<div class="title">In your riscv-compliance repository clone</div>
-<div class="content">
-<pre>    $ make RISCV_TARGET=sail-riscv-c all_variant
-    for isa in rv32i rv32im rv32imc rv32mi rv32si rv32ua rv32uc rv32ui rv64i rv64im; do \
-    ... OK: 48/48
-    ... OK: 8/8
-    ... OK: 25/25
-    ... OK: 9/9
-    ... OK: 6/6
-    ... OK: 10/10
-    ... OK: 1/1
-    ... OK: 39/39
-    ... OK: 9/9
-    ... OK: 4/4</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>(One test, <code>lrsc</code>, is marked IGNORE instead of OK. I&#8217;m not sure why;
-perhaps because it is uninteresting in this single-hart sequential
-execution?)</p>
+<p>In the transcript, you will see the results for each of the ISA groups
+mentioned in the <code>for isa in rv32i, rv32im, &#8230;&#8203;</code> line at the top.  For
+each test, it compiles the ELF file and executes it on the C
+simulator, and then verifies the output against the expected output.</p>
 </div>
 </div>
 </div>
@@ -3030,7 +3066,7 @@ part).</p>
 <div id="footer">
 <div id="footer-text">
 Version v0.2<br>
-Last updated 2020-12-08 15:59:42 EST
+Last updated 2020-12-09 11:08:34 EST
 </div>
 </div>
 </body>
