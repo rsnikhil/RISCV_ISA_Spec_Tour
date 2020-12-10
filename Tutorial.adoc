@@ -338,8 +338,26 @@ _Each code fragment in this document shows the file from which it is taken._
 
 == Reading the ISA to understand semantics of each RISC-V instruction
 
+The central component of the formal specification of an ISA is the
+specification of individual instructions:
+
+* How each instruction is represented in bits
+    ** In Sail, we also specify how assembly language notation for an instruction is mapped to its bit representation
+
+* How each instruction modifies architectural state when it is executed
+
+Surrounding these individual-instruction specs can be many possible
+specs for composing them into an execution engine.  The simplest of
+these would be a completely sequential composition, a classical
+fetch-decode-execute loop.  A more complex version would allow for
+more concurrent composition, for modeling superscalar and out-of-order
+cores and multicores with weak memory models.
+
 // SUBSECTTION ================================================================
 === A first taste
+
+The semantics of each instruction is given by an `execute`
+instruction, a fragment of which is shown below.
 
 .From file `riscv_insts_base.sail`
 ----
@@ -357,47 +375,73 @@ function clause execute (RTYPE(rs2, rs1, rd, op)) = {
 }
 ----
 
-* The semantics of each instruction is given by an `execute`
-    instruction, a fragment of which is shown above.
+The function argument says that it is an "`R-format`" instruction
+(`RTYPE`) containing source register fields `rs1` and `rs2`,
+destination register field `rd`, and an `op` sub-opcode identifying
+the specific operation within the group of R-format instructions.
 
-* The function argument says that it is an "`R-format`" instruction (`RTYPE`)
-    containing source register fields `rs1` and `rs2`, destination
-    register field `rd`, and an `op` sub-opcode identifying the
-    specific operation within the group of "`R-format`" instructions.
+The function body shows that we:
 
-* It shows that we:
-    ** read a source register `rs1`,
-    ** read a source register `rs2`,
-    ** perform the operation specified by `op` (here showing the `ADD` and `SLL` sub-opcodes),
-    ** and write the result to destination register `rd`
+* read a source register `X(rs1)`,
+* read a source register `X(rs2)`,
+* perform the operation specified by `op` (this excerpt showing only the `ADD` and `SLL` sub-opcodes),
+* and write the result to destination register `X(rd)`.
 
 // SUBSECTION ================================================================
-=== Spec source files (there are a lot of them!)
+=== Spec source files
+
+The Sail language does not have a package/module structure--a full
+Sail program is just the concatenation of the source files.  We
+organize the spec into separate files just according to our own
+convenience.
 
 ----
---12:50:52--Dell-mation: ~/git_clones/sail-riscv/model
+$ pwd
+/home/nikhil/git_clones/ISA_Formal_Spec/sail-riscv/model
+
 $ ls
-main.sail                      riscv_insts_aext.sail    riscv_platform.sail            riscv_termination_duo.sail
-prelude_mapping.sail           riscv_insts_base.sail    riscv_pmp_control.sail         riscv_termination_rv32.sail
-prelude_mem_metadata.sail      riscv_insts_begin.sail   riscv_pmp_regs.sail            riscv_termination_rv64.sail
-prelude_mem.sail               riscv_insts_cext.sail    riscv_pte.sail                 riscv_types_ext.sail
-prelude.sail                   riscv_insts_end.sail     riscv_ptw.sail                 riscv_types.sail
-README.md                      riscv_insts_mext.sail    riscv_regs.sail                riscv_vmem_common.sail
-riscv_addr_checks_common.sail  riscv_insts_next.sail    riscv_reg_type.sail            riscv_vmem_rv32.sail
-riscv_addr_checks.sail         riscv_insts_rmem.sail    riscv_step_common.sail         riscv_vmem_rv64.sail
-riscv_analysis.sail            riscv_insts_zicsr.sail   riscv_step_ext.sail            riscv_vmem_sv32.sail
-riscv_csr_ext.sail             riscv_jalr_rmem.sail     riscv_step_rvfi.sail           riscv_vmem_sv39.sail
-riscv_csr_map.sail             riscv_jalr_seq.sail      riscv_step.sail                riscv_vmem_sv48.sail
-riscv_decode_ext.sail          riscv_mem.sail           riscv_sync_exception.sail      riscv_vmem_tlb.sail
-riscv_duopod.sail              riscv_misa_ext.sail      riscv_sys_control.sail         riscv_vmem_types.sail
-riscv_ext_regs.sail            riscv_next_control.sail  riscv_sys_exceptions.sail      riscv_xlen32.sail
-riscv_fetch_rvfi.sail          riscv_next_regs.sail     riscv_sys_regs.sail            riscv_xlen64.sail
-riscv_fetch.sail               riscv_pc_access.sail     riscv_termination_common.sail  rvfi_dii.sail
+main.sail		       riscv_insts_cfext.sail	       riscv_step_ext.sail
+prelude_mapping.sail	       riscv_insts_dext.sail	       riscv_step_rvfi.sail
+prelude_mem_metadata.sail      riscv_insts_end.sail	       riscv_step.sail
+prelude_mem.sail	       riscv_insts_fext.sail	       riscv_sync_exception.sail
+prelude.sail		       riscv_insts_hints.sail	       riscv_sys_control.sail
+README.md		       riscv_insts_mext.sail	       riscv_sys_exceptions.sail
+riscv_addr_checks_common.sail  riscv_insts_next.sail	       riscv_sys_regs.sail
+riscv_addr_checks.sail	       riscv_insts_rmem.sail	       riscv_termination_common.sail
+riscv_analysis.sail	       riscv_insts_zicsr.sail	       riscv_termination_duo.sail
+riscv_csr_ext.sail	       riscv_iris.sail		       riscv_termination_rv32.sail
+riscv_csr_map.sail	       riscv_jalr_rmem.sail	       riscv_termination_rv64.sail
+riscv_decode_ext.sail	       riscv_jalr_seq.sail	       riscv_types_common.sail
+riscv_duopod.sail	       riscv_mem.sail		       riscv_types_ext.sail
+riscv_ext_regs.sail	       riscv_misa_ext.sail	       riscv_types.sail
+riscv_fdext_control.sail       riscv_next_control.sail	       riscv_vmem_common.sail
+riscv_fdext_regs.sail	       riscv_next_regs.sail	       riscv_vmem_rv32.sail
+riscv_fetch_rvfi.sail	       riscv_pc_access.sail	       riscv_vmem_rv64.sail
+riscv_fetch.sail	       riscv_platform.sail	       riscv_vmem_sv32.sail
+riscv_flen_D.sail	       riscv_pmp_control.sail	       riscv_vmem_sv39.sail
+riscv_flen_F.sail	       riscv_pmp_regs.sail	       riscv_vmem_sv48.sail
+riscv_freg_type.sail	       riscv_pte.sail		       riscv_vmem_tlb.sail
+riscv_insts_aext.sail	       riscv_ptw.sail		       riscv_vmem_types.sail
+riscv_insts_base.sail	       riscv_regs.sail		       riscv_xlen32.sail
+riscv_insts_begin.sail	       riscv_reg_type.sail	       riscv_xlen64.sail
+riscv_insts_cdext.sail	       riscv_softfloat_interface.sail  rvfi_dii.sail
+riscv_insts_cext.sail	       riscv_step_common.sail
 ----
 
-Sail does not have a package/module structure--the full Sail program
-is just the concatenation of the source files.  Our organization into
-separate files is just for our own convenience.
+As you can see, there are many source files (and the number will grow
+as we add formal specs for new standard ISA extensions).
+
+The files named `riscv_insts_*.sail` are the central files describing
+individual instructions and their semantics: `..._base` for the base
+instruction set, `..._aext` for the A (atomics) extension, `..._cext`
+for the C (compressed) extension, etc.
+
+Other files describe state: `riscv_regs` for the integer register
+file, `riscv_fdext_regs` for the floating point extension (F,D)
+register file, etc.
+
+Still other files concern composing individual instruction semantics
+into an execution model: `riscv_fetch`, `riscv_step` (fetch-execute-interrupt), etc.
 
 In this tutorial we will look at excerpts of some of these files.
 
@@ -420,10 +464,9 @@ In this tutorial we will look at excerpts of some of these files.
           different sizes, and the precise size is important.
 
         ** Moreover, sizes of various entities are often related.
-          E.g., the shift amount in RV32 (respectively, RV64) should
-          be a 5-bit value (respectively, a 6-bit value).  In Sail,
-          such relationships can be expressed in types, and are
-          type-checked.
+          E.g., the shift amount in RV32 should be a 5-bit value and,
+          for RV64, a 6-bit value.  In Sail, such relationships can
+          be expressed in types, and are type-checked.
 
 * Sail also statically keeps track of _effects_ (for
       example, does a certain expression read any registers? Write any
@@ -436,7 +479,10 @@ In this tutorial we will look at excerpts of some of these files.
 // SUBSUBSECTION ================================================================
 ==== Let's start with some small, easy files
 
-We'd use one of these two files, depending on whether we are considering RV32 or RV64.
+These two files define XLEN for RV32 and RV64, respectively.
+Remember, a complete Sail program is a concatenation of `.sail` files,
+so we'd use one of these files, depending on whether we are
+considering RV32 or RV64.
 
 .From file `riscv_xlen32.sail`
 ----
@@ -459,9 +505,9 @@ We'd use one of these two files, depending on whether we are considering RV32 or
 In the first two lines of each excerpt, we are defining new _types_ that are numeric.
 
 In the next line we are defining a new type for bit-vectors of size `xlen`.
-The type `bits(`_t_`)` represents the type of
+The type `bits(` _t_ `)` represents the type of
 bit-vectors of size _t_.
-It's parameter _t_ must be a numeric type (here, we instantiate it as `xlen`).
+Its parameter _t_ must be a numeric type (here, we instantiate it as `xlen`).
 
 // SUBSUBSECTION ================================================================
 ==== Registers and values
@@ -496,7 +542,7 @@ Note: the keyword `type` introduces a type definition, the keyword
 .From file `riscv_regs.sail`
 ----
     register PC       : xlenbits
-
+    ...
     register x1  : regtype
     register x2  : regtype
     ...
@@ -505,9 +551,8 @@ Note: the keyword `type` introduces a type definition, the keyword
 
 In line 1 with keyword `register` we declare `PC` to be a register,
 and we specify the type of values it can contain, `xlenbits`.  The
-remaining lines similarly declare registers `x1`...`x31`.
-
-(There's no `x0` register because it's a constant 0.)
+remaining lines similarly declare registers `x1`...`x31`.  (There's no
+`x0` register because it's a constant 0.)
 
 // SUBSUBSUBSECTION ================================================================
 ===== Reading from integer registers
@@ -535,50 +580,20 @@ It can be read as:
 
 ****
 For all _n_ in the range 0..31, it takes an argument _n_ that is a
-register number, and returns a value of type `xlenbits`.  Executing
-this function can have two possible effects, `rreg` (reading a
-register) and `escape` (abort due to illegal register number).
+register number, and returns a value of type `xlenbits`.
+Executing this function can have two possible effects, `rreg` (reading
+a register) and `escape` (abort due to illegal register number).
 ****
 
-.From file `riscv_regs.sail`
-----
-    val rX : forall 'n, 0 <= 'n < 32. regno('n) -> xlenbits effect {rreg, escape}
-    function rX r = {
-      let v : regtype =
-        match r {
-          0 => zero_reg,
-          1 => x1,
-          ...
-          31 => x31,
-          _  => {assert(false, "invalid register number"); zero_reg}
-        };
-      regval_from_reg(v)
-    }
-----
-
-The line introduced by the `function` keyword, defines the function
-`rX` itself, with argument `r`.
+The next line, introduced by the `function` keyword, defines the
+function `rX` itself, with argument `r`.  Note that the argument is
+not enclosed in parentheses; this is quite common in functional
+languages like OCaml, SML, and Haskell.
 
 The `let` binding introduces a local variable `v` and binds it to the
 value of the "`pattern-matching`" expression in Lines 4-10.  This
 matches the value `r` with each of the subsequent patterns 0, 1, 2,
 ... 31, returning the value of the right-hand side on first match.
-
-.From file `riscv_regs.sail`
-----
-    val rX : forall 'n, 0 <= 'n < 32. regno('n) -> xlenbits effect {rreg, escape}
-    function rX r = {
-      let v : regtype =
-        match r {
-          0 => zero_reg,
-          1 => x1,
-          2 => x2,
-          ...
-          _  => {assert(false, "invalid register number"); zero_reg}
-        };
-      regval_from_reg(v)
-    }
-----
 
 The type of `v` is `regtype`, i.e., it is a register, and so in Line
 11 the `regval_from_reg(v)` application reads out the register value,
@@ -611,11 +626,11 @@ This, in turn, should allow us to omit the `escape` effect.
 ----
 
 This is similar to the `rX` read-function.  The function
-type-declaration in line 1 says it takes two arguments, one a register
-number and the second a value of type `xlenbits`, and its result type
-is `unit` which is like the "`void`" type in C, indicating a value of
-no particular interest, since this is a pure side effect.  Its effects
-include `wreg` (writing a register) and `escape`.
+type-declaration in line 1 says its argument is a pair of values, one
+a register number and the second a value of type `xlenbits`, and its
+result type is `unit` which is like the "`void`" type in C, indicating
+a value of no particular interest, since this is a pure side effect.
+Its effects include `wreg` (writing a register) and `escape`.
 
 // SUBSUBSUBSECTION ================================================================
 ===== Using Sail overloading to simplify notation
@@ -625,8 +640,9 @@ include `wreg` (writing a register) and `escape`.
     overload X = {..., rX, wX}
 ----
 
-This allows `X(r)` to be used to read a register (invoking the function `rX()`), +
-and `X(r)=v` to write a register (invoking the function `wX()`).
+This allows the notation `X(r)` to be used to read a register (in
+which case it invokes the function `rX(r)`), and the notation `X(r)=v`
+to write a register (in which case it invokes the function `wX(r,v)`).
 
 // SUBSUBSECTION ================================================================
 ==== "`Scattered`" organization of instruction specs
@@ -641,24 +657,39 @@ In a traditional programming language, we might have:
 
 * An execute function that describes how to execute each variant of instruction.
 
-Traditional instruction set manuals "`scatter`" this same information
-differently---a page (or a few) per instruction variant, showing:
+The problem is that for a given instruction, it would have one clause
+in the first group (type definitions), one clause in the second group
+(decode) and one clause in the third group (execute), and these may be
+quite far apart in the text, possibly in different files.  To add a
+new instruction, one would have to add a clause to each of the groups.
+
+Traditional instruction set manuals, on the other hand "`scatter`"
+this same information differently---a page (or a few) per instruction
+variant, showing:
 
 * Its fields (opcode, register fields, immediate fields, ...).
 * How a 32-bit instruction is decoded/encoded.
 * How it is executed.
 
-Sail supports the latter more traditional, familiar organization.  For
-each type of instruction, all its relevant information is collected in
-one place.
+Sail supports this more traditional, familiar organization of ISA
+specs.  For each type of instruction, all its relevant information is
+collected in one place.  Or, to view it another way, the type
+definitions, decode information and execute information are
+"`scattered`" across instruction defintions.
 
 We must first introduce the generic information about entities whose
-individual definition-clauses will given later in scattered fashion;
-specifically, types:
+individual definition-clauses will be given later in scattered
+fashion.  In the concatenation of `.sail` files, the following
+is given early before any of the scattered definitions:
 
-For file `riscv_insts_begin.sail`:
+.From file `riscv_insts_begin.sail`
 ----
     scattered union ast
+
+    /* returns whether an instruction was retired, used for computing minstret */
+    val execute : ast -> Retired effect {escape, wreg, rreg, wmv, wmvt, eamem,
+                                         rmem, rmemt, barr, exmem, undef}
+    scattered function execute
 
     val encdec : ast <-> bits(32)
     scattered mapping encdec
@@ -669,40 +700,28 @@ For file `riscv_insts_begin.sail`:
 
 The first line introduces the type `ast` which is a _union_ of all the
 different variants of instructions.  Each variant will follow later,
-in a scattered fashion.  Here, "`ast`" stands for Abstract Syntax
-Tree, the decoded view of an instruction.
+in a scattered fashion.  Here, `ast` stands for Abstract Syntax Tree,
+the decoded view of an instruction.
 
-The next line declares the type of the `encdec` mapping, which is a
-pair of functions converting from a 32-bit value (instruction) to is
-decoded view (ast), and vice versa, and the following line indicates
-that its definition will be scattered.
+The next line declares the type of the `execute` function.  It takes
+an argument whose type is `ast` and returns a value of type `Retired`,
+which indicates whether it should be counted as a retired instruction
+or not.  It also specifies all the possible effects of an instruction,
+such as aborting (`escape`), writing and reading registers (`wreg`,
+`rreg`), reading memory, and so on.  The following line indicates that
+`execute` 's definition will be scattered.
+
+The next line declares the type of the `encdec` mapping. The +<->+
+notation says it is a _mapping_, which is a _pair_ of functions
+converting from a 32-bit value (instruction) to is decoded view (ast),
+and vice versa.  When applied to an `ast` argument it produces a
+`bits(32)` result, and when applied to a `bits(32)` argument it
+produces an `ast` result.  The following line indicates that its
+definition will be scattered.
 
 The next line declares the type of the `assembly` mapping that
 converts from a string to a decoded instruction and vice versa, and
 the following line indicates that its definition will be scattered.
-
-// SUBSUBSUBSECTION ================================================================
-===== Introducing items whose clauses will be scattered
-
-Before we provide any clauses of a scattered definition of an entity,
-we must first declare the entity's type, and that its clauses will be
-scattered.
-
-.From file `riscv_insts_begin.sail`
-----
-    val execute : ast -> Retired effect {escape, wreg, rreg, rmem, ...}
-    scattered function execute
-----
-
-The first line declares the type of the `execute` function, which
-takes a decoded instruction (ast) and returns a `Retired` result which
-indicates whether it should be counted as a retired instruction or
-not.  It also specifies all the possible effects of an instruction,
-such as aborting (`escape`), writing and reading registers (`wreg`,
-`rreg`), reading memory, and so on.
-
-The `scattered` line indicates that the clauses of this function will
-follow later, in a scattered manner.
 
 // SUBSECTION ================================================================
 === Instruction fields
@@ -721,11 +740,11 @@ image::Fig_RISCV_formats.png[align="center", width=800]
 * The funct3 and funct7 fields (and sometimes the immediate fields) often
       specify sub-opcodes.
 
-* The "`rs1`", "`rs2`" and "`rd`" fields are 5-bit values specifying
-  source and destination registers.
+* The rs1, rs2 and rd fields are 5-bit values specifying source and
+  destination registers.
 
 * Immediate values are often composed from non-trivial permutation of
-  "`imm`" instruction fields.
+  imm instruction fields.
 
 
 We declare convenient types for instruction fields.
@@ -733,6 +752,7 @@ We declare convenient types for instruction fields.
 .From file `riscv_types.sail`
 ----
     type regidx  = bits(5)
+    type cregidx = bits(3)    /* identifiers in RVC instructions */
     type csreg   = bits(12)   /* CSR addressing */
     ...
     type opcode = bits(7)
@@ -741,8 +761,9 @@ We declare convenient types for instruction fields.
     ...
 ----
 
-These are definitions for register indexes, CSR register addresses,
-major opcodes, and 12-bit and 20-bit immediates.
+These are definitions for register indexes, register indexes in
+compressed instructions, CSR register addresses, major opcodes, and
+12-bit and 20-bit immediates.
 
 // SUBSECTION ================================================================
 === Some base instructions
@@ -766,7 +787,7 @@ image::Fig_RISCV_U_format.png[align="center", width=800]
 This says: one variant of the `ast` type is called `UTYPE`.  It
 contains 3 fields (identified positionally, not with keywords) whose
 types are, respectively, a bit-vector of 20 bits, a register index,
-and a `uop` identifies whether it's an LUI or AUIPC.
+and a `uop` which identifies whether it's an LUI or AUIPC.
 
 Note: Sail unions are similar to "`algebraic types`" or "`tagged
 unions`" in other programming languages.  Each value of a tagged union
@@ -781,12 +802,14 @@ variant of the union.
 // SUBSUBSECTION ================================================================
 ==== LUI and AUIPC: Decoding
 
-Earlier, we declared a mapping (a function and its inverse) `encdec`
-with this type:
+Earlier, we declared a scattered mapping (a function and its inverse) `encdec`
+along with its type:
+
+.From file `riscv_insts_begin.sail`
 ----
-val encdec : ast <-> bits(32)
+    val encdec : ast <-> bits(32)
+    scattered mapping encdec
 ----
-and further declared that the mapping body would be provided later in scattered clauses.
 
 We now provide one such clause, showing how to encode/decode LUI and AUIPC instructions.
 
@@ -801,35 +824,41 @@ We now provide one such clause, showing how to encode/decode LUI and AUIPC instr
       <-> imm @ rd @ encdec_uop(op)
 ----
 
-The first four define a new, local mapping between the bit-encodings
-of the 7-bit opcode in a U-format instruction to a value of `uop`
-type, i.e., the symbolic names for the corresponding instructions.
+The first four lines define a new, local mapping between the
+bit-encodings of the 7-bit opcode in a U-format instruction to a value
+of `uop` type, i.e., the symbolic names for the corresponding
+instructions.
 
 The last two lines add a scattered clause to the `encdec` mapping.
-The left-hand-side of +<->+ shows the decoded view.  The right-hand
-side shows a bit-concatenation.  The prior declarations allow Sail to
-infer that `imm`, `rd`, and `encddec_op(op)` are are 20-bit, 5-bit and
-7-bit fields, respectively, and that the concatenation is a 32-bit
-value,
+The left-hand-side of +<->+ shows the decoded view, i.e., a UTYPE
+`ast`.  The right-hand side shows a bit-concatenation.  The prior
+declarations allow Sail to infer that `imm`, `rd`, and
+`encddec_op(op)` are are 20-bit, 5-bit and 7-bit fields, respectively,
+and that the concatenation is a 32-bit value,
 
 // SUBSUBSECTION ================================================================
 ==== LUI and AUIPC: execution
 
-Earlier, we declared a function `execute` with this type.
+Earlier, we declared a scattered function `execute` and its type:
+
+.From file `riscv_insts_begin.sail`
 ----
-    val execute : ast -> Retired effect {escape, wreg, rreg, rmem, ...}
+    val execute : ast -> Retired effect {escape, wreg, rreg, wmv, wmvt, eamem,
+                                         rmem, rmemt, barr, exmem, undef}
+    scattered function execute
 ----
-and further declared that the function body would be provided later in
-scattered clauses.  Here is the definition of the `Retired` type:
+
+Here is the definition of the `Retired` type:
 
 .From file `riscv_types.sail`
 ----
     enum Retired = {RETIRE_SUCCESS, RETIRE_FAIL}
 ----
 
-We could have used the `bool` type for this, but (a) these provide
-more readable names, and (b) this prevents accidental confusion of
-random booleans where a `Retired` value is expected.
+Since it is a type with 2 values, we could have used the `bool` type
+for this, but (a) defining a new type provides more readable names,
+and (b) this prevents accidental confusion of random booleans where a
+`Retired` value is expected.
 
 We now provide one of the clauses for `execute`, for LUI and AUIPC
 instructions.
@@ -855,19 +884,6 @@ variant.  On a successful match, it also binds the names `imm`, `rd`
 and `op` to the three fields of the decoded instruction, so we can use
 these variables in the body of the function.
 
-.From file `riscv_insts_base.sail`
-----
-    function clause execute UTYPE(imm, rd, op) = {
-      let off : xlenbits = EXTS(imm @ 0x000);
-      let ret : xlenbits = match op {
-        RISCV_LUI   => off,
-        RISCV_AUIPC => get_arch_pc() + off
-      };
-      X(rd) = ret;
-      RETIRE_SUCCESS
-    }
-----
-
 Strong-typing assures us that `imm` is of type `bits(20)`, i.e., a
 bit-vector of length 20.  In Line 2, we concatenate this with the
 12-bit value 0x000, giving us a 32-bit value.  Then, we use `EXTS` to
@@ -875,21 +891,8 @@ sign-extend it as necessary. This does nothing in RV32, since it's
 already a 32-bit value, and it sign-extends it to 64 bits in RV64.
 The result is bound to the local variable `off` of type `xlenbits`.
 
-.From file `riscv_insts_base.sail`
-----
-    function clause execute UTYPE(imm, rd, op) = {
-      let off : xlenbits = EXTS(imm @ 0x000);
-      let ret : xlenbits = match op {
-        RISCV_LUI   => off,
-        RISCV_AUIPC => get_arch_pc() + off
-      };
-      X(rd) = ret;
-      RETIRE_SUCCESS
-    }
-----
-
 The third line binds local variable `ret`, of type `xlenbits`, to the
-right-hand side, which is a pattern-matching expression examining
+right-hand side, which is a pattern-matching expression despatching on
 `op`.  When it matches `RISCV_LUI`, the value is just `off`.  When it
 matches `RISCV_AUIPC`, the value is added to `get_arch_pc()`, which
 retrieves the value of the program counter in the current machine
@@ -900,7 +903,8 @@ overloading of `X` we saw earlier.
 
 The final line is the constant expression `RETIRE_SUCCESS`.  Being the
 last expression in the block, and the block being the body of the
-function, this is the value returned by the function.
+function, this is the value returned by the function.  It's type is
+`Retire`, as given in the `execute` function's type declaration.
 
 // SUBSUBSECTION ================================================================
 ==== LUI and AUIPC: assembly language parsing and printing
@@ -967,18 +971,21 @@ Our abstract (decoded) ast view is:
 We define a mapping converting the 3-bit `funct3` field in the
 instruction to its abstract names:
 
-.From file `riscv_types.sail`
+.From file `riscv_insts_base.sail`
 ----
     mapping encdec_bop : bop <-> bits(3) = {
-      RISCV_BEQ  <-> 0b000,    RISCV_BNE  <-> 0b001,
-      RISCV_BLT  <-> 0b100,    RISCV_BGE  <-> 0b101,
-      RISCV_BLTU <-> 0b110,    RISCV_BGEU <-> 0b111
+      RISCV_BEQ  <-> 0b000,
+      RISCV_BNE  <-> 0b001,
+      RISCV_BLT  <-> 0b100,
+      RISCV_BGE  <-> 0b101,
+      RISCV_BLTU <-> 0b110,
+      RISCV_BGEU <-> 0b111
     }
 ----
 
 Then, we add a scattered clause to the `encdec` mapping:
 
-.From file `riscv_types.sail`
+.From file `riscv_insts_base.sail`
 ----
     mapping clause encdec = BTYPE(imm7_6 @ imm5_0 @ imm7_5_0 @ imm5_4_1 @ 0b0, rs2, rs1, op)
     <-> imm7_6 : bits(1) @ imm7_5_0 : bits(6)
@@ -995,15 +1002,18 @@ places in the instruction.
 
 We add a scattered clause to the `execute` function.  The first part is straightforward:
 
-.From file `riscv_types.sail`
+.From file `riscv_insts_base.sail`
 ----
     function clause execute (BTYPE(imm, rs2, rs1, op)) = {
       let rs1_val = X(rs1);
       let rs2_val = X(rs2);
       let taken : bool = match op {
-        RISCV_BEQ  => rs1_val == rs2_val,     RISCV_BNE  => rs1_val != rs2_val,
-        RISCV_BLT  => rs1_val <_s rs2_val,    RISCV_BGE  => rs1_val >=_s rs2_val,
-        RISCV_BLTU => rs1_val <_u rs2_val,    RISCV_BGEU => rs1_val >=_u rs2_val
+        RISCV_BEQ  => rs1_val == rs2_val,
+        RISCV_BNE  => rs1_val != rs2_val,
+        RISCV_BLT  => rs1_val <_s rs2_val,
+        RISCV_BGE  => rs1_val >=_s rs2_val,
+        RISCV_BLTU => rs1_val <_u rs2_val,
+        RISCV_BGEU => rs1_val >=_u rs2_val
       };
       let t : xlenbits = PC + EXTS(imm);
       ...
@@ -1016,13 +1026,13 @@ We add a scattered clause to the `execute` function.  The first part is straight
   unsigned values, respectively.  This is encoded by using different
   Sail pre-defined comparison operators `<_s` and `<_u`, respectively.
 
-* Line 9 computes the branch target, adding a sign-extension of the
-  immediate to the PC.
+* The `let t` line computes `t`, the branch target of type `xlenbits`
+  by adding a sign-extension of the immediate to the PC.
 
-The second part of the `execute` function clause performs different
+The next section of the `execute` function clause performs different
 actions depending on whether the branch is taken or not:
 
-.From file `riscv_types.sail`
+.From file `riscv_insts_base.sail`
 ----
     function clause execute (BTYPE(imm, rs2, rs1, op)) = {
       ...
@@ -1038,14 +1048,16 @@ is `RETIRE_SUCCESS`.
 
 If the branch is taken, we first check that the branch target PC is valid.
 
-.From file `riscv_types.sail`
+.From file `riscv_insts_base.sail`
 ----
       if taken then {
         ... <some code elided> ...
             if bit_to_bool(target[1]) & (~ (haveRVC())) then {
-              handle_mem_exception(target, E_Fetch_Addr_Align());    RETIRE_FAIL;
+              handle_mem_exception(target, E_Fetch_Addr_Align());
+              RETIRE_FAIL;
             } else {
-              set_next_pc(target);    RETIRE_SUCCESS
+              set_next_pc(target);
+              RETIRE_SUCCESS
             }
 ----
 
@@ -1053,10 +1065,10 @@ If the branch is taken, we first check that the branch target PC is valid.
   (compressed instructions), the branch target must be 4-byte aligned,
   i.e., bit [1] must be 0. `bit_to_bool` converts a value of `bits(1)`
   type to `bool` type (we could have also used `==1`). `haveRVC`
-  checks if the C extension is active. If the target is not ok, on
-  Line 4 we invoke function `handle_mem_exception` to perform
-  exception actions and return failure.  If the target is ok, Line 6
-  assigns it to the next PC and we return success.
+  checks if the C extension is active. If the target is not ok, in the
+  next line we invoke function `handle_mem_exception` to perform
+  exception actions and return failure.  If the target is ok, the next
+  line assigns the target to the next PC and we return success.
 
 * Our `<some code elided>` on Line 2 contains additional checks for
   target validity that may be required by any other extensions.
@@ -1070,9 +1082,12 @@ sub-opcode `bop` to a string and back:
 .From file `riscv_insts_base.sail`
 ----
     mapping btype_mnemonic : bop <-> string = {
-      RISCV_BEQ  <-> "beq",     RISCV_BNE  <-> "bne",
-      RISCV_BLT  <-> "blt",     RISCV_BGE  <-> "bge",
-      RISCV_BLTU <-> "bltu",    RISCV_BGEU <-> "bgeu"
+      RISCV_BEQ  <-> "beq",
+      RISCV_BNE  <-> "bne",
+      RISCV_BLT  <-> "blt",
+      RISCV_BGE  <-> "bge",
+      RISCV_BLTU <-> "bltu",
+      RISCV_BGEU <-> "bgeu"
 }
 ----
 
@@ -1094,7 +1109,7 @@ Then, we add a scattered clause to our previously introduced `assembly` mapping:
 // SUBSECTION ================================================================
 === Taking stock [[slide_taking_stock_1]]
 
-The general scheme for adding a new instruction, or new class of instructions, should be clear by now:
+The general scheme for each new instruction, or new class of instructions, should be clear by now:
 
 * Define an enum and mapping for any sub-opcodes in the class
       (if the class contains more than one instruction)
@@ -1113,7 +1128,9 @@ structure and semantics.  For example, BEQ/BNE/BLT/... differ only in
 the particular comparison operator; using a class with sub-opcodes
 captures this similarity.
 
-_For the remaining examples we'll focus on the `execute` function._
+_For the remaining examples we'll focus on the `execute` function only
+(the `encdec` and `assembly` clauses are similar to the previous
+examples)._
 
 // SUBSECTION ================================================================
 === LOAD instructions: execution
@@ -1124,7 +1141,7 @@ translation, physical memory protection checks, ordering relationships
 with other memory accesses, and so on.  Many of these can trap (raise
 an exception).
 
-The header of a memory-load instruction:
+The header of the scattered clause of `execute` to handle memory-load instructions is:
 
 .From file `riscv_insts_base.sail`
 ----
@@ -1139,7 +1156,7 @@ The arguments are the
   whether the loaded value should be sign-extended or zero-extended to
   the width of the destination register;
 
-* the width: byte, halfword (2 bytes), word (4 bytes) or double (8 bytes);
+* the width to be loaded: byte, halfword (2 bytes), word (4 bytes) or double (8 bytes);
 
 * the acquire/release semantics for memory ordering.
 
@@ -1156,17 +1173,15 @@ The next step is to compute the actual (virtual) address to be accessed:
 
 After computing the offset by sign-extending the immediate value, it
 invokes the function `ext_data_get_addr` to perform a signed addition
-to the contents of rs1.  This function is defined in
+of the offset to the contents of rs1.  This function is defined in
 `riscv_addr_checks.sail`.  By encapsulating this addition in a
 function, we allow future extensibility to new ISA extensions that may
 perform additional checks/transformations on the address.
 
 This function can return an error, but in the normal simple case
 without additional ISA extensions it returns `Ext_DataAddr_OK(vaddr)`
-containing the effective virtual address.  We use a `match` expression
-to distinguish these two outcomes.
-
-Next:
+containing the effective virtual address.  We use pattern-matching (a
+`match` expression) to distinguish these two outcomes.  Next:
 
 .From file `riscv_insts_base.sail`
 ----
@@ -1179,12 +1194,15 @@ Next:
 The function `check_misaligned(vaddr, width)` optionally checks if the
 access is aligned for the requested width.  This function is defined a
 little earlier in the file and returns true it is misaligned _and if
-we've configured the model to disallow misaligned accesses._
+we've configured the model to disallow misaligned accesses._ If we've
+configured the model to allow misaligned accesses, this function will
+always return `False`.
 
 If ok, it invokes `translateAddr(vaddr, Read(Data)` to
 optionally translate virtual addresses to physical addresses.
 This function is defined in a collection of files:
 ----
+    riscv_vmem_types.sail, riscv_vmem_common.sail
     riscv_vmem_rv32.sail, riscv_vmem_sv32.sail
     riscv_vmem_rv64.sail, riscv_vmem_sv39.sail, riscv_vmem_sv48.sail
     riscv_vmem_tlb.sail
@@ -1193,8 +1211,8 @@ different subsets of which are used depending on whether we're
 modeling RV32 or RV64, and the Sv32, Sv39 or Sv48 virtual memory
 schemes.
 
-The function simply returns the address as-is if not running with
-virtual memory.
+The `translateAddr` function simply returns the address as-is if not
+running with virtual memory.
 
 In the virtual-memory translation functions, you'll notice that they
 also model a TLB (Translation Lookaside Buffer).  This is because TLBs
@@ -1209,13 +1227,21 @@ Finally:
             TR_Address(addr, _) =>
               match (width, sizeof(xlen)) {
                 (BYTE, _)   =>
-                   process_load(rd, vaddr, mem_read(Read(Data), addr, 1, aq, rl, false), is_unsigned),
+                   process_load(rd, vaddr,
+                                mem_read(Read(Data), addr, 1, aq, rl, false),
+                                is_unsigned),
                 (HALF, _)   =>
-                   process_load(rd, vaddr, mem_read(Read(Data), addr, 2, aq, rl, false), is_unsigned),
+                   process_load(rd, vaddr,
+                                mem_read(Read(Data), addr, 2, aq, rl, false),
+                                is_unsigned),
                 (WORD, _)   =>
-                   process_load(rd, vaddr, mem_read(Read(Data), addr, 4, aq, rl, false), is_unsigned),
+                   process_load(rd, vaddr,
+                                mem_read(Read(Data), addr, 4, aq, rl, false),
+                                is_unsigned),
                 (DOUBLE, 64) =>
-                   process_load(rd, vaddr, mem_read(Read(Data), addr, 8, aq, rl, false), is_unsigned)
+                   process_load(rd, vaddr,
+                                mem_read(Read(Data), addr, 8, aq, rl, false),
+                                is_unsigned)
 ----
 
 If the virtual-to-physical translation was successful, we invoke
@@ -1236,7 +1262,8 @@ RISC-V has
 * interrupts (asynchronous exceptions, conceptually "`between`" any two instructions)
 * traps (synchronous exceptions, due to execution of an instruction)
 
-The different kinds of interrupts:
+The different kinds of interrupts are Software, Timer and External and
+are delivered at User, Supervisor or Machine privilege levels:
 
 .From file `riscv_types.sail`
 ----
@@ -1245,13 +1272,17 @@ The different kinds of interrupts:
                             I_U_External,    I_S_External,    I_M_External    }
 ----
 
-The file also contains a function to convert bit-encodings to these symbolic names:
+This is followed by a function to convert bit-encodings to these symbolic names:
 
 .From file `riscv_types.sail`
 ----
     val interruptType_to_bits : InterruptType -> bits (8)
-    function interruptType_to_bits (i) = match (i) {   I_U_Software => 0x00,
-                                                       I_S_Software => 0x01,  ... }
+    function interruptType_to_bits (i) =
+      match (i) {
+        I_U_Software => 0x00,  I_S_Software => 0x01,  I_M_Software => 0x03,
+        I_U_Timer    => 0x04,  I_S_Timer    => 0x05,  I_M_Timer    => 0x07,
+        I_U_External => 0x08,  I_S_External => 0x09,  I_M_External => 0x0b
+      }
 ----
 
 A mapping would be more expressive than a function, but since we don't
@@ -1271,8 +1302,12 @@ The different kinds of traps, and converting to bits:
                             E_Reserved_14        : unit,     E_SAMO_Page_Fault    : unit }
 
     val exceptionType_to_bits : ExceptionType -> exc_code
-    function exceptionType_to_bits(e) = match (e) { E_Fetch_Addr_Align()   => 0x00,
-                                                    E_Fetch_Access_Fault() => 0x01, ...}
+    function exceptionType_to_bits(e) =
+      match (e) {
+        E_Fetch_Addr_Align()   => 0x00,
+        E_Fetch_Access_Fault() => 0x01,
+        ...
+      }
 ----
 
 [NOTE]
@@ -1285,19 +1320,23 @@ interesting data with each tag.
 Some traps may carry additional information.  In Sail (and OCaml),
 optional information is usually expressed using the `option`
 predefined type:
+
 ----
     union option ('a : Type) = { Some : 'a,
                                  None : unit }
 ----
+
 i.e., the `Some` variant carries some additional information
-(generic/polymorphic type `'a'), and the `None` variant carries no
+(generic/polymorphic type `'a`), and the `None` variant carries no
 additional information.
 
 .From file `riscv_sync_exception.sail`
 ----
-    struct sync_exception = { trap    : ExceptionType,
-                              excinfo : option(xlenbits),
-                              ext     : option(ext_exception)   /* for extensions */ }
+    struct sync_exception = {
+      trap    : ExceptionType,
+      excinfo : option(xlenbits),
+      ext     : option(ext_exception)   /* for extensions */
+    }
 ----
 
 The `trap` field is necessary information.  The other two fields carry
@@ -1321,10 +1360,11 @@ conditional branches with illegal branch targets is:
     }
 ----
 
-Lines 1-3 construct a `sync_exception` value, filling in the address
-as optional exception info, and binds it to the local variable `t`.
+The `let t` line constructs a `sync_exception` value, filling in
+the address as optional exception info, and binds it to the local
+variable `t`.
 
-In Line 4 we invoke a more general `exception_handler`.
+The next line invokes a more general `exception_handler`.
 
 .From file `riscv_sys_control.sail`
 ----
@@ -1343,7 +1383,7 @@ In Line 4 we invoke a more general `exception_handler`.
 
 Line 5 checks if the current trap, at the current privilege level, is
 being delegated to be handled at a different privilege level
-(returning that, or the current, privilege level).
+(returning that privilege level or the current privilege level).
 
 Line 7 invokes an even more general trap handler (below).
 
@@ -1353,17 +1393,23 @@ User privilege levels, respectively.
 .From file `riscv_sys_control.sail`
 ----
     function trap_handler(del_priv : Privilege, intr : bool, c : exc_code,
-                          pc : xlenbits, info : option(xlenbits), ext : option(ext_exception))
+                          pc : xlenbits, info : option(xlenbits),
+                          ext : option(ext_exception))
                          -> xlenbits = {
       cancel_reservation();    /* for LR/SC */
       match (del_priv) {
         Machine => { mcause->IsInterrupt() = bool_to_bits(intr);
                      mcause->Cause()       = EXTZ(c);
-                     mstatus->MPIE()       = mstatus.MIE();    mstatus->MIE() = 0b0;
+
+                     mstatus->MPIE()       = mstatus.MIE();
+                     mstatus->MIE()        = 0b0;
                      mstatus->MPP()        = privLevel_to_bits(cur_privilege);
-                     mtval                 = tval(info);       mepc           = pc;
+                     mtval                 = tval(info);
+                     mepc                  = pc;
+
                      cur_privilege         = del_priv;
-                     prepare_trap_vector(del_priv, mcause) },
+                     prepare_trap_vector(del_priv, mcause)
+        },
         Supervisor => { ... }
         User => { ... }
 ----
@@ -1378,30 +1424,29 @@ file `riscv_sys_extensions.sail`) which returns the PC that is in
 // SECTION ================================================================
 == Composing Individual Instruction Semantics into an Executable Model
 
-* So far, we've only talked about the decode and execute
-    function for individual instructions.  We've said nothing about
-    how and when these get invoked, nor about how instructions are
-    fetched.
+So far, we've only talked about the decode and execute function for
+individual instructions.  We've said nothing about how and when these
+get invoked, nor about how instructions are fetched.
 
-* This separation is deliberate.  We may wish to build several
-    different processor models: pipelined, superscalar, multi-hart,
-    and so on.  Each of these would be a different top-level system,
-    with its own system-level semantics, but they can all share the
-    individual instruction semantics discussed so far.
+This separation is deliberate.  We may wish to build several different
+processor models: pipelined, superscalar, multi-hart, and so on.  Each
+of these would be a different top-level system, with its own
+system-level semantics, but they can all share the individual
+instruction semantics discussed so far.
 
-* In this section we'll sketch one such encapsulating model, which is
-  used in the default simulators built from the model.  This model,
-  shown in files `main.sail` and `riscv_step.sail` implement a simple,
-  sequential, unpipelined, one-instruction-at-a-time fetch-execute
-  loop ().
-+
+In this section we'll sketch one such encapsulating model, which is
+used in the default simulators built from the model.  This model,
+shown in files `main.sail` and `riscv_step.sail` implement a simple,
+sequential, unpipelined, one-instruction-at-a-time fetch-execute loop
+().
+
 Section <<concurrency>> discusses alternatives, such as concurrent
-  composition of instruction semantics, for more accurate modeling of
-  out-of-order processors and weak memory models.
+composition of instruction semantics, for more accurate modeling of
+out-of-order processors and weak memory models.
 
-The top-level function initializes the PC, initializes the model as a
-whole (including certain CSRs and registers), and performs the
-fetch-execute loop:
+The top-level function initializes the PC to 0x1000, initializes the
+model as a whole (including certain CSRs and registers), and then
+invokes the fetch-execute loop:
 
 .From file `main.sail`
 ----
@@ -1412,7 +1457,9 @@ fetch-execute loop:
     }
 ----
 
-The `loop()` function, in turn, repeatedly performs a fetch-execute step:
+Note, the 0x1000 initial value is not part of the spec, it is an
+implementation choice by the "`platform`".  The `loop()` function, in
+turn, repeatedly performs a fetch-execute step:
 
 .From file `riscv_step.sail`
 ----
@@ -1424,6 +1471,8 @@ The `loop()` function, in turn, repeatedly performs a fetch-execute step:
     }
 ----
 
+In each iteration of the loop, we perform a `step()`:
+
 .From file `riscv_step.sail`
 ----
     function step(step_no : int) -> bool = {
@@ -1434,19 +1483,28 @@ The `loop()` function, in turn, repeatedly performs a fetch-execute step:
             let f : FetchResult = ext_fetch_hook(fetch());
             match f {
               F_RVC(h) => { let ast = decodeCompressed(h);
-                            (execute(ext_post_decode_hook(ast)), true) ... }
+                            if haveRVC() then {
+                              nextPC = PC + 2;
+                              (execute(ext_post_decode_hook(ast)), true)
+                          } else {
+                            handle_illegal();
+                            (RETIRE_FAIL, true)
+                          }
+              },
               F_Base(w) => { let ast = decode(w);
                              nextPC = PC + 4;
-                             (execute(ext_post_decode_hook(ast)), true) ... }
-    }
+                             (execute(ext_post_decode_hook(ast)), true)
+              }
+          ...
 ----
 
-* The step first checks for interrupts and handles it if there is one.
+The `step()` function first checks for interrupts and handles it if
+there is one.  To check this, it will consult various CSRs including
+MSTATUS, MIP, MIE.
 
-* If not, it fetches and instruction and decides whether its
-      an RVC (compressed) instruction or a base instruction.
-
-* In each case, it decodes it and executes it.
+If there is no interrupt, it fetches an instruction and decides
+whether its an RVC (compressed) instruction or a base instruction.  In
+each case, it decodes it and executes it.
 
 // SUBSECTION ================================================================
 === Taking stock ...

@@ -448,7 +448,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_reading_the_isa_to_understand_semantics_of_each_risc_v_instruction">2. Reading the ISA to understand semantics of each RISC-V instruction</a>
 <ul class="sectlevel2">
 <li><a href="#_a_first_taste">2.1. A first taste</a></li>
-<li><a href="#_spec_source_files_there_are_a_lot_of_them">2.2. Spec source files (there are a lot of them!)</a></li>
+<li><a href="#_spec_source_files">2.2. Spec source files</a></li>
 <li><a href="#_a_word_about_types_and_type_checking">2.3. A word about types and type-checking</a></li>
 <li><a href="#_preliminaries_registers_and_values_scattered_organization_of_instruction_specs">2.4. Preliminaries; Registers and values; &#8220;Scattered&#8221; organization of instruction specs</a>
 <ul class="sectlevel3">
@@ -462,11 +462,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_using_sail_overloading_to_simplify_notation">Using Sail overloading to simplify notation</a></li>
 </ul>
 </li>
-<li><a href="#__scattered_organization_of_instruction_specs">2.4.3. &#8220;Scattered&#8221; organization of instruction specs</a>
-<ul class="sectlevel4">
-<li><a href="#_introducing_items_whose_clauses_will_be_scattered">Introducing items whose clauses will be scattered</a></li>
-</ul>
-</li>
+<li><a href="#__scattered_organization_of_instruction_specs">2.4.3. &#8220;Scattered&#8221; organization of instruction specs</a></li>
 </ul>
 </li>
 <li><a href="#_instruction_fields">2.5. Instruction fields</a>
@@ -1024,8 +1020,41 @@ context.</p>
 <div class="sect1">
 <h2 id="_reading_the_isa_to_understand_semantics_of_each_risc_v_instruction">2. Reading the ISA to understand semantics of each RISC-V instruction</h2>
 <div class="sectionbody">
+<div class="paragraph">
+<p>The central component of the formal specification of an ISA is the
+specification of individual instructions:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>How each instruction is represented in bits</p>
+<div class="ulist">
+<ul>
+<li>
+<p>In Sail, we also specify how assembly language notation for an instruction is mapped to its bit representation</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>How each instruction modifies architectural state when it is executed</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Surrounding these individual-instruction specs can be many possible
+specs for composing them into an execution engine.  The simplest of
+these would be a completely sequential composition, a classical
+fetch-decode-execute loop.  A more complex version would allow for
+more concurrent composition, for modeling superscalar and out-of-order
+cores and multicores with weak memory models.</p>
+</div>
 <div class="sect2">
 <h3 id="_a_first_taste">2.1. A first taste</h3>
+<div class="paragraph">
+<p>The semantics of each instruction is given by an <code>execute</code>
+instruction, a fragment of which is shown below.</p>
+</div>
 <div class="listingblock">
 <div class="title">From file <code>riscv_insts_base.sail</code></div>
 <div class="content">
@@ -1043,68 +1072,92 @@ context.</p>
 }</pre>
 </div>
 </div>
-<div class="ulist">
-<ul>
-<li>
-<p>The semantics of each instruction is given by an <code>execute</code>
-instruction, a fragment of which is shown above.</p>
-</li>
-<li>
-<p>The function argument says that it is an &#8220;R-format&#8221; instruction (<code>RTYPE</code>)
-containing source register fields <code>rs1</code> and <code>rs2</code>, destination
-register field <code>rd</code>, and an <code>op</code> sub-opcode identifying the
-specific operation within the group of &#8220;R-format&#8221; instructions.</p>
-</li>
-<li>
-<p>It shows that we:</p>
-<div class="ulist">
-<ul>
-<li>
-<p>read a source register <code>rs1</code>,</p>
-</li>
-<li>
-<p>read a source register <code>rs2</code>,</p>
-</li>
-<li>
-<p>perform the operation specified by <code>op</code> (here showing the <code>ADD</code> and <code>SLL</code> sub-opcodes),</p>
-</li>
-<li>
-<p>and write the result to destination register <code>rd</code></p>
-</li>
-</ul>
+<div class="paragraph">
+<p>The function argument says that it is an &#8220;R-format&#8221; instruction
+(<code>RTYPE</code>) containing source register fields <code>rs1</code> and <code>rs2</code>,
+destination register field <code>rd</code>, and an <code>op</code> sub-opcode identifying
+the specific operation within the group of R-format instructions.</p>
 </div>
+<div class="paragraph">
+<p>The function body shows that we:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>read a source register <code>X(rs1)</code>,</p>
+</li>
+<li>
+<p>read a source register <code>X(rs2)</code>,</p>
+</li>
+<li>
+<p>perform the operation specified by <code>op</code> (this excerpt showing only the <code>ADD</code> and <code>SLL</code> sub-opcodes),</p>
+</li>
+<li>
+<p>and write the result to destination register <code>X(rd)</code>.</p>
 </li>
 </ul>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_spec_source_files_there_are_a_lot_of_them">2.2. Spec source files (there are a lot of them!)</h3>
+<h3 id="_spec_source_files">2.2. Spec source files</h3>
+<div class="paragraph">
+<p>The Sail language does not have a package/module structure&#8212;&#8203;a full
+Sail program is just the concatenation of the source files.  We
+organize the spec into separate files just according to our own
+convenience.</p>
+</div>
 <div class="listingblock">
 <div class="content">
-<pre>--12:50:52--Dell-mation: ~/git_clones/sail-riscv/model
+<pre>$ pwd
+/home/nikhil/git_clones/ISA_Formal_Spec/sail-riscv/model
+
 $ ls
-main.sail                      riscv_insts_aext.sail    riscv_platform.sail            riscv_termination_duo.sail
-prelude_mapping.sail           riscv_insts_base.sail    riscv_pmp_control.sail         riscv_termination_rv32.sail
-prelude_mem_metadata.sail      riscv_insts_begin.sail   riscv_pmp_regs.sail            riscv_termination_rv64.sail
-prelude_mem.sail               riscv_insts_cext.sail    riscv_pte.sail                 riscv_types_ext.sail
-prelude.sail                   riscv_insts_end.sail     riscv_ptw.sail                 riscv_types.sail
-README.md                      riscv_insts_mext.sail    riscv_regs.sail                riscv_vmem_common.sail
-riscv_addr_checks_common.sail  riscv_insts_next.sail    riscv_reg_type.sail            riscv_vmem_rv32.sail
-riscv_addr_checks.sail         riscv_insts_rmem.sail    riscv_step_common.sail         riscv_vmem_rv64.sail
-riscv_analysis.sail            riscv_insts_zicsr.sail   riscv_step_ext.sail            riscv_vmem_sv32.sail
-riscv_csr_ext.sail             riscv_jalr_rmem.sail     riscv_step_rvfi.sail           riscv_vmem_sv39.sail
-riscv_csr_map.sail             riscv_jalr_seq.sail      riscv_step.sail                riscv_vmem_sv48.sail
-riscv_decode_ext.sail          riscv_mem.sail           riscv_sync_exception.sail      riscv_vmem_tlb.sail
-riscv_duopod.sail              riscv_misa_ext.sail      riscv_sys_control.sail         riscv_vmem_types.sail
-riscv_ext_regs.sail            riscv_next_control.sail  riscv_sys_exceptions.sail      riscv_xlen32.sail
-riscv_fetch_rvfi.sail          riscv_next_regs.sail     riscv_sys_regs.sail            riscv_xlen64.sail
-riscv_fetch.sail               riscv_pc_access.sail     riscv_termination_common.sail  rvfi_dii.sail</pre>
+main.sail		       riscv_insts_cfext.sail	       riscv_step_ext.sail
+prelude_mapping.sail	       riscv_insts_dext.sail	       riscv_step_rvfi.sail
+prelude_mem_metadata.sail      riscv_insts_end.sail	       riscv_step.sail
+prelude_mem.sail	       riscv_insts_fext.sail	       riscv_sync_exception.sail
+prelude.sail		       riscv_insts_hints.sail	       riscv_sys_control.sail
+README.md		       riscv_insts_mext.sail	       riscv_sys_exceptions.sail
+riscv_addr_checks_common.sail  riscv_insts_next.sail	       riscv_sys_regs.sail
+riscv_addr_checks.sail	       riscv_insts_rmem.sail	       riscv_termination_common.sail
+riscv_analysis.sail	       riscv_insts_zicsr.sail	       riscv_termination_duo.sail
+riscv_csr_ext.sail	       riscv_iris.sail		       riscv_termination_rv32.sail
+riscv_csr_map.sail	       riscv_jalr_rmem.sail	       riscv_termination_rv64.sail
+riscv_decode_ext.sail	       riscv_jalr_seq.sail	       riscv_types_common.sail
+riscv_duopod.sail	       riscv_mem.sail		       riscv_types_ext.sail
+riscv_ext_regs.sail	       riscv_misa_ext.sail	       riscv_types.sail
+riscv_fdext_control.sail       riscv_next_control.sail	       riscv_vmem_common.sail
+riscv_fdext_regs.sail	       riscv_next_regs.sail	       riscv_vmem_rv32.sail
+riscv_fetch_rvfi.sail	       riscv_pc_access.sail	       riscv_vmem_rv64.sail
+riscv_fetch.sail	       riscv_platform.sail	       riscv_vmem_sv32.sail
+riscv_flen_D.sail	       riscv_pmp_control.sail	       riscv_vmem_sv39.sail
+riscv_flen_F.sail	       riscv_pmp_regs.sail	       riscv_vmem_sv48.sail
+riscv_freg_type.sail	       riscv_pte.sail		       riscv_vmem_tlb.sail
+riscv_insts_aext.sail	       riscv_ptw.sail		       riscv_vmem_types.sail
+riscv_insts_base.sail	       riscv_regs.sail		       riscv_xlen32.sail
+riscv_insts_begin.sail	       riscv_reg_type.sail	       riscv_xlen64.sail
+riscv_insts_cdext.sail	       riscv_softfloat_interface.sail  rvfi_dii.sail
+riscv_insts_cext.sail	       riscv_step_common.sail</pre>
 </div>
 </div>
 <div class="paragraph">
-<p>Sail does not have a package/module structure&#8212;&#8203;the full Sail program
-is just the concatenation of the source files.  Our organization into
-separate files is just for our own convenience.</p>
+<p>As you can see, there are many source files (and the number will grow
+as we add formal specs for new standard ISA extensions).</p>
+</div>
+<div class="paragraph">
+<p>The files named <code>riscv_insts_*.sail</code> are the central files describing
+individual instructions and their semantics: <code>&#8230;&#8203;_base</code> for the base
+instruction set, <code>&#8230;&#8203;_aext</code> for the A (atomics) extension, <code>&#8230;&#8203;_cext</code>
+for the C (compressed) extension, etc.</p>
+</div>
+<div class="paragraph">
+<p>Other files describe state: <code>riscv_regs</code> for the integer register
+file, <code>riscv_fdext_regs</code> for the floating point extension (F,D)
+register file, etc.</p>
+</div>
+<div class="paragraph">
+<p>Still other files concern composing individual instruction semantics
+into an execution model: <code>riscv_fetch</code>, <code>riscv_step</code> (fetch-execute-interrupt), etc.</p>
 </div>
 <div class="paragraph">
 <p>In this tutorial we will look at excerpts of some of these files.</p>
@@ -1136,10 +1189,9 @@ different sizes, and the precise size is important.</p>
 </li>
 <li>
 <p>Moreover, sizes of various entities are often related.
-E.g., the shift amount in RV32 (respectively, RV64) should
-be a 5-bit value (respectively, a 6-bit value).  In Sail,
-such relationships can be expressed in types, and are
-type-checked.</p>
+E.g., the shift amount in RV32 should be a 5-bit value and,
+for RV64, a 6-bit value.  In Sail, such relationships can
+be expressed in types, and are type-checked.</p>
 </li>
 </ul>
 </div>
@@ -1157,7 +1209,10 @@ registers? &#8230;&#8203;).  More about this later.</p>
 <div class="sect3">
 <h4 id="_let_s_start_with_some_small_easy_files">2.4.1. Let&#8217;s start with some small, easy files</h4>
 <div class="paragraph">
-<p>We&#8217;d use one of these two files, depending on whether we are considering RV32 or RV64.</p>
+<p>These two files define XLEN for RV32 and RV64, respectively.
+Remember, a complete Sail program is a concatenation of <code>.sail</code> files,
+so we&#8217;d use one of these files, depending on whether we are
+considering RV32 or RV64.</p>
 </div>
 <div class="listingblock">
 <div class="title">From file <code>riscv_xlen32.sail</code></div>
@@ -1184,9 +1239,9 @@ registers? &#8230;&#8203;).  More about this later.</p>
 </div>
 <div class="paragraph">
 <p>In the next line we are defining a new type for bit-vectors of size <code>xlen</code>.
-The type <code>bits(`<em>t</em></code>)` represents the type of
+The type <code>bits(</code> <em>t</em> <code>)</code> represents the type of
 bit-vectors of size <em>t</em>.
-It&#8217;s parameter <em>t</em> must be a numeric type (here, we instantiate it as <code>xlen</code>).</p>
+Its parameter <em>t</em> must be a numeric type (here, we instantiate it as <code>xlen</code>).</p>
 </div>
 </div>
 <div class="sect3">
@@ -1225,7 +1280,7 @@ is needed.</p>
 <div class="title">From file <code>riscv_regs.sail</code></div>
 <div class="content">
 <pre>    register PC       : xlenbits
-
+    ...
     register x1  : regtype
     register x2  : regtype
     ...
@@ -1235,10 +1290,8 @@ is needed.</p>
 <div class="paragraph">
 <p>In line 1 with keyword <code>register</code> we declare <code>PC</code> to be a register,
 and we specify the type of values it can contain, <code>xlenbits</code>.  The
-remaining lines similarly declare registers <code>x1</code>&#8230;&#8203;<code>x31</code>.</p>
-</div>
-<div class="paragraph">
-<p>(There&#8217;s no <code>x0</code> register because it&#8217;s a constant 0.)</p>
+remaining lines similarly declare registers <code>x1</code>&#8230;&#8203;<code>x31</code>.  (There&#8217;s no
+<code>x0</code> register because it&#8217;s a constant 0.)</p>
 </div>
 </div>
 <div class="sect4">
@@ -1270,55 +1323,23 @@ It can be read as:</p>
 <div class="content">
 <div class="paragraph">
 <p>For all <em>n</em> in the range 0..31, it takes an argument <em>n</em> that is a
-register number, and returns a value of type <code>xlenbits</code>.  Executing
-this function can have two possible effects, <code>rreg</code> (reading a
-register) and <code>escape</code> (abort due to illegal register number).</p>
+register number, and returns a value of type <code>xlenbits</code>.
+Executing this function can have two possible effects, <code>rreg</code> (reading
+a register) and <code>escape</code> (abort due to illegal register number).</p>
 </div>
-</div>
-</div>
-<div class="listingblock">
-<div class="title">From file <code>riscv_regs.sail</code></div>
-<div class="content">
-<pre>    val rX : forall 'n, 0 &lt;= 'n &lt; 32. regno('n) -&gt; xlenbits effect {rreg, escape}
-    function rX r = {
-      let v : regtype =
-        match r {
-          0 =&gt; zero_reg,
-          1 =&gt; x1,
-          ...
-          31 =&gt; x31,
-          _  =&gt; {assert(false, "invalid register number"); zero_reg}
-        };
-      regval_from_reg(v)
-    }</pre>
 </div>
 </div>
 <div class="paragraph">
-<p>The line introduced by the <code>function</code> keyword, defines the function
-<code>rX</code> itself, with argument <code>r</code>.</p>
+<p>The next line, introduced by the <code>function</code> keyword, defines the
+function <code>rX</code> itself, with argument <code>r</code>.  Note that the argument is
+not enclosed in parentheses; this is quite common in functional
+languages like OCaml, SML, and Haskell.</p>
 </div>
 <div class="paragraph">
 <p>The <code>let</code> binding introduces a local variable <code>v</code> and binds it to the
 value of the &#8220;pattern-matching&#8221; expression in Lines 4-10.  This
 matches the value <code>r</code> with each of the subsequent patterns 0, 1, 2,
 &#8230;&#8203; 31, returning the value of the right-hand side on first match.</p>
-</div>
-<div class="listingblock">
-<div class="title">From file <code>riscv_regs.sail</code></div>
-<div class="content">
-<pre>    val rX : forall 'n, 0 &lt;= 'n &lt; 32. regno('n) -&gt; xlenbits effect {rreg, escape}
-    function rX r = {
-      let v : regtype =
-        match r {
-          0 =&gt; zero_reg,
-          1 =&gt; x1,
-          2 =&gt; x2,
-          ...
-          _  =&gt; {assert(false, "invalid register number"); zero_reg}
-        };
-      regval_from_reg(v)
-    }</pre>
-</div>
 </div>
 <div class="paragraph">
 <p>The type of <code>v</code> is <code>regtype</code>, i.e., it is a register, and so in Line
@@ -1356,11 +1377,11 @@ This, in turn, should allow us to omit the <code>escape</code> effect.</p>
 </div>
 <div class="paragraph">
 <p>This is similar to the <code>rX</code> read-function.  The function
-type-declaration in line 1 says it takes two arguments, one a register
-number and the second a value of type <code>xlenbits</code>, and its result type
-is <code>unit</code> which is like the &#8220;void&#8221; type in C, indicating a value of
-no particular interest, since this is a pure side effect.  Its effects
-include <code>wreg</code> (writing a register) and <code>escape</code>.</p>
+type-declaration in line 1 says its argument is a pair of values, one
+a register number and the second a value of type <code>xlenbits</code>, and its
+result type is <code>unit</code> which is like the &#8220;void&#8221; type in C, indicating
+a value of no particular interest, since this is a pure side effect.
+Its effects include <code>wreg</code> (writing a register) and <code>escape</code>.</p>
 </div>
 </div>
 <div class="sect4">
@@ -1372,8 +1393,9 @@ include <code>wreg</code> (writing a register) and <code>escape</code>.</p>
 </div>
 </div>
 <div class="paragraph">
-<p>This allows <code>X(r)</code> to be used to read a register (invoking the function <code>rX()</code>),<br>
-and <code>X(r)=v</code> to write a register (invoking the function <code>wX()</code>).</p>
+<p>This allows the notation <code>X(r)</code> to be used to read a register (in
+which case it invokes the function <code>rX(r)</code>), and the notation <code>X(r)=v</code>
+to write a register (in which case it invokes the function <code>wX(r,v)</code>).</p>
 </div>
 </div>
 </div>
@@ -1398,8 +1420,16 @@ into into each of the different instruction variants.</p>
 </ul>
 </div>
 <div class="paragraph">
-<p>Traditional instruction set manuals &#8220;scatter&#8221; this same information
-differently---a page (or a few) per instruction variant, showing:</p>
+<p>The problem is that for a given instruction, it would have one clause
+in the first group (type definitions), one clause in the second group
+(decode) and one clause in the third group (execute), and these may be
+quite far apart in the text, possibly in different files.  To add a
+new instruction, one would have to add a clause to each of the groups.</p>
+</div>
+<div class="paragraph">
+<p>Traditional instruction set manuals, on the other hand &#8220;scatter&#8221;
+this same information differently---a page (or a few) per instruction
+variant, showing:</p>
 </div>
 <div class="ulist">
 <ul>
@@ -1415,21 +1445,27 @@ differently---a page (or a few) per instruction variant, showing:</p>
 </ul>
 </div>
 <div class="paragraph">
-<p>Sail supports the latter more traditional, familiar organization.  For
-each type of instruction, all its relevant information is collected in
-one place.</p>
+<p>Sail supports this more traditional, familiar organization of ISA
+specs.  For each type of instruction, all its relevant information is
+collected in one place.  Or, to view it another way, the type
+definitions, decode information and execute information are
+&#8220;scattered&#8221; across instruction defintions.</p>
 </div>
 <div class="paragraph">
 <p>We must first introduce the generic information about entities whose
-individual definition-clauses will given later in scattered fashion;
-specifically, types:</p>
-</div>
-<div class="paragraph">
-<p>For file <code>riscv_insts_begin.sail</code>:</p>
+individual definition-clauses will be given later in scattered
+fashion.  In the concatenation of <code>.sail</code> files, the following
+is given early before any of the scattered definitions:</p>
 </div>
 <div class="listingblock">
+<div class="title">From file <code>riscv_insts_begin.sail</code></div>
 <div class="content">
 <pre>    scattered union ast
+
+    /* returns whether an instruction was retired, used for computing minstret */
+    val execute : ast -&gt; Retired effect {escape, wreg, rreg, wmv, wmvt, eamem,
+                                         rmem, rmemt, barr, exmem, undef}
+    scattered function execute
 
     val encdec : ast &lt;-&gt; bits(32)
     scattered mapping encdec
@@ -1441,46 +1477,31 @@ specifically, types:</p>
 <div class="paragraph">
 <p>The first line introduces the type <code>ast</code> which is a <em>union</em> of all the
 different variants of instructions.  Each variant will follow later,
-in a scattered fashion.  Here, &#8220;ast&#8221; stands for Abstract Syntax
-Tree, the decoded view of an instruction.</p>
+in a scattered fashion.  Here, <code>ast</code> stands for Abstract Syntax Tree,
+the decoded view of an instruction.</p>
 </div>
 <div class="paragraph">
-<p>The next line declares the type of the <code>encdec</code> mapping, which is a
-pair of functions converting from a 32-bit value (instruction) to is
-decoded view (ast), and vice versa, and the following line indicates
-that its definition will be scattered.</p>
+<p>The next line declares the type of the <code>execute</code> function.  It takes
+an argument whose type is <code>ast</code> and returns a value of type <code>Retired</code>,
+which indicates whether it should be counted as a retired instruction
+or not.  It also specifies all the possible effects of an instruction,
+such as aborting (<code>escape</code>), writing and reading registers (<code>wreg</code>,
+<code>rreg</code>), reading memory, and so on.  The following line indicates that
+<code>execute</code> 's definition will be scattered.</p>
+</div>
+<div class="paragraph">
+<p>The next line declares the type of the <code>encdec</code> mapping. The &lt;-&gt;
+notation says it is a <em>mapping</em>, which is a <em>pair</em> of functions
+converting from a 32-bit value (instruction) to is decoded view (ast),
+and vice versa.  When applied to an <code>ast</code> argument it produces a
+<code>bits(32)</code> result, and when applied to a <code>bits(32)</code> argument it
+produces an <code>ast</code> result.  The following line indicates that its
+definition will be scattered.</p>
 </div>
 <div class="paragraph">
 <p>The next line declares the type of the <code>assembly</code> mapping that
 converts from a string to a decoded instruction and vice versa, and
 the following line indicates that its definition will be scattered.</p>
-</div>
-<div class="sect4">
-<h5 id="_introducing_items_whose_clauses_will_be_scattered">Introducing items whose clauses will be scattered</h5>
-<div class="paragraph">
-<p>Before we provide any clauses of a scattered definition of an entity,
-we must first declare the entity&#8217;s type, and that its clauses will be
-scattered.</p>
-</div>
-<div class="listingblock">
-<div class="title">From file <code>riscv_insts_begin.sail</code></div>
-<div class="content">
-<pre>    val execute : ast -&gt; Retired effect {escape, wreg, rreg, rmem, ...}
-    scattered function execute</pre>
-</div>
-</div>
-<div class="paragraph">
-<p>The first line declares the type of the <code>execute</code> function, which
-takes a decoded instruction (ast) and returns a <code>Retired</code> result which
-indicates whether it should be counted as a retired instruction or
-not.  It also specifies all the possible effects of an instruction,
-such as aborting (<code>escape</code>), writing and reading registers (<code>wreg</code>,
-<code>rreg</code>), reading memory, and so on.</p>
-</div>
-<div class="paragraph">
-<p>The <code>scattered</code> line indicates that the clauses of this function will
-follow later, in a scattered manner.</p>
-</div>
 </div>
 </div>
 </div>
@@ -1508,12 +1529,12 @@ RISC-V instruction formats:</p>
 specify sub-opcodes.</p>
 </li>
 <li>
-<p>The &#8220;rs1&#8221;, &#8220;rs2&#8221; and &#8220;rd&#8221; fields are 5-bit values specifying
-source and destination registers.</p>
+<p>The rs1, rs2 and rd fields are 5-bit values specifying source and
+destination registers.</p>
 </li>
 <li>
 <p>Immediate values are often composed from non-trivial permutation of
-&#8220;imm&#8221; instruction fields.</p>
+imm instruction fields.</p>
 </li>
 </ul>
 </div>
@@ -1524,6 +1545,7 @@ source and destination registers.</p>
 <div class="title">From file <code>riscv_types.sail</code></div>
 <div class="content">
 <pre>    type regidx  = bits(5)
+    type cregidx = bits(3)    /* identifiers in RVC instructions */
     type csreg   = bits(12)   /* CSR addressing */
     ...
     type opcode = bits(7)
@@ -1533,8 +1555,9 @@ source and destination registers.</p>
 </div>
 </div>
 <div class="paragraph">
-<p>These are definitions for register indexes, CSR register addresses,
-major opcodes, and 12-bit and 20-bit immediates.</p>
+<p>These are definitions for register indexes, register indexes in
+compressed instructions, CSR register addresses, major opcodes, and
+12-bit and 20-bit immediates.</p>
 </div>
 </div>
 </div>
@@ -1565,7 +1588,7 @@ provided later in scattered clauses.</p>
 <p>This says: one variant of the <code>ast</code> type is called <code>UTYPE</code>.  It
 contains 3 fields (identified positionally, not with keywords) whose
 types are, respectively, a bit-vector of 20 bits, a register index,
-and a <code>uop</code> identifies whether it&#8217;s an LUI or AUIPC.</p>
+and a <code>uop</code> which identifies whether it&#8217;s an LUI or AUIPC.</p>
 </div>
 <div class="paragraph">
 <p>Note: Sail unions are similar to &#8220;algebraic types&#8221; or &#8220;tagged
@@ -1583,16 +1606,15 @@ variant of the union.</p>
 <div class="sect3">
 <h4 id="_lui_and_auipc_decoding">2.6.2. LUI and AUIPC: Decoding</h4>
 <div class="paragraph">
-<p>Earlier, we declared a mapping (a function and its inverse) <code>encdec</code>
-with this type:</p>
+<p>Earlier, we declared a scattered mapping (a function and its inverse) <code>encdec</code>
+along with its type:</p>
 </div>
 <div class="listingblock">
+<div class="title">From file <code>riscv_insts_begin.sail</code></div>
 <div class="content">
-<pre>val encdec : ast &lt;-&gt; bits(32)</pre>
+<pre>    val encdec : ast &lt;-&gt; bits(32)
+    scattered mapping encdec</pre>
 </div>
-</div>
-<div class="paragraph">
-<p>and further declared that the mapping body would be provided later in scattered clauses.</p>
 </div>
 <div class="paragraph">
 <p>We now provide one such clause, showing how to encode/decode LUI and AUIPC instructions.</p>
@@ -1610,32 +1632,35 @@ with this type:</p>
 </div>
 </div>
 <div class="paragraph">
-<p>The first four define a new, local mapping between the bit-encodings
-of the 7-bit opcode in a U-format instruction to a value of <code>uop</code>
-type, i.e., the symbolic names for the corresponding instructions.</p>
+<p>The first four lines define a new, local mapping between the
+bit-encodings of the 7-bit opcode in a U-format instruction to a value
+of <code>uop</code> type, i.e., the symbolic names for the corresponding
+instructions.</p>
 </div>
 <div class="paragraph">
 <p>The last two lines add a scattered clause to the <code>encdec</code> mapping.
-The left-hand-side of &lt;-&gt; shows the decoded view.  The right-hand
-side shows a bit-concatenation.  The prior declarations allow Sail to
-infer that <code>imm</code>, <code>rd</code>, and <code>encddec_op(op)</code> are are 20-bit, 5-bit and
-7-bit fields, respectively, and that the concatenation is a 32-bit
-value,</p>
+The left-hand-side of &lt;-&gt; shows the decoded view, i.e., a UTYPE
+<code>ast</code>.  The right-hand side shows a bit-concatenation.  The prior
+declarations allow Sail to infer that <code>imm</code>, <code>rd</code>, and
+<code>encddec_op(op)</code> are are 20-bit, 5-bit and 7-bit fields, respectively,
+and that the concatenation is a 32-bit value,</p>
 </div>
 </div>
 <div class="sect3">
 <h4 id="_lui_and_auipc_execution">2.6.3. LUI and AUIPC: execution</h4>
 <div class="paragraph">
-<p>Earlier, we declared a function <code>execute</code> with this type.</p>
+<p>Earlier, we declared a scattered function <code>execute</code> and its type:</p>
 </div>
 <div class="listingblock">
+<div class="title">From file <code>riscv_insts_begin.sail</code></div>
 <div class="content">
-<pre>    val execute : ast -&gt; Retired effect {escape, wreg, rreg, rmem, ...}</pre>
+<pre>    val execute : ast -&gt; Retired effect {escape, wreg, rreg, wmv, wmvt, eamem,
+                                         rmem, rmemt, barr, exmem, undef}
+    scattered function execute</pre>
 </div>
 </div>
 <div class="paragraph">
-<p>and further declared that the function body would be provided later in
-scattered clauses.  Here is the definition of the <code>Retired</code> type:</p>
+<p>Here is the definition of the <code>Retired</code> type:</p>
 </div>
 <div class="listingblock">
 <div class="title">From file <code>riscv_types.sail</code></div>
@@ -1644,9 +1669,10 @@ scattered clauses.  Here is the definition of the <code>Retired</code> type:</p>
 </div>
 </div>
 <div class="paragraph">
-<p>We could have used the <code>bool</code> type for this, but (a) these provide
-more readable names, and (b) this prevents accidental confusion of
-random booleans where a <code>Retired</code> value is expected.</p>
+<p>Since it is a type with 2 values, we could have used the <code>bool</code> type
+for this, but (a) defining a new type provides more readable names,
+and (b) this prevents accidental confusion of random booleans where a
+<code>Retired</code> value is expected.</p>
 </div>
 <div class="paragraph">
 <p>We now provide one of the clauses for <code>execute</code>, for LUI and AUIPC
@@ -1675,20 +1701,6 @@ variant.  On a successful match, it also binds the names <code>imm</code>, <code
 and <code>op</code> to the three fields of the decoded instruction, so we can use
 these variables in the body of the function.</p>
 </div>
-<div class="listingblock">
-<div class="title">From file <code>riscv_insts_base.sail</code></div>
-<div class="content">
-<pre>    function clause execute UTYPE(imm, rd, op) = {
-      let off : xlenbits = EXTS(imm @ 0x000);
-      let ret : xlenbits = match op {
-        RISCV_LUI   =&gt; off,
-        RISCV_AUIPC =&gt; get_arch_pc() + off
-      };
-      X(rd) = ret;
-      RETIRE_SUCCESS
-    }</pre>
-</div>
-</div>
 <div class="paragraph">
 <p>Strong-typing assures us that <code>imm</code> is of type <code>bits(20)</code>, i.e., a
 bit-vector of length 20.  In Line 2, we concatenate this with the
@@ -1697,23 +1709,9 @@ sign-extend it as necessary. This does nothing in RV32, since it&#8217;s
 already a 32-bit value, and it sign-extends it to 64 bits in RV64.
 The result is bound to the local variable <code>off</code> of type <code>xlenbits</code>.</p>
 </div>
-<div class="listingblock">
-<div class="title">From file <code>riscv_insts_base.sail</code></div>
-<div class="content">
-<pre>    function clause execute UTYPE(imm, rd, op) = {
-      let off : xlenbits = EXTS(imm @ 0x000);
-      let ret : xlenbits = match op {
-        RISCV_LUI   =&gt; off,
-        RISCV_AUIPC =&gt; get_arch_pc() + off
-      };
-      X(rd) = ret;
-      RETIRE_SUCCESS
-    }</pre>
-</div>
-</div>
 <div class="paragraph">
 <p>The third line binds local variable <code>ret</code>, of type <code>xlenbits</code>, to the
-right-hand side, which is a pattern-matching expression examining
+right-hand side, which is a pattern-matching expression despatching on
 <code>op</code>.  When it matches <code>RISCV_LUI</code>, the value is just <code>off</code>.  When it
 matches <code>RISCV_AUIPC</code>, the value is added to <code>get_arch_pc()</code>, which
 retrieves the value of the program counter in the current machine
@@ -1726,7 +1724,8 @@ overloading of <code>X</code> we saw earlier.</p>
 <div class="paragraph">
 <p>The final line is the constant expression <code>RETIRE_SUCCESS</code>.  Being the
 last expression in the block, and the block being the body of the
-function, this is the value returned by the function.</p>
+function, this is the value returned by the function.  It&#8217;s type is
+<code>Retire</code>, as given in the <code>execute</code> function&#8217;s type declaration.</p>
 </div>
 </div>
 <div class="sect3">
@@ -1821,12 +1820,15 @@ in the instruction, with 0 appended as the least-significant bit.</p>
 instruction to its abstract names:</p>
 </div>
 <div class="listingblock">
-<div class="title">From file <code>riscv_types.sail</code></div>
+<div class="title">From file <code>riscv_insts_base.sail</code></div>
 <div class="content">
 <pre>    mapping encdec_bop : bop &lt;-&gt; bits(3) = {
-      RISCV_BEQ  &lt;-&gt; 0b000,    RISCV_BNE  &lt;-&gt; 0b001,
-      RISCV_BLT  &lt;-&gt; 0b100,    RISCV_BGE  &lt;-&gt; 0b101,
-      RISCV_BLTU &lt;-&gt; 0b110,    RISCV_BGEU &lt;-&gt; 0b111
+      RISCV_BEQ  &lt;-&gt; 0b000,
+      RISCV_BNE  &lt;-&gt; 0b001,
+      RISCV_BLT  &lt;-&gt; 0b100,
+      RISCV_BGE  &lt;-&gt; 0b101,
+      RISCV_BLTU &lt;-&gt; 0b110,
+      RISCV_BGEU &lt;-&gt; 0b111
     }</pre>
 </div>
 </div>
@@ -1834,7 +1836,7 @@ instruction to its abstract names:</p>
 <p>Then, we add a scattered clause to the <code>encdec</code> mapping:</p>
 </div>
 <div class="listingblock">
-<div class="title">From file <code>riscv_types.sail</code></div>
+<div class="title">From file <code>riscv_insts_base.sail</code></div>
 <div class="content">
 <pre>    mapping clause encdec = BTYPE(imm7_6 @ imm5_0 @ imm7_5_0 @ imm5_4_1 @ 0b0, rs2, rs1, op)
     &lt;-&gt; imm7_6 : bits(1) @ imm7_5_0 : bits(6)
@@ -1854,15 +1856,18 @@ places in the instruction.</p>
 <p>We add a scattered clause to the <code>execute</code> function.  The first part is straightforward:</p>
 </div>
 <div class="listingblock">
-<div class="title">From file <code>riscv_types.sail</code></div>
+<div class="title">From file <code>riscv_insts_base.sail</code></div>
 <div class="content">
 <pre>    function clause execute (BTYPE(imm, rs2, rs1, op)) = {
       let rs1_val = X(rs1);
       let rs2_val = X(rs2);
       let taken : bool = match op {
-        RISCV_BEQ  =&gt; rs1_val == rs2_val,     RISCV_BNE  =&gt; rs1_val != rs2_val,
-        RISCV_BLT  =&gt; rs1_val &lt;_s rs2_val,    RISCV_BGE  =&gt; rs1_val &gt;=_s rs2_val,
-        RISCV_BLTU =&gt; rs1_val &lt;_u rs2_val,    RISCV_BGEU =&gt; rs1_val &gt;=_u rs2_val
+        RISCV_BEQ  =&gt; rs1_val == rs2_val,
+        RISCV_BNE  =&gt; rs1_val != rs2_val,
+        RISCV_BLT  =&gt; rs1_val &lt;_s rs2_val,
+        RISCV_BGE  =&gt; rs1_val &gt;=_s rs2_val,
+        RISCV_BLTU =&gt; rs1_val &lt;_u rs2_val,
+        RISCV_BGEU =&gt; rs1_val &gt;=_u rs2_val
       };
       let t : xlenbits = PC + EXTS(imm);
       ...
@@ -1879,17 +1884,17 @@ unsigned values, respectively.  This is encoded by using different
 Sail pre-defined comparison operators <code>&lt;_s</code> and <code>&lt;_u</code>, respectively.</p>
 </li>
 <li>
-<p>Line 9 computes the branch target, adding a sign-extension of the
-immediate to the PC.</p>
+<p>The <code>let t</code> line computes <code>t</code>, the branch target of type <code>xlenbits</code>
+by adding a sign-extension of the immediate to the PC.</p>
 </li>
 </ul>
 </div>
 <div class="paragraph">
-<p>The second part of the <code>execute</code> function clause performs different
+<p>The next section of the <code>execute</code> function clause performs different
 actions depending on whether the branch is taken or not:</p>
 </div>
 <div class="listingblock">
-<div class="title">From file <code>riscv_types.sail</code></div>
+<div class="title">From file <code>riscv_insts_base.sail</code></div>
 <div class="content">
 <pre>    function clause execute (BTYPE(imm, rs2, rs1, op)) = {
       ...
@@ -1908,14 +1913,16 @@ is <code>RETIRE_SUCCESS</code>.</p>
 <p>If the branch is taken, we first check that the branch target PC is valid.</p>
 </div>
 <div class="listingblock">
-<div class="title">From file <code>riscv_types.sail</code></div>
+<div class="title">From file <code>riscv_insts_base.sail</code></div>
 <div class="content">
 <pre>      if taken then {
         ... &lt;some code elided&gt; ...
             if bit_to_bool(target[1]) &amp; (~ (haveRVC())) then {
-              handle_mem_exception(target, E_Fetch_Addr_Align());    RETIRE_FAIL;
+              handle_mem_exception(target, E_Fetch_Addr_Align());
+              RETIRE_FAIL;
             } else {
-              set_next_pc(target);    RETIRE_SUCCESS
+              set_next_pc(target);
+              RETIRE_SUCCESS
             }</pre>
 </div>
 </div>
@@ -1926,10 +1933,10 @@ is <code>RETIRE_SUCCESS</code>.</p>
 (compressed instructions), the branch target must be 4-byte aligned,
 i.e., bit [1] must be 0. <code>bit_to_bool</code> converts a value of <code>bits(1)</code>
 type to <code>bool</code> type (we could have also used <code>==1</code>). <code>haveRVC</code>
-checks if the C extension is active. If the target is not ok, on
-Line 4 we invoke function <code>handle_mem_exception</code> to perform
-exception actions and return failure.  If the target is ok, Line 6
-assigns it to the next PC and we return success.</p>
+checks if the C extension is active. If the target is not ok, in the
+next line we invoke function <code>handle_mem_exception</code> to perform
+exception actions and return failure.  If the target is ok, the next
+line assigns the target to the next PC and we return success.</p>
 </li>
 <li>
 <p>Our <code>&lt;some code elided&gt;</code> on Line 2 contains additional checks for
@@ -1948,9 +1955,12 @@ sub-opcode <code>bop</code> to a string and back:</p>
 <div class="title">From file <code>riscv_insts_base.sail</code></div>
 <div class="content">
 <pre>    mapping btype_mnemonic : bop &lt;-&gt; string = {
-      RISCV_BEQ  &lt;-&gt; "beq",     RISCV_BNE  &lt;-&gt; "bne",
-      RISCV_BLT  &lt;-&gt; "blt",     RISCV_BGE  &lt;-&gt; "bge",
-      RISCV_BLTU &lt;-&gt; "bltu",    RISCV_BGEU &lt;-&gt; "bgeu"
+      RISCV_BEQ  &lt;-&gt; "beq",
+      RISCV_BNE  &lt;-&gt; "bne",
+      RISCV_BLT  &lt;-&gt; "blt",
+      RISCV_BGE  &lt;-&gt; "bge",
+      RISCV_BLTU &lt;-&gt; "bltu",
+      RISCV_BGEU &lt;-&gt; "bgeu"
 }</pre>
 </div>
 </div>
@@ -1983,7 +1993,7 @@ sub-opcode <code>bop</code> to a string and back:</p>
 <div class="sect2">
 <h3 id="slide_taking_stock_1">2.7. Taking stock</h3>
 <div class="paragraph">
-<p>The general scheme for adding a new instruction, or new class of instructions, should be clear by now:</p>
+<p>The general scheme for each new instruction, or new class of instructions, should be clear by now:</p>
 </div>
 <div class="ulist">
 <ul>
@@ -2018,7 +2028,9 @@ the particular comparison operator; using a class with sub-opcodes
 captures this similarity.</p>
 </div>
 <div class="paragraph">
-<p><em>For the remaining examples we&#8217;ll focus on the <code>execute</code> function.</em></p>
+<p><em>For the remaining examples we&#8217;ll focus on the <code>execute</code> function only
+(the <code>encdec</code> and <code>assembly</code> clauses are similar to the previous
+examples).</em></p>
 </div>
 </div>
 <div class="sect2">
@@ -2031,7 +2043,7 @@ with other memory accesses, and so on.  Many of these can trap (raise
 an exception).</p>
 </div>
 <div class="paragraph">
-<p>The header of a memory-load instruction:</p>
+<p>The header of the scattered clause of <code>execute</code> to handle memory-load instructions is:</p>
 </div>
 <div class="listingblock">
 <div class="title">From file <code>riscv_insts_base.sail</code></div>
@@ -2053,7 +2065,7 @@ whether the loaded value should be sign-extended or zero-extended to
 the width of the destination register;</p>
 </li>
 <li>
-<p>the width: byte, halfword (2 bytes), word (4 bytes) or double (8 bytes);</p>
+<p>the width to be loaded: byte, halfword (2 bytes), word (4 bytes) or double (8 bytes);</p>
 </li>
 <li>
 <p>the acquire/release semantics for memory ordering.</p>
@@ -2076,7 +2088,7 @@ the width of the destination register;</p>
 <div class="paragraph">
 <p>After computing the offset by sign-extending the immediate value, it
 invokes the function <code>ext_data_get_addr</code> to perform a signed addition
-to the contents of rs1.  This function is defined in
+of the offset to the contents of rs1.  This function is defined in
 <code>riscv_addr_checks.sail</code>.  By encapsulating this addition in a
 function, we allow future extensibility to new ISA extensions that may
 perform additional checks/transformations on the address.</p>
@@ -2084,11 +2096,8 @@ perform additional checks/transformations on the address.</p>
 <div class="paragraph">
 <p>This function can return an error, but in the normal simple case
 without additional ISA extensions it returns <code>Ext_DataAddr_OK(vaddr)</code>
-containing the effective virtual address.  We use a <code>match</code> expression
-to distinguish these two outcomes.</p>
-</div>
-<div class="paragraph">
-<p>Next:</p>
+containing the effective virtual address.  We use pattern-matching (a
+<code>match</code> expression) to distinguish these two outcomes.  Next:</p>
 </div>
 <div class="listingblock">
 <div class="title">From file <code>riscv_insts_base.sail</code></div>
@@ -2103,7 +2112,9 @@ to distinguish these two outcomes.</p>
 <p>The function <code>check_misaligned(vaddr, width)</code> optionally checks if the
 access is aligned for the requested width.  This function is defined a
 little earlier in the file and returns true it is misaligned <em>and if
-we&#8217;ve configured the model to disallow misaligned accesses.</em></p>
+we&#8217;ve configured the model to disallow misaligned accesses.</em> If we&#8217;ve
+configured the model to allow misaligned accesses, this function will
+always return <code>False</code>.</p>
 </div>
 <div class="paragraph">
 <p>If ok, it invokes <code>translateAddr(vaddr, Read(Data)</code> to
@@ -2112,7 +2123,8 @@ This function is defined in a collection of files:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre>    riscv_vmem_rv32.sail, riscv_vmem_sv32.sail
+<pre>    riscv_vmem_types.sail, riscv_vmem_common.sail
+    riscv_vmem_rv32.sail, riscv_vmem_sv32.sail
     riscv_vmem_rv64.sail, riscv_vmem_sv39.sail, riscv_vmem_sv48.sail
     riscv_vmem_tlb.sail</pre>
 </div>
@@ -2123,8 +2135,8 @@ modeling RV32 or RV64, and the Sv32, Sv39 or Sv48 virtual memory
 schemes.</p>
 </div>
 <div class="paragraph">
-<p>The function simply returns the address as-is if not running with
-virtual memory.</p>
+<p>The <code>translateAddr</code> function simply returns the address as-is if not
+running with virtual memory.</p>
 </div>
 <div class="paragraph">
 <p>In the virtual-memory translation functions, you&#8217;ll notice that they
@@ -2142,13 +2154,21 @@ are visible in the semantics via the SFENCE.VMA instruction.</p>
             TR_Address(addr, _) =&gt;
               match (width, sizeof(xlen)) {
                 (BYTE, _)   =&gt;
-                   process_load(rd, vaddr, mem_read(Read(Data), addr, 1, aq, rl, false), is_unsigned),
+                   process_load(rd, vaddr,
+                                mem_read(Read(Data), addr, 1, aq, rl, false),
+                                is_unsigned),
                 (HALF, _)   =&gt;
-                   process_load(rd, vaddr, mem_read(Read(Data), addr, 2, aq, rl, false), is_unsigned),
+                   process_load(rd, vaddr,
+                                mem_read(Read(Data), addr, 2, aq, rl, false),
+                                is_unsigned),
                 (WORD, _)   =&gt;
-                   process_load(rd, vaddr, mem_read(Read(Data), addr, 4, aq, rl, false), is_unsigned),
+                   process_load(rd, vaddr,
+                                mem_read(Read(Data), addr, 4, aq, rl, false),
+                                is_unsigned),
                 (DOUBLE, 64) =&gt;
-                   process_load(rd, vaddr, mem_read(Read(Data), addr, 8, aq, rl, false), is_unsigned)</pre>
+                   process_load(rd, vaddr,
+                                mem_read(Read(Data), addr, 8, aq, rl, false),
+                                is_unsigned)</pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2180,7 +2200,8 @@ component is 64, i.e., it restricts it to RV64.</p>
 </ul>
 </div>
 <div class="paragraph">
-<p>The different kinds of interrupts:</p>
+<p>The different kinds of interrupts are Software, Timer and External and
+are delivered at User, Supervisor or Machine privilege levels:</p>
 </div>
 <div class="listingblock">
 <div class="title">From file <code>riscv_types.sail</code></div>
@@ -2191,14 +2212,18 @@ component is 64, i.e., it restricts it to RV64.</p>
 </div>
 </div>
 <div class="paragraph">
-<p>The file also contains a function to convert bit-encodings to these symbolic names:</p>
+<p>This is followed by a function to convert bit-encodings to these symbolic names:</p>
 </div>
 <div class="listingblock">
 <div class="title">From file <code>riscv_types.sail</code></div>
 <div class="content">
 <pre>    val interruptType_to_bits : InterruptType -&gt; bits (8)
-    function interruptType_to_bits (i) = match (i) {   I_U_Software =&gt; 0x00,
-                                                       I_S_Software =&gt; 0x01,  ... }</pre>
+    function interruptType_to_bits (i) =
+      match (i) {
+        I_U_Software =&gt; 0x00,  I_S_Software =&gt; 0x01,  I_M_Software =&gt; 0x03,
+        I_U_Timer    =&gt; 0x04,  I_S_Timer    =&gt; 0x05,  I_M_Timer    =&gt; 0x07,
+        I_U_External =&gt; 0x08,  I_S_External =&gt; 0x09,  I_M_External =&gt; 0x0b
+      }</pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2221,8 +2246,12 @@ decode interrupts/exceptions, we don&#8217;t need the inverse function.</p>
                             E_Reserved_14        : unit,     E_SAMO_Page_Fault    : unit }
 
     val exceptionType_to_bits : ExceptionType -&gt; exc_code
-    function exceptionType_to_bits(e) = match (e) { E_Fetch_Addr_Align()   =&gt; 0x00,
-                                                    E_Fetch_Access_Fault() =&gt; 0x01, ...}</pre>
+    function exceptionType_to_bits(e) =
+      match (e) {
+        E_Fetch_Addr_Align()   =&gt; 0x00,
+        E_Fetch_Access_Fault() =&gt; 0x01,
+        ...
+      }</pre>
 </div>
 </div>
 <div class="admonitionblock note">
@@ -2254,15 +2283,17 @@ predefined type:</p>
 </div>
 <div class="paragraph">
 <p>i.e., the <code>Some</code> variant carries some additional information
-(generic/polymorphic type <code>'a'), and the `None</code> variant carries no
+(generic/polymorphic type <code>'a</code>), and the <code>None</code> variant carries no
 additional information.</p>
 </div>
 <div class="listingblock">
 <div class="title">From file <code>riscv_sync_exception.sail</code></div>
 <div class="content">
-<pre>    struct sync_exception = { trap    : ExceptionType,
-                              excinfo : option(xlenbits),
-                              ext     : option(ext_exception)   /* for extensions */ }</pre>
+<pre>    struct sync_exception = {
+      trap    : ExceptionType,
+      excinfo : option(xlenbits),
+      ext     : option(ext_exception)   /* for extensions */
+    }</pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2289,11 +2320,12 @@ conditional branches with illegal branch targets is:</p>
 </div>
 </div>
 <div class="paragraph">
-<p>Lines 1-3 construct a <code>sync_exception</code> value, filling in the address
-as optional exception info, and binds it to the local variable <code>t</code>.</p>
+<p>The <code>let t</code> line constructs a <code>sync_exception</code> value, filling in
+the address as optional exception info, and binds it to the local
+variable <code>t</code>.</p>
 </div>
 <div class="paragraph">
-<p>In Line 4 we invoke a more general <code>exception_handler</code>.</p>
+<p>The next line invokes a more general <code>exception_handler</code>.</p>
 </div>
 <div class="listingblock">
 <div class="title">From file <code>riscv_sys_control.sail</code></div>
@@ -2314,7 +2346,7 @@ as optional exception info, and binds it to the local variable <code>t</code>.</
 <div class="paragraph">
 <p>Line 5 checks if the current trap, at the current privilege level, is
 being delegated to be handled at a different privilege level
-(returning that, or the current, privilege level).</p>
+(returning that privilege level or the current privilege level).</p>
 </div>
 <div class="paragraph">
 <p>Line 7 invokes an even more general trap handler (below).</p>
@@ -2327,17 +2359,23 @@ User privilege levels, respectively.</p>
 <div class="title">From file <code>riscv_sys_control.sail</code></div>
 <div class="content">
 <pre>    function trap_handler(del_priv : Privilege, intr : bool, c : exc_code,
-                          pc : xlenbits, info : option(xlenbits), ext : option(ext_exception))
+                          pc : xlenbits, info : option(xlenbits),
+                          ext : option(ext_exception))
                          -&gt; xlenbits = {
       cancel_reservation();    /* for LR/SC */
       match (del_priv) {
         Machine =&gt; { mcause-&gt;IsInterrupt() = bool_to_bits(intr);
                      mcause-&gt;Cause()       = EXTZ(c);
-                     mstatus-&gt;MPIE()       = mstatus.MIE();    mstatus-&gt;MIE() = 0b0;
+
+                     mstatus-&gt;MPIE()       = mstatus.MIE();
+                     mstatus-&gt;MIE()        = 0b0;
                      mstatus-&gt;MPP()        = privLevel_to_bits(cur_privilege);
-                     mtval                 = tval(info);       mepc           = pc;
+                     mtval                 = tval(info);
+                     mepc                  = pc;
+
                      cur_privilege         = del_priv;
-                     prepare_trap_vector(del_priv, mcause) },
+                     prepare_trap_vector(del_priv, mcause)
+        },
         Supervisor =&gt; { ... }
         User =&gt; { ... }</pre>
 </div>
@@ -2358,39 +2396,34 @@ file <code>riscv_sys_extensions.sail</code>) which returns the PC that is in
 <div class="sect1">
 <h2 id="_composing_individual_instruction_semantics_into_an_executable_model">3. Composing Individual Instruction Semantics into an Executable Model</h2>
 <div class="sectionbody">
-<div class="ulist">
-<ul>
-<li>
-<p>So far, we&#8217;ve only talked about the decode and execute
-function for individual instructions.  We&#8217;ve said nothing about
-how and when these get invoked, nor about how instructions are
-fetched.</p>
-</li>
-<li>
-<p>This separation is deliberate.  We may wish to build several
-different processor models: pipelined, superscalar, multi-hart,
-and so on.  Each of these would be a different top-level system,
-with its own system-level semantics, but they can all share the
-individual instruction semantics discussed so far.</p>
-</li>
-<li>
+<div class="paragraph">
+<p>So far, we&#8217;ve only talked about the decode and execute function for
+individual instructions.  We&#8217;ve said nothing about how and when these
+get invoked, nor about how instructions are fetched.</p>
+</div>
+<div class="paragraph">
+<p>This separation is deliberate.  We may wish to build several different
+processor models: pipelined, superscalar, multi-hart, and so on.  Each
+of these would be a different top-level system, with its own
+system-level semantics, but they can all share the individual
+instruction semantics discussed so far.</p>
+</div>
+<div class="paragraph">
 <p>In this section we&#8217;ll sketch one such encapsulating model, which is
 used in the default simulators built from the model.  This model,
 shown in files <code>main.sail</code> and <code>riscv_step.sail</code> implement a simple,
-sequential, unpipelined, one-instruction-at-a-time fetch-execute
-loop ().</p>
+sequential, unpipelined, one-instruction-at-a-time fetch-execute loop
+().</p>
+</div>
 <div class="paragraph">
 <p>Section <a href="#concurrency">Concurrency and Connection to RISC-V Weak Memory Model</a> discusses alternatives, such as concurrent
-  composition of instruction semantics, for more accurate modeling of
-  out-of-order processors and weak memory models.</p>
-</div>
-</li>
-</ul>
+composition of instruction semantics, for more accurate modeling of
+out-of-order processors and weak memory models.</p>
 </div>
 <div class="paragraph">
-<p>The top-level function initializes the PC, initializes the model as a
-whole (including certain CSRs and registers), and performs the
-fetch-execute loop:</p>
+<p>The top-level function initializes the PC to 0x1000, initializes the
+model as a whole (including certain CSRs and registers), and then
+invokes the fetch-execute loop:</p>
 </div>
 <div class="listingblock">
 <div class="title">From file <code>main.sail</code></div>
@@ -2403,7 +2436,9 @@ fetch-execute loop:</p>
 </div>
 </div>
 <div class="paragraph">
-<p>The <code>loop()</code> function, in turn, repeatedly performs a fetch-execute step:</p>
+<p>Note, the 0x1000 initial value is not part of the spec, it is an
+implementation choice by the &#8220;platform&#8221;.  The <code>loop()</code> function, in
+turn, repeatedly performs a fetch-execute step:</p>
 </div>
 <div class="listingblock">
 <div class="title">From file <code>riscv_step.sail</code></div>
@@ -2416,6 +2451,9 @@ fetch-execute loop:</p>
     }</pre>
 </div>
 </div>
+<div class="paragraph">
+<p>In each iteration of the loop, we perform a <code>step()</code>:</p>
+</div>
 <div class="listingblock">
 <div class="title">From file <code>riscv_step.sail</code></div>
 <div class="content">
@@ -2427,26 +2465,30 @@ fetch-execute loop:</p>
             let f : FetchResult = ext_fetch_hook(fetch());
             match f {
               F_RVC(h) =&gt; { let ast = decodeCompressed(h);
-                            (execute(ext_post_decode_hook(ast)), true) ... }
+                            if haveRVC() then {
+                              nextPC = PC + 2;
+                              (execute(ext_post_decode_hook(ast)), true)
+                          } else {
+                            handle_illegal();
+                            (RETIRE_FAIL, true)
+                          }
+              },
               F_Base(w) =&gt; { let ast = decode(w);
                              nextPC = PC + 4;
-                             (execute(ext_post_decode_hook(ast)), true) ... }
-    }</pre>
+                             (execute(ext_post_decode_hook(ast)), true)
+              }
+          ...</pre>
 </div>
 </div>
-<div class="ulist">
-<ul>
-<li>
-<p>The step first checks for interrupts and handles it if there is one.</p>
-</li>
-<li>
-<p>If not, it fetches and instruction and decides whether its
-an RVC (compressed) instruction or a base instruction.</p>
-</li>
-<li>
-<p>In each case, it decodes it and executes it.</p>
-</li>
-</ul>
+<div class="paragraph">
+<p>The <code>step()</code> function first checks for interrupts and handles it if
+there is one.  To check this, it will consult various CSRs including
+MSTATUS, MIP, MIE.</p>
+</div>
+<div class="paragraph">
+<p>If there is no interrupt, it fetches an instruction and decides
+whether its an RVC (compressed) instruction or a base instruction.  In
+each case, it decodes it and executes it.</p>
 </div>
 <div class="sect2">
 <h3 id="_taking_stock">3.1. Taking stock &#8230;&#8203;</h3>
@@ -3094,7 +3136,7 @@ weak memory model.</p>
 <div id="footer">
 <div id="footer-text">
 Version v0.2<br>
-Last updated 2020-12-09 16:41:19 EST
+Last updated 2020-12-10 00:15:23 EST
 </div>
 </div>
 </body>
