@@ -491,46 +491,43 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </li>
 </ul>
 </li>
-<li><a href="#_composing_individual_instruction_semantics_into_an_executable_model">3. Composing Individual Instruction Semantics into an Executable Model</a>
+<li><a href="#_composing_individual_instruction_semantics_into_an_executable_model">3. Composing Individual Instruction Semantics into an Executable Model</a></li>
+<li><a href="#_taking_stock">4. Taking stock &#8230;&#8203;</a>
 <ul class="sectlevel2">
-<li><a href="#_taking_stock">3.1. Taking stock &#8230;&#8203;</a>
+<li><a href="#_overview_of_spec_module_dependencies">4.1. Overview of spec module dependencies</a></li>
+</ul>
+</li>
+<li><a href="#_executing_standard_risc_v_isa_tests">5. Executing standard RISC-V ISA Tests</a>
+<ul class="sectlevel2">
+<li><a href="#reminder_download_install">5.1. Reminder: Download and Install</a></li>
+<li><a href="#_executing_standard_risc_v_isa_tests_using_the_c_simulator">5.2. Executing standard RISC-V ISA tests using the C simulator</a>
 <ul class="sectlevel3">
-<li><a href="#_overview_of_spec_module_dependencies">3.1.1. Overview of spec module dependencies</a></li>
+<li><a href="#_executing_standard_risc_v_isa_tests_using_the_ocaml_simulator">5.2.1. Executing standard RISC-V ISA tests using the OCaml simulator</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a href="#_executing_standard_risc_v_isa_tests">4. Executing standard RISC-V ISA Tests</a>
+<li><a href="#_executing_standard_risc_v_compliance_tests">6. Executing standard RISC-V Compliance Tests</a>
 <ul class="sectlevel2">
-<li><a href="#reminder_download_install">4.1. Reminder: Download and Install</a></li>
-<li><a href="#_executing_standard_risc_v_isa_tests_using_the_c_simulator">4.2. Executing standard RISC-V ISA tests using the C simulator</a>
+<li><a href="#_executing_compliance_tests_preparation">6.1. Executing Compliance tests: preparation</a></li>
+<li><a href="#_executing_compliance_tests">6.2. Executing Compliance tests</a></li>
+</ul>
+</li>
+<li><a href="#_adding_new_isa_extensions_to_the_formal_spec">7. Adding new ISA extensions to the Formal Spec</a>
+<ul class="sectlevel2">
+<li><a href="#_case_study_adding_isa_extensions_f_and_d_single_and_double_precision_floating_point">7.1. Case study: adding ISA Extensions F and D (single and double-precision floating point)</a>
 <ul class="sectlevel3">
-<li><a href="#_executing_standard_risc_v_isa_tests_using_the_ocaml_simulator">4.2.1. Executing standard RISC-V ISA tests using the OCaml simulator</a></li>
+<li><a href="#_new_registers_for_the_f_and_d_extensions">7.1.1. New Registers for the F and D Extensions</a></li>
+<li><a href="#_semantics_of_f_and_d_instructions">7.1.2. Semantics of F and D instructions</a></li>
+<li><a href="#_updating_the_makefiles">7.1.3. Updating the Makefiles</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a href="#_executing_standard_risc_v_compliance_tests">5. Executing standard RISC-V Compliance Tests</a>
+<li><a href="#concurrency">8. Concurrency and Connection to RISC-V Weak Memory Model</a>
 <ul class="sectlevel2">
-<li><a href="#_executing_compliance_tests_preparation">5.1. Executing Compliance tests: preparation</a></li>
-<li><a href="#_executing_compliance_tests">5.2. Executing Compliance tests</a></li>
-</ul>
-</li>
-<li><a href="#_adding_new_isa_extensions_to_the_formal_spec">6. Adding new ISA extensions to the Formal Spec</a>
-<ul class="sectlevel2">
-<li><a href="#_case_study_adding_isa_extensions_f_and_d_single_and_double_precision_floating_point">6.1. Case study: adding ISA Extensions F and D (single and double-precision floating point)</a>
-<ul class="sectlevel3">
-<li><a href="#_new_registers_for_the_f_and_d_extensions">6.1.1. New Registers for the F and D Extensions</a></li>
-<li><a href="#_semantics_of_f_and_d_instructions">6.1.2. Semantics of F and D instructions</a></li>
-<li><a href="#_updating_the_makefiles">6.1.3. Updating the Makefiles</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a href="#concurrency">7. Concurrency and Connection to RISC-V Weak Memory Model</a>
-<ul class="sectlevel2">
-<li><a href="#_concurrency">7.1. Concurrency</a></li>
-<li><a href="#_connection_to_official_risc_v_memory_model">7.2. Connection to official RISC-V Memory Model</a></li>
+<li><a href="#_concurrency">8.1. Concurrency</a></li>
+<li><a href="#_connection_to_official_risc_v_memory_model">8.2. Connection to official RISC-V Memory Model</a></li>
 </ul>
 </li>
 </ul>
@@ -2503,38 +2500,75 @@ MSTATUS, MIP, MIE.</p>
 whether its an RVC (compressed) instruction or a base instruction.  In
 each case, it decodes it and executes it.</p>
 </div>
-<div class="sect2">
-<h3 id="_taking_stock">3.1. Taking stock &#8230;&#8203;</h3>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_taking_stock">4. Taking stock &#8230;&#8203;</h2>
+<div class="sectionbody">
 <div class="paragraph">
 <p>By this time we hope you&#8217;re getting the hang of reading the Sail code
-that expresses the semantics of RISC-V instructions.  Some
-observations:</p>
+that expresses the semantics of RISC-V instructions.</p>
+</div>
+<div class="paragraph">
+<p>Some observations:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
 <p>In many senses, Sail is &#8220;just another&#8221; programming language.  Many
 of its notations and features are taken from or inspired by the
-functional programming language OCaml (which, in turn, was
-inspired by SML).</p>
+functional programming language OCaml (whose heritage, in turn,
+goes back to SML and ML).</p>
 </li>
 <li>
 <p>Expressing the semantics of RISC-V instructions is an exercise in
 coding in this programming language.</p>
 </li>
 <li>
-<p>Features like numeric types with type-checking, scattered
-definitions, mappings, bit-vectors with type-encoded lengths all
-make it into a DSL (Domain Specific Language) for expressing ISAs.</p>
+<p>In principle, a simulator for RISC-V written in any programming
+language, including C/C++, is a formalization of the RISC-V ISA.
+So what makes Sail a preferred &#8220;host language&#8221; for the Formal Spec?</p>
+<div class="ulist">
+<ul>
+<li>
+<p>The host language needs to be <em>small</em>, and its semantics needs to
+be <em>simple, clear, and formalizable</em>.  This is true of Sail,
+but not true of most widely known programming languages
+(including C and C++).</p>
 </li>
 <li>
-<p>Sail&#8217;s simple, clean, semantics make it suitable for connecting to
-well-known formal-method tools (such as Coq, Isabelle, HOL4).</p>
+<p>Sail&#8217;s features like numeric types with type-checking, scattered
+definitions, mappings, bit-vectors with type-encoded lengths
+all make it into a DSL (Domain Specific Language) that is
+<em>particularly suited for expressing ISAs</em>.</p>
+</li>
+<li>
+<p>The RISC-V ISA has many optional parts; Sail&#8217;s powerful
+parameterization is useful in expressing this cleanly.</p>
+</li>
+<li>
+<p>RISC-V implementations can vary highly in their amount of
+<em>concurrency and allowed non-determinism</em>, from completely
+sequential fetch-decode-execute simulators to pipelining,
+speculation, superscalarity, out-of-order, multi-hart,
+multi-core, and weak memory models.  Sail is able to express all
+such variants cleanly.</p>
+</li>
+<li>
+<p>Sail&#8217;s simple, clean, semantics make it suitable for connecting
+to well-known formal-method tools (such as Coq, Isabelle, HOL4),
+for automated reasoning about properties (including correctness)
+of RISC-V programs and artefacts that manipulate or interpret
+RISC-V programs, such as hardware implementations, simulators,
+compilers.</p>
 </li>
 </ul>
 </div>
-<div class="sect3">
-<h4 id="_overview_of_spec_module_dependencies">3.1.1. Overview of spec module dependencies</h4>
+</li>
+</ul>
+</div>
+<div class="sect2">
+<h3 id="_overview_of_spec_module_dependencies">4.1. Overview of spec module dependencies</h3>
 <div class="paragraph">
 <p>The following diagram gives an Overview of module dependencies in the
 Sail RISC-V spec. (From: <code>doc/figs/riscvspecdeps.svg</code> in GitHub
@@ -2548,12 +2582,11 @@ repository <a href="https://github.com/rems-project/sail-riscv" class="bare">htt
 </div>
 </div>
 </div>
-</div>
 <div class="sect1">
-<h2 id="_executing_standard_risc_v_isa_tests">4. Executing standard RISC-V ISA Tests</h2>
+<h2 id="_executing_standard_risc_v_isa_tests">5. Executing standard RISC-V ISA Tests</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="reminder_download_install">4.1. Reminder: Download and Install</h3>
+<h3 id="reminder_download_install">5.1. Reminder: Download and Install</h3>
 <div class="paragraph">
 <p>If you have not already done so, please follow both Step A and Step B
 described in document <code>Installation.html</code> in the repository
@@ -2597,7 +2630,7 @@ c_emulator/riscv_sim_RV32*  c_emulator/riscv_sim_RV64*</pre>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_executing_standard_risc_v_isa_tests_using_the_c_simulator">4.2. Executing standard RISC-V ISA tests using the C simulator</h3>
+<h3 id="_executing_standard_risc_v_isa_tests_using_the_c_simulator">5.2. Executing standard RISC-V ISA tests using the C simulator</h3>
 <div class="paragraph">
 <p>The directory <code>sail-riscv/test/riscv-tests/</code> has a full suite of
 pre-compiled standard RISC-V ISA tests.  Each has an ELF file (RISC-V
@@ -2680,7 +2713,7 @@ instructions executed (PC, instruction, assembly).</p>
 <code>sail-riscv/test/riscv-tests/</code> in the same way.</p>
 </div>
 <div class="sect3">
-<h4 id="_executing_standard_risc_v_isa_tests_using_the_ocaml_simulator">4.2.1. Executing standard RISC-V ISA tests using the OCaml simulator</h4>
+<h4 id="_executing_standard_risc_v_isa_tests_using_the_ocaml_simulator">5.2.1. Executing standard RISC-V ISA tests using the OCaml simulator</h4>
 <div class="paragraph">
 <p>FYI, for those who wish to explore the OCaml-based simulators and/or
 connections to various formal tools.</p>
@@ -2708,7 +2741,7 @@ options.</p>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_executing_standard_risc_v_compliance_tests">5. Executing standard RISC-V Compliance Tests</h2>
+<h2 id="_executing_standard_risc_v_compliance_tests">6. Executing standard RISC-V Compliance Tests</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>RISC-V International Association (RVIA) is developing a &#8220;Compliance&#8221;
@@ -2744,7 +2777,7 @@ versions of the RISC-V Formal Spec in Sail, as described in Section
 <a href="#reminder_download_install">Reminder: Download and Install</a>.</p>
 </div>
 <div class="sect2">
-<h3 id="_executing_compliance_tests_preparation">5.1. Executing Compliance tests: preparation</h3>
+<h3 id="_executing_compliance_tests_preparation">6.1. Executing Compliance tests: preparation</h3>
 <div class="paragraph">
 <p>Clone a copy of the RISC-V International Association&#8217;s &#8220;Compliance&#8221; repository:</p>
 </div>
@@ -2802,7 +2835,7 @@ spec:</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_executing_compliance_tests">5.2. Executing Compliance tests</h3>
+<h3 id="_executing_compliance_tests">6.2. Executing Compliance tests</h3>
 <div class="paragraph">
 <p>Finally, the following will execute all relevant variants of the Compliance test suite:</p>
 </div>
@@ -2863,7 +2896,7 @@ simulator, and then verifies the output against the expected output.</p>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_adding_new_isa_extensions_to_the_formal_spec">6. Adding new ISA extensions to the Formal Spec</h2>
+<h2 id="_adding_new_isa_extensions_to_the_formal_spec">7. Adding new ISA extensions to the Formal Spec</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>The general scheme for adding a new instruction, or new class of
@@ -2903,7 +2936,7 @@ only in the particular comparison operator; using a class with
 sub-opcodes captures this similarity.</p>
 </div>
 <div class="sect2">
-<h3 id="_case_study_adding_isa_extensions_f_and_d_single_and_double_precision_floating_point">6.1. Case study: adding ISA Extensions F and D (single and double-precision floating point)</h3>
+<h3 id="_case_study_adding_isa_extensions_f_and_d_single_and_double_precision_floating_point">7.1. Case study: adding ISA Extensions F and D (single and double-precision floating point)</h3>
 <div class="paragraph">
 <p>The implementation of F and D extensions (single and double-precision
 floating point) in the RISC-V ISA Formal Spec in Sail is somewhat
@@ -2938,7 +2971,7 @@ project for some interested party.</p>
 </ul>
 </div>
 <div class="sect3">
-<h4 id="_new_registers_for_the_f_and_d_extensions">6.1.1. New Registers for the F and D Extensions</h4>
+<h4 id="_new_registers_for_the_f_and_d_extensions">7.1.1. New Registers for the F and D Extensions</h4>
 <div class="paragraph">
 <p>Since F,D define a new register width <code>FLEN</code>, we created two new files
 by analogy with <code>riscv_xlen32.sail</code> and <code>riscv_xlen64.sail</code>.  (This
@@ -2976,7 +3009,7 @@ that don&#8217;t define new CSRs):</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_semantics_of_f_and_d_instructions">6.1.2. Semantics of F and D instructions</h4>
+<h4 id="_semantics_of_f_and_d_instructions">7.1.2. Semantics of F and D instructions</h4>
 <div class="paragraph">
 <p>Finally, the semantics of F and D instructions are in two new files:</p>
 </div>
@@ -3071,7 +3104,7 @@ instructions.  It starts with a scattered clause to define the <code>ast</code>:
 </div>
 </div>
 <div class="sect3">
-<h4 id="_updating_the_makefiles">6.1.3. Updating the Makefiles</h4>
+<h4 id="_updating_the_makefiles">7.1.3. Updating the Makefiles</h4>
 <div class="paragraph">
 <p>The Sail files described in the previous sections are enough for reading and understanding the spec.</p>
 </div>
@@ -3120,10 +3153,10 @@ extension coded wholly in Sail.</p>
 </div>
 </div>
 <div class="sect1">
-<h2 id="concurrency">7. Concurrency and Connection to RISC-V Weak Memory Model</h2>
+<h2 id="concurrency">8. Concurrency and Connection to RISC-V Weak Memory Model</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="_concurrency">7.1. Concurrency</h3>
+<h3 id="_concurrency">8.1. Concurrency</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -3196,7 +3229,7 @@ finished; in fact can launch it speculatively based only on PC of previous instr
 </div>
 </div>
 <div class="sect2">
-<h3 id="_connection_to_official_risc_v_memory_model">7.2. Connection to official RISC-V Memory Model</h3>
+<h3 id="_connection_to_official_risc_v_memory_model">8.2. Connection to official RISC-V Memory Model</h3>
 <div class="ulist">
 <ul>
 <li>
@@ -3222,7 +3255,7 @@ weak memory model.</p>
 <div id="footer">
 <div id="footer-text">
 Version v0.2<br>
-Last updated 2020-12-10 10:50:23 EST
+Last updated 2020-12-10 11:35:32 EST
 </div>
 </div>
 </body>

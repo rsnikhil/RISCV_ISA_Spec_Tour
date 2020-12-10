@@ -1510,30 +1510,55 @@ If there is no interrupt, it fetches an instruction and decides
 whether its an RVC (compressed) instruction or a base instruction.  In
 each case, it decodes it and executes it.
 
-// SUBSECTION ================================================================
-=== Taking stock ...
+// SECTION ================================================================
+== Taking stock ...
 
 By this time we hope you're getting the hang of reading the Sail code
-that expresses the semantics of RISC-V instructions.  Some
-observations:
+that expresses the semantics of RISC-V instructions.
+
+Some observations:
   
 * In many senses, Sail is "`just another`" programming language.  Many
     of its notations and features are taken from or inspired by the
-    functional programming language OCaml (which, in turn, was
-    inspired by SML).
+    functional programming language OCaml (whose heritage, in turn,
+    goes back to SML and ML).
 
 * Expressing the semantics of RISC-V instructions is an exercise in
     coding in this programming language.
 
-* Features like numeric types with type-checking, scattered
-    definitions, mappings, bit-vectors with type-encoded lengths all
-    make it into a DSL (Domain Specific Language) for expressing ISAs.
+* In principle, a simulator for RISC-V written in any programming
+    language, including C/C++, is a formalization of the RISC-V ISA.
+    So what makes Sail a preferred "`host language`" for the Formal Spec?
 
-* Sail's simple, clean, semantics make it suitable for connecting to
-    well-known formal-method tools (such as Coq, Isabelle, HOL4).
+  ** The host language needs to be _small_, and its semantics needs to
+       be _simple, clear, and formalizable_.  This is true of Sail,
+       but not true of most widely known programming languages
+       (including C and C++).
 
-// SUBSUBSECTION ================================================================
-==== Overview of spec module dependencies
+  ** Sail's features like numeric types with type-checking, scattered
+       definitions, mappings, bit-vectors with type-encoded lengths
+       all make it into a DSL (Domain Specific Language) that is
+       _particularly suited for expressing ISAs_.
+
+  ** The RISC-V ISA has many optional parts; Sail's powerful
+       parameterization is useful in expressing this cleanly.
+
+  ** RISC-V implementations can vary highly in their amount of
+     _concurrency and allowed non-determinism_, from completely
+     sequential fetch-decode-execute simulators to pipelining,
+     speculation, superscalarity, out-of-order, multi-hart,
+     multi-core, and weak memory models.  Sail is able to express all
+     such variants cleanly.
+
+  ** Sail's simple, clean, semantics make it suitable for connecting
+      to well-known formal-method tools (such as Coq, Isabelle, HOL4),
+      for automated reasoning about properties (including correctness)
+      of RISC-V programs and artefacts that manipulate or interpret
+      RISC-V programs, such as hardware implementations, simulators,
+      compilers.
+
+// SUBSECTION ================================================================
+=== Overview of spec module dependencies
 
 The following diagram gives an Overview of module dependencies in the
 Sail RISC-V spec. (From: `doc/figs/riscvspecdeps.svg` in GitHub
