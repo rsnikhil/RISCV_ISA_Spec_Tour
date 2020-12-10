@@ -1,0 +1,77 @@
+= README for "`A Tour of the RISC-V ISA Formal Specification`"
+Rishiyur S. Nikhil, Bluespec, Inc. (c) 2019-2020
+:revnumber: v0.2
+:revdate: 2020-12-10
+:revremark: Converted to Asciidoc from LaTeX Beamer
+:sectnums:
+:toc:
+:toclevels: 5
+:toc: left
+:toc-title: Contents
+:keywords: RISC-V, ISA, Formal Specifications, Sail
+:imagesdir: Figures
+:data-uri:
+
+// ================================================================
+
+These are materials for a tutorial:
+
+====
+"A Tour of the RISC-V ISA Formal Specification"
+====
+
+that was first presented by Rishiyur Nikhil at the RISC-V Summit,
+December 12, 2019, and updated subsequently.  This tutorial is aimed
+working engineers who may be _non-specialists_ in formal methods, who
+merely wish to read and use the formal spec for various daily
+practical purposes, such as:
+
+1. Understanding each instruction's semantics, to make sure a hardware
+  CPU implementation or simulator or compiler is doing the right thing
+  (in the same way you might use a classic textual ISA spec document).
+
+2. Use it as a reference RISC-V implementation against which to
+  compare the functional correctness of some implementation (simulator
+  or HW CPU).
+
+The RISC-V ISA Formal Specification is written in Sail, a
+Domain-Specific Language (DSL) for specifying ISAs.  No prior
+knowledge of Sail is assumed in this tutorial.
+
+// SECTION ================================================================
+== Contents of this repo
+
+`Installation.{adoc,html}`:: This describes how to download the spec,
+and optionally how to build an executable version of the spec.  For
+use-case (1) above, it's a simple one-step git-clone.  For use case
+(2) above, you will need to install some software and take some build
+steps.
+
+`Tutorial.{adoc,html}`:: This is the tutorial itself.  It assumes you
+have gone through the download/installation process.
+
+_Disclaimer_: Any errors in this tutorial are solely due to the author
+(we welcome feedback on errata or improvements).
+
+// SECTION ================================================================
+== Acknowledgements and Further References
+
+The RISC-V ISA Formal Spec in Sail was primarily written by Prashanth
+Mundkur at SRI and Alasdair Armstrong at U.Cambridge.  The open
+repository for the RISC-V ISA spec in Sail is:
+https://github.com/rems-project/sail-riscv[].
+
+Sail was developed at the University of Cambridge, UK.  Note that Sail
+has also been used to specify other ISAs, including ARMv8 and parts of
+x86, PowerPC, MIPS, etc.  The open repository for Sail is:
+https://github.com/rems-project/sail[].
+
+The above websites contain a lot more detail than is covered in this
+tutorial.  People going beyond this tutorial and using formal methods
+will likely wish to interact with those websites and their authors.
+
+The Sail RISC-V ISA spec was selected after a year-long development
+and assessment process by the ISA Formal Spec Technical Group of the
+RISC-V Foundation (now called RISC-V International Association).
+
+// ================================================================
