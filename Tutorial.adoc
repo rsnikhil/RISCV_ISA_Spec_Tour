@@ -15,11 +15,30 @@ Rishiyur S. Nikhil, Bluespec, Inc. (c) 2019-2020
 
 // ================================================================
 
-This is an overview tutorial for the RISC-V ISA Formal Specification.
-The Formal Spec is intended to be the official and definitive
-description of the RISC-V ISA, i.e., the standard of correctness
-against which all other implementations are measured (including
-hardware implementations and software simulators).
+This is an introductory tutorial for the RISC-V ISA Formal
+Specification.  The Formal Spec is intended to be the official and
+definitive description of the RISC-V ISA, i.e., the standard against
+which the functional correctness of all other implementations will be
+measured (including hardware implementations and software simulators).
+
+====
+[quote]
+____
+_Dear Reader, it may previously have seemed abnormal,_ +
+_To consider using an ISA Spec Formal;_
+
+_But our future RISC-V tasks loom large and can terrify,_ +
+_As CPUs, compilers and IPs we design and verify;_
+
+_Greek symbol-laden formal specs may make us queasy,_ +
+_But this one's different; Sail's really quite easy:_
+
+_Instead of passing out in shock, wheeled out on a gurney,_ +
+_This tutorial, we hope, for you, starts a more pleasant journey._
+____
+====
+
+If you wish to dive right into the tutorial you can skip to Section <<downloading>>.
 
 // SECTION ================================================================
 == Introduction
@@ -28,8 +47,8 @@ hardware implementations and software simulators).
 === Context, History and Outlook
 
 * The official "`owner`" of the RISC-V ISA specification is RISC-V
-    International Association and its former incarnation, the RISC-V
-    Foundation.  We'll refer to them both as "`RVIA`" below.
+    International Association (formerly the RISC-V Foundation).  We'll
+    refer to it as "`RVIA`" below.
 
 * In 2017, RVIA created a Technical Committee to develop a formal
     specification for the RISC-V ISA.  In the meanwhile, the
@@ -42,19 +61,22 @@ hardware implementations and software simulators).
 
 * RVIA has stated that the Formal Spec is intended to be the _official
     and definitive_ description of the RISC-V ISA, i.e., the standard
-    of correctness against which all other implementations will be
-    measured (including hardware implementations and software
-    simulators).
+    against which the functional correctness of all other
+    implementations will be measured (including hardware
+    implementations and software simulators).
 
-* The RISC-V ISA is evolving. Ambiguities and bugfixes in the base
-    Unprivileged and Privileged specs continue to be clarified, and
-    many new ISA extensions are being developed (e.g., vector).  This
-    Sail Formal Spec will be continuously updated accordingly.
+* The RISC-V ISA is evolving. The base Unprivileged and Privileged
+    specs continue to be clarified, and many new ISA extensions are
+    being developed (e.g., vector).  This Sail Formal Spec will be
+    continuously updated accordingly.
 
   ** The current version of the formal spec covers the Unprivileged
   RV32GC and RV64GC, and Privileged ISAs.  It is sufficient for
   simulators generated automatically from the spec to be able to boot
   a number of operating systems (Linux, FreeBSD, FreeRTOS, ...).
+
+_Disclaimer_: Any errors in this document are solely due to the
+author; we welcome feedback and suggestions for improvement.
 
 // SUBSECTION ================================================================
 === Objectives for this tutorial, and target audience
@@ -73,40 +95,158 @@ hardware implementations and software simulators).
     actual hardware implementation) to see if the implementation's
     behavior matches the formal spec accurately.
 
-* Tertiary objective (if there is time)}: Briefly discuss how to
-    extend the spec for a newly developed ISA extension; concurrency
-    and weak memory models, etc.
+* Tertiary objective: Briefly discuss:
+    ** how to extend the spec for a newly developed ISA extension
+    ** concurrency and weak memory models
 
 *Target audience*
 
-* Working RISC-V engineers (e.g., CPU designers, compiler writers,
- simulator/emulator writers, ...) who consult the spec to clarify
- understanding of instruction semantics.  We do not assume any prior
- experience with formal languages or formal methods.
+We aim this tutorial at working RISC-V engineers--CPU designers,
+compiler writers, simulator/emulator writers, etc.-- who consult the
+spec frequently to clarify their understanding of instruction
+encodings and semantics.  We do not assume any prior experience with
+formal languages or formal methods.
 
-Afficionados of formal methods and experts may find this tutorial
+Experts and Afficionados of formal methods may also find this tutorial
 useful as an initial familiarization with Sail and the RISC-V formal
 spec.
 
 // SUBSECTION ================================================================
-=== Location of this document, the RISC-V Formal Spec in Sail, etc.
+=== What is an ISA Formal Specification?
 
-This document is `Tutorial.{adoc,html}` in the following GitHub repository:
-https://github.com/rsnikhil/RISCV_ISA_Spec_Tour[].
+The formal spec of the RISC-V ISA is intended to be:
 
-The repository also contains `Installation.{adoc,html}`, which describes:
+* the _authoritative and definitive reference_ for RISC-V instructions:
 
-* Step A that is sufficient for reading the ISA formal spec, and
+  ** Encoding
 
-* Step B that is needed to create an executable version of the spec.
+  ** Execution semantics (what executing each instruction is supposed to do).
+        It is intended to be more authoritative than the English prose
+        spec (completeness, precision, unambiguity) or any other simulator.
 
-Please at least perform Step A, which is just to clone the following
-repository: https://github.com/rems-project/sail-riscv[], which
-contains the RISC-V ISA Formal Spec in Sail.  This is sufficient for
-most of this tutorial.
+* _executable_: can be run as a simulator executing RISC-V binaries,
+  providing definitive execution behaviors
+
+* _readable and usable_ by, and useful to, ordinary mortals who don't do formal stuff for a living.
+
+  ** Casual reading, as a reference guide to RISC-V instructions.
+  ** Executable "`golden reference model`" to check implementation correctness.
+
+* for those who do formal stuff for a living, usable with formal tools
+  for proofs of correctness of compilers, CPU implementations,
+  automatic generation of tests, test coverage, etc.
 
 // SUBSECTION ================================================================
-=== Credits and Acknowledgements
+=== How people use ISA formal specs
+
+People are already using and will use the ISA formal spec in various ways.
+
+* As a reading reference to clarify the intended semantics of
+      each type of instruction (enabling this is the primary goal of
+      this tutorial).
+
+* As a "`golden reference model`" against which to compare functional
+      correctness other implementations (simulators and hardware
+      designs).  Specific examples of such usage include:
+
+      ** The RVIA official Compliance Test Suite and Compliance testing framework
+      ** Tandem Verification (which is a kind of dynamic instruction-by-instruction compliance testing).
+
+* In a tool to generate ISA tests automatically.
+
+* In a tool to measure instruction coverage automatically.
+
+* In a tool to formally prove a separately-written
+      implementation correct, by directly correlating the ISA formal
+      semantics with the semantics of the language of the
+      implementation:
+      
+      ** Simulators (written in C, C++, SystemVerilog, ...)
+      ** Actual CPU hardware, designed in SystemVerilog, Bluespec, Chisel, ...
+
+* In a tool to formally and systematically _derive_ an
+      implementation from the ISA formal spec using a series of
+      derivations, each formally proved correct
+      ("`correct-by-construction implementation`").
+
+* ... and so on.
+
+// SUBSECTION ================================================================
+=== About Sail, the language in which the RISC-V ISA Formal Spec is written
+
+[NOTE]
+====
+The name "`Sail`" is not an acronym; it is the same word as in "`a ship's sail`".
+====
+
+The RISC-V ISA Formal Spec is written in the language Sail, which is a
+DSL (Domain-Specific Language) designed for purpose, i.e., for writing
+ISA specs.  Sail has also been used to describe other ISAs, including
+ARMv8 (complete spec!), MIPS, parts of x86 and IBM POWER, and more.
+It has also been used to formalize ISA extensions for some of these
+ISAs.
+
+*Don't worry, Sail is easy!* The design of the Sail language was
+heavily informed by the style in which actual specs for many previous
+ISAs were written (in English, but typically in a very formal style).
+It is intended to be easily understandable and usable by practicing
+engineers, not just by experts in formal methods.  Sail
+was created by Peter Sewell and his research group at University of
+Cambridge, UK.
+
+In this tutorial we won't study Sail separately; we'll jump into
+studying the RISC-V Spec written in Sail, explaining any necessary
+Sail notation as we go along.
+
+The general Sail repository (not RISC-V specific) is
+https://github.com/rems-project/sail[], where you can find the Sail
+manual, a compiler to produce executable models from Sail specs, and
+much more.
+
+The RISC-V spec in Sail has its own repository:
+https://github.com/rems-project/sail-riscv[].  We will be studying the
+code in the `model/` directory.
+
+The general Sail repository contains a compiler with several back ends
+to transform an ISA spec written in Sail into a C-based executable
+simulator, into an OCaml-based executable simulator, into inputs for
+formal environments such as Coq, Isabelle, HOL4, etc.  The compiler
+itself is written in OCaml, a widely used general-purpose functional
+programming language.
+
+The following picture (original in
+https://github.com/rems-project/sail[]) gives a sense of the Sail
+world:
+
+====
+image::overview-sail.png[align="center", width=800]
+====
+
+The following publication is a standard reference for Sail:
+  
+====
+_ISA Semantics for ARMv8-A, RISC-V, and Cheri-MIPS_,
+Alasdair Armstrong,
+Thomas Bauereiss,
+Brian Campbell,
+Alastair Reid,
+Kathryn E. Gray,
+Robert M. Norton,
+Prashanth Mundkur,
+Mark Wassell,
+Jon French,
+Christopher Pulte,
+Shaked Flur,
+Ian Stark,
+Neel Krishnaswami,
+Peter Sewell,
+in _Proc. 46th ACM SIGPLAN Symp. on Principles of Programming
+    Languages (POPL), Cascais/Lisbon, Portugal, Jan 13-19, 2019_,
+pp. 71:1--71:31.
+====
+
+// SUBSECTION ================================================================
+=== RISC-V ISA Formal Spec Credits and Acknowledgements
 
 Authors (so far) of the RISC-V ISA Formal Spec in the Sail language:
 ****
@@ -124,151 +264,75 @@ Rishiyur Nikhil
 This list will no doubt grow as the spec evolves, both for clarity and
 to include new ISA extensions.
 
-Sail, a domain-specific language for formal specifications of ISAs,
-was created by Peter Sewell and his research group at University of
-Cambridge, UK.  The following paper is a good reference:
-****
-_ISA Semantics for ARMv8-A, RISC-V, and Cheri-MIPS_
-Alasdair Armstrong, Thomas Bauereiss, Brian Campbell, Alastair Reid, Kathryn E. Gray,
-Robert M. Norton, Prashanth Mundkur, Mark Wassell, Jon French, Christopher Pulte,
-Shaked Flur, Ian Stark, Neel Krishnaswami, Peter Sewell,
-in _Proc. 46th ACM SIGPLAN Symp. on Principles of Programming
-Languages (POPL), Cascais/Lisbon, Portugal, Jan 13-19, 2019_, pp. 71:1--71:31.
-****
-
 Thanks to Alasdair Armstrong, Robert Norton-Wright, Prashant Mundkur
 and Peter Sewell for guidance and feedback in preparing this tutorial.
 
 // SUBSECTION ================================================================
-=== What is an ISA Formal Specification?
+=== Status and plans
 
-The formal spec of the RISC-V ISA is intended to be:
+The RISC-V ISA Formal Specification in Sail currently covers the
+RV32GC, RV64GC Unprivileged and Privileged ISAs.  The functionality is
+sufficient to cover many operating systems (Linux, FreeBSD, FreeRTOS,
+and more).  The generated C-based simulators are fast enough to boot
+those OSs in a few seconds to minutes.
 
-* the _definitive reference_ for RISC-V instructions:
+Here are some of the upcoming and future activities:
 
-  ** Encoding
+* General accessibilty, training, tutorials so that the Formal Spec
+    becomes routinely used by all RISC-V practising engineers.
 
-  ** Execution semantics (what executing each instruction is supposed to do)
-        and intended to be more authoritative than the English prose
-        spec (completeness, precision, unambiguity).
+* Integration of the Formal Spec into the prose English spec document,
+    so that, for each instruction described in prose, you can also see
+    the corresponding Sail code for that instruction.
 
-* _executable_: can be run as a simulator executing RISC-V binaries,
-  providing definitive execution behaviors
+* Formalization of "`implementation options`".  When comparing the
+  functional correctness of a particular implementation (hardware or
+  simulator) with the ISA Formal Spec, the simulator generated from
+  the Formal Spec should be configured with the same implementation
+  choices as the implementation.  Examples of implementation choices
+  include:
 
-* _readable and usable_ by, and useful to, ordinary mortals who don't do formal stuff for a living.
+    ** Whether a misaligned memory access traps or is handled directly.
 
-  ** Casual reading, as a reference guide to RISC-V instructions.
-  ** Executable "`golden reference model`" to check implementation correctness.
+    ** Whether the A (accessed) and D (dirty) bits in a Page Table
+        Entry invoke a trap or are handled directly.
 
-* for those who _do_ formal stuff for a living, usable with formal
-  tools for proofs of correctness of compilers, CPU implementations,
-  automatic generation of tests, test coverage, etc.
+    ** How WARL ("`Write Any, Read Legal`") bits of a CSR are actually
+        updated.
 
-// SUBSECTION ================================================================
-=== How people use ISA formal specs
+    ** and so on.
 
-People are already using and will use the ISA formal spec in various ways.
+* Automation and ease-of-use in use with the Compliance Test suite
 
-* As a reading reference to clarify the intended semantics of
-      each type of instruction (enabling this is the primary goal of
-      this tutorial).
+* Concurrency and tight integration with weak memory models
 
-* As a "`golden reference model`" against which to compare
-      other implementations (simulation to hardware designs) for
-      correctness.  Specific examples include:
-
-      ** the official Compliance Tests and Compliance testing framework
-      ** Tandem Verification (which is a kind of dynamic instruction-by-instruction compliance testing).
-
-* In a tool to generate ISA tests automatically.
-
-* In a tool to measure instruction coverage automatically.
-
-* In a tool to formally prove a separately-written
-      implementation correct, by directly correlating the ISA formal
-      semantics with the semantics of the language of the
-      implementation:
-      
-      ** Simulators (written in C, C++, SystemVerilog, ...)
-      ** Actual CPU hardware, designed in SystemVerilog, Bluespec, Chisel, ...)
-
-* In a tool to formally and systematically _derive_ an
-      implementation from the ISA formal spec using a series of
-      derivations, each formally proved correct
-      ("`correct-by-construction implementation`").
-
-* ... and so on.
+* Formalization of all new official ISA extensions
 
 // SUBSECTION ================================================================
-=== Downloading and Installing
+=== Links, Downloading and Installing [[downloading]]
+
+This tutorial is in https://github.com/rsnikhil/RISCV_ISA_Spec_Tour[].
+
+This document is `Tutorial.{adoc,html}` in that repository.
+
+The repository also contains a document `Installation.{adoc,html}`,
+which describes some installation you can/should perform before
+embarking on this tutorial.  It describes one necessary and one
+optional step:
+
+* Step A: sufficient for reading the ISA formal spec; just clones the
+    RISC-V ISA Formal Spec repository
+    https://github.com/rems-project/sail-riscv[].
+
+* Step B: needed for creating an executable version of the spec.
 
 Although this document is self-contained, containing code fragments,
 we recommend that, in parallel, you view the actual code from the
-repository in a text viewer or editor.  The fragments here are
-excerpts, contain elisions, and cannot show their larger context.
+`sail-riscv` repository in a text viewer or editor.  The fragments
+here are excerpts, contain elisions, and cannot show their larger
+context.
 
 _Each code fragment in this document shows the file from which it is taken._
-
-Please visit this repository:
-
-    https://github.com/rsnikhil/RISCV_ISA_Spec_Tour[]
-
-and clone it or download the two HTML files there.
-
-This document is:  `Tutorial.{adoc,html}`
-
-The document `Installation.{adoc,html}` has instructions on how to
-download the spec, and optionally to build an executable version of
-the spec.
-
-// SUBSECTION ================================================================
-=== About Sail, the language in which the RISC-V ISA Formal Spec is written
-
-* The RISC-V ISA Formal Spec is written in the language
-    Sail, which is a DSL (Domain-Specific Language) designed for
-    purpose, i.e., for writing ISA specs.
-
-* Sail has been used to describe ISAs for RISC-V, ARMv8
-    (complete spec!), MIPS, parts of x86 and IBM POWER, and more.
-
-* The Sail manual can be found in the main Sail repository
-    https://github.com/rems-project/sail[].
-
-* In this tutorial we won't study Sail separately; we'll
-    jump into studying the RISC-V Spec written in Sail, explaining
-    the Sail notation as we go along.
-
-* The RISC-V spec in Sail has its own repository:
-    https://github.com/rems-project/sail-riscv[].
-    We will be studying the code in the `model/` directory.
-
-Note: The name "`Sail`" is not an acronym; it is the same word as in "`a ship's sail`".
-
-// ----------------
-
-*Don't worry, Sail is easy!*
-
-The design of Sail was heavily informed by actual specs for real ISAs
-(typically written in English in a very formal style) and is intended
-to be easily understandable and usable by practicing engineers, not
-just by experts in formal methods.
-
-====
-[quote]
-____
-_Dear Reader, it may previously have seemed abnormal,_ +
-_To consider using an ISA Spec Formal;_
-
-_But our future RISC-V tasks loom large and can terrify,_ +
-_As CPUs, compilers and IPs we design and verify;_
-
-_Greek symbol-laden formal specs may make us queasy,_ +
-_But this one's different; Sail's really quite easy:_
-
-_Instead of passing out in shock, wheeled out on a gurney,_ +
-_This tutorial, we hope, for you, starts a more pleasant journey._
-____
-====
 
 // SECTION ================================================================
 
@@ -1028,9 +1092,7 @@ Then, we add a scattered clause to our previously introduced `assembly` mapping:
 * `hex_bits_13()` returns a string showing a hex printing of a 13-bit value.
 
 // SUBSECTION ================================================================
-=== Taking stock ...
-
-[[slide-taking-stock-1]]
+=== Taking stock [[slide_taking_stock_1]]
 
 The general scheme for adding a new instruction, or new class of instructions, should be clear by now:
 
@@ -1314,7 +1376,7 @@ file `riscv_sys_extensions.sail`) which returns the PC that is in
 `mtvec`, `stvec`, or `utvec`, as appropriate.
 
 // SECTION ================================================================
-== Executing the RISC-V ISA Formal Spec (a complete Sail program)
+== Composing Individual Instruction Semantics into an Executable Model
 
 * So far, we've only talked about the decode and execute
     function for individual instructions.  We've said nothing about
@@ -1327,11 +1389,15 @@ file `riscv_sys_extensions.sail`) which returns the PC that is in
     with its own system-level semantics, but they can all share the
     individual instruction semantics discussed so far.
 
-* In the slides that follow, we'll sketch one such encapsulating
-    model, which is used in the default simulators built from the
-    model.  This model, shown in files `main.sail` and
-    `riscv_step.sail` implement a simple, sequential, unpipelined,
-    one-instruction-at-a-time fetch-execute loop ().
+* In this section we'll sketch one such encapsulating model, which is
+  used in the default simulators built from the model.  This model,
+  shown in files `main.sail` and `riscv_step.sail` implement a simple,
+  sequential, unpipelined, one-instruction-at-a-time fetch-execute
+  loop ().
++
+Section <<concurrency>> discusses alternatives, such as concurrent
+  composition of instruction semantics, for more accurate modeling of
+  out-of-order processors and weak memory models.
 
 The top-level function initializes the PC, initializes the model as a
 whole (including certain CSRs and registers), and performs the
@@ -1417,13 +1483,12 @@ image::riscvspecdeps.png[align="center", width=600]
 == Executing standard RISC-V ISA Tests
 
 // SUBSECTION ================================================================
-=== Ensure you have downloaded/built/installed executable versions of the formal spec
-
-[[reminder-download-install]]
+=== Reminder: Download and Install [[reminder_download_install]]
 
 If you have not already done so, please follow both Step A and Step B
 described in document `Installation.html` in the repository
 https://github.com/rsnikhil/RISCV_ISA_Spec_Tour[]
+to download/build/install executable versions of the formal spec.
 
 Step A clones the repository
 https://github.com/rems-project/sail-riscv[], with the Sail RISC-V
@@ -1572,7 +1637,7 @@ encompass new tests as the Compliance suite grows.
 
 First, please ensure you have downloaded/built/installed executable
 versions of the RISC-V Formal Spec in Sail, as described in Section
-<<reminder-download-install>>.
+<<reminder_download_install>>.
 
 // SUBSECTION ================================================================
 === Executing Compliance tests: preparation
@@ -1679,7 +1744,7 @@ simulator, and then verifies the output against the expected output.
 
 The general scheme for adding a new instruction, or new class of
 instructions is (these bullets repeat information from Section
-<<slide-taking-stock-1>>.):
+<<slide_taking_stock_1>>.):
 
 * Define an enum and mapping for any sub-opcodes in the class (if the
     class contains more than one instruction)
@@ -1805,44 +1870,7 @@ so that your new files are included.  They look something like this:
 ----
 
 // SECTION ================================================================
-== The larger context of Sail usage
-
-In addition to RISC-V, Sail has also been used to specify other ISAs.
-In addition to the so-called "`C-based`" back-end we've seen in this
-tutorial, it has more back-ends to create an OCaml-based simulator,
-and to connect to various formal environments such as Coq, Isabelle,
-HOL4, etc.
-
-Recommended reference with more details:
-  
-====
-_ISA Semantics for ARMv8-A, RISC-V, and Cheri-MIPS_,
-Alasdair Armstrong,
-Thomas Bauereiss,
-Brian Campbell,
-Alastair Reid,
-Kathryn E. Gray,
-Robert M. Norton,
-Prashanth Mundkur,
-Mark Wassell,
-Jon French,
-Christopher Pulte,
-Shaked Flur,
-Ian Stark,
-Neel Krishnaswami,
-Peter Sewell,
-in _Proc. 46th ACM SIGPLAN Symp. on Principles of Programming
-    Languages (POPL), Cascais/Lisbon, Portugal, Jan 13-19, 2019_,
-pp. 71:1--71:31.
-====
-
-.From: `https://github.com/rems-project/sail`
-====
-image::overview-sail.png[align="center", width=800]
-====
-
-// SECTION ================================================================
-== Concurrency and connection to RISC-V Weak Memory Model
+== Concurrency and Connection to RISC-V Weak Memory Model  [[concurrency]]
 
 // SUBSECTION ================================================================
 === Concurrency
@@ -1892,17 +1920,5 @@ image::Fig_concurrency.png[align="center", width=800]
     weak memory model.
 
 *   (These should be covered in another, more advanced tutorial.)
-
-// SECTION ================================================================
-== Status and plans
-
-* The RISC-V ISA Formal Specification in Sail is intended to become
-  the _authoritative and definitive_ specification of the RISC-V ISA,
-  against which the correctness of all other implementations will be
-  measured (whether in hardware or in simulation).
-
-* The immediate priority is to clean up, polish, document, and make it
-  easily accessible to the community (of which this tutorial is a
-  part).
 
 // ================================================================
