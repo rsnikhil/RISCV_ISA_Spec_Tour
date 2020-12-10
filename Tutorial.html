@@ -520,7 +520,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <ul class="sectlevel2">
 <li><a href="#_case_study_adding_isa_extensions_f_and_d_single_and_double_precision_floating_point">6.1. Case study: adding ISA Extensions F and D (single and double-precision floating point)</a>
 <ul class="sectlevel3">
-<li><a href="#_new_registers_for_the_f_and_d">6.1.1. New Registers for the F and D</a></li>
+<li><a href="#_new_registers_for_the_f_and_d_extensions">6.1.1. New Registers for the F and D Extensions</a></li>
 <li><a href="#_semantics_of_f_and_d_instructions">6.1.2. Semantics of F and D instructions</a></li>
 <li><a href="#_updating_the_makefiles">6.1.3. Updating the Makefiles</a></li>
 </ul>
@@ -1020,6 +1020,21 @@ context.</p>
 <div class="sect1">
 <h2 id="_reading_the_isa_to_understand_semantics_of_each_risc_v_instruction">2. Reading the ISA to understand semantics of each RISC-V instruction</h2>
 <div class="sectionbody">
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>The descriptions below are based on commit 41a4072fac3e (Nov 30
+2020) of the <code>sail-riscv</code> repository.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
 <div class="paragraph">
 <p>The central component of the formal specification of an ISA is the
 specification of individual instructions:</p>
@@ -1056,7 +1071,7 @@ cores and multicores with weak memory models.</p>
 instruction, a fragment of which is shown below.</p>
 </div>
 <div class="listingblock">
-<div class="title">From file <code>riscv_insts_base.sail</code></div>
+<div class="title">From file <code>sail-riscv/model/riscv_insts_base.sail</code></div>
 <div class="content">
 <pre>function clause execute (RTYPE(rs2, rs1, rd, op)) = {
   let rs1_val = X(rs1);
@@ -1107,11 +1122,9 @@ organize the spec into separate files just according to our own
 convenience.</p>
 </div>
 <div class="listingblock">
+<div class="title">In <code>sail-riscv/model/</code></div>
 <div class="content">
-<pre>$ pwd
-/home/nikhil/git_clones/ISA_Formal_Spec/sail-riscv/model
-
-$ ls
+<pre>$ ls
 main.sail		       riscv_insts_cfext.sail	       riscv_step_ext.sail
 prelude_mapping.sail	       riscv_insts_dext.sail	       riscv_step_rvfi.sail
 prelude_mem_metadata.sail      riscv_insts_end.sail	       riscv_step.sail
@@ -1215,7 +1228,7 @@ so we&#8217;d use one of these files, depending on whether we are
 considering RV32 or RV64.</p>
 </div>
 <div class="listingblock">
-<div class="title">From file <code>riscv_xlen32.sail</code></div>
+<div class="title">From file <code>sail-riscv/model/riscv_xlen32.sail</code></div>
 <div class="content">
 <pre>    /* Define the XLEN value for the architecture. */
 
@@ -1225,7 +1238,7 @@ considering RV32 or RV64.</p>
 </div>
 </div>
 <div class="listingblock">
-<div class="title">From file <code>riscv_xlen64.sail</code></div>
+<div class="title">From file <code>sail-riscv/model/riscv_xlen64.sail</code></div>
 <div class="content">
 <pre>    /* Define the XLEN value for the architecture. */
 
@@ -1249,7 +1262,7 @@ Its parameter <em>t</em> must be a numeric type (here, we instantiate it as <cod
 <div class="sect4">
 <h5 id="_values_in_integer_registers">Values in integer registers</h5>
 <div class="listingblock">
-<div class="title">From file <code>riscv_reg_type.sail</code></div>
+<div class="title">From file <code>sail-riscv/model/riscv_reg_type.sail</code></div>
 <div class="content">
 <pre>    /* default register type */
     type regtype = xlenbits
@@ -1277,7 +1290,7 @@ is needed.</p>
 <div class="sect4">
 <h5 id="_integer_registers">Integer registers</h5>
 <div class="listingblock">
-<div class="title">From file <code>riscv_regs.sail</code></div>
+<div class="title">From file <code>sail-riscv/model/riscv_regs.sail</code></div>
 <div class="content">
 <pre>    register PC       : xlenbits
     ...
@@ -1297,7 +1310,7 @@ remaining lines similarly declare registers <code>x1</code>&#8230;&#8203;<code>x
 <div class="sect4">
 <h5 id="_reading_from_integer_registers">Reading from integer registers</h5>
 <div class="listingblock">
-<div class="title">From file <code>riscv_regs.sail</code></div>
+<div class="title">From file <code>sail-riscv/model/riscv_regs.sail</code></div>
 <div class="content">
 <pre>    val rX : forall 'n, 0 &lt;= 'n &lt; 32. regno('n) -&gt; xlenbits effect {rreg, escape}
     function rX r = {
@@ -1360,7 +1373,7 @@ This, in turn, should allow us to omit the <code>escape</code> effect.</p>
 <div class="sect4">
 <h5 id="_writing_integer_registers">Writing integer registers</h5>
 <div class="listingblock">
-<div class="title">From file <code>riscv_regs.sail</code></div>
+<div class="title">From file <code>sail-riscv/model/riscv_regs.sail</code></div>
 <div class="content">
 <pre>    val wX : forall 'n, 0 &lt;= 'n &lt; 32. (regno('n), xlenbits) -&gt; unit effect {wreg, escape}
     function wX (r, in_v) = {
@@ -1387,7 +1400,7 @@ Its effects include <code>wreg</code> (writing a register) and <code>escape</cod
 <div class="sect4">
 <h5 id="_using_sail_overloading_to_simplify_notation">Using Sail overloading to simplify notation</h5>
 <div class="listingblock">
-<div class="title">From file <code>riscv_regs.sail</code></div>
+<div class="title">From file <code>sail-riscv/model/riscv_regs.sail</code></div>
 <div class="content">
 <pre>    overload X = {..., rX, wX}</pre>
 </div>
@@ -1458,7 +1471,7 @@ fashion.  In the concatenation of <code>.sail</code> files, the following
 is given early before any of the scattered definitions:</p>
 </div>
 <div class="listingblock">
-<div class="title">From file <code>riscv_insts_begin.sail</code></div>
+<div class="title">From file <code>sail-riscv/model/riscv_insts_begin.sail</code></div>
 <div class="content">
 <pre>    scattered union ast
 
@@ -1542,7 +1555,7 @@ imm instruction fields.</p>
 <p>We declare convenient types for instruction fields.</p>
 </div>
 <div class="listingblock">
-<div class="title">From file <code>riscv_types.sail</code></div>
+<div class="title">From file <code>sail-riscv/model/riscv_types.sail</code></div>
 <div class="content">
 <pre>    type regidx  = bits(5)
     type cregidx = bits(3)    /* identifiers in RVC instructions */
@@ -1579,7 +1592,7 @@ provided later in scattered clauses.</p>
 </div>
 </div>
 <div class="listingblock">
-<div class="title">From file <code>riscv_insts_base.sail</code></div>
+<div class="title">From file <code>sail-riscv/model/riscv_insts_base.sail</code></div>
 <div class="content">
 <pre>    union clause ast = UTYPE : (bits(20), regidx, uop)</pre>
 </div>
@@ -1610,7 +1623,7 @@ variant of the union.</p>
 along with its type:</p>
 </div>
 <div class="listingblock">
-<div class="title">From file <code>riscv_insts_begin.sail</code></div>
+<div class="title">From file <code>sail-riscv/model/riscv_insts_begin.sail</code></div>
 <div class="content">
 <pre>    val encdec : ast &lt;-&gt; bits(32)
     scattered mapping encdec</pre>
@@ -1620,7 +1633,7 @@ along with its type:</p>
 <p>We now provide one such clause, showing how to encode/decode LUI and AUIPC instructions.</p>
 </div>
 <div class="listingblock">
-<div class="title">From file <code>riscv_insts_base.sail</code></div>
+<div class="title">From file <code>sail-riscv/model/riscv_insts_base.sail</code></div>
 <div class="content">
 <pre>    mapping encdec_uop : uop &lt;-&gt; bits(7) = {
       RISCV_LUI   &lt;-&gt; 0b0110111,
@@ -1652,7 +1665,7 @@ and that the concatenation is a 32-bit value,</p>
 <p>Earlier, we declared a scattered function <code>execute</code> and its type:</p>
 </div>
 <div class="listingblock">
-<div class="title">From file <code>riscv_insts_begin.sail</code></div>
+<div class="title">From file <code>sail-riscv/model/riscv_insts_begin.sail</code></div>
 <div class="content">
 <pre>    val execute : ast -&gt; Retired effect {escape, wreg, rreg, wmv, wmvt, eamem,
                                          rmem, rmemt, barr, exmem, undef}
@@ -1663,7 +1676,7 @@ and that the concatenation is a 32-bit value,</p>
 <p>Here is the definition of the <code>Retired</code> type:</p>
 </div>
 <div class="listingblock">
-<div class="title">From file <code>riscv_types.sail</code></div>
+<div class="title">From file <code>sail-riscv/model/riscv_types.sail</code></div>
 <div class="content">
 <pre>    enum Retired = {RETIRE_SUCCESS, RETIRE_FAIL}</pre>
 </div>
@@ -1679,7 +1692,7 @@ and (b) this prevents accidental confusion of random booleans where a
 instructions.</p>
 </div>
 <div class="listingblock">
-<div class="title">From file <code>riscv_insts_base.sail</code></div>
+<div class="title">From file <code>sail-riscv/model/riscv_insts_base.sail</code></div>
 <div class="content">
 <pre>    function clause execute UTYPE(imm, rd, op) = {
       let off : xlenbits = EXTS(imm @ 0x000);
@@ -1735,7 +1748,7 @@ function, this is the value returned by the function.  It&#8217;s type is
 sub-opcode <code>uop</code> to a string and back:</p>
 </div>
 <div class="listingblock">
-<div class="title">From file <code>riscv_insts_base.sail</code></div>
+<div class="title">From file <code>sail-riscv/model/riscv_insts_base.sail</code></div>
 <div class="content">
 <pre>    mapping utype_mnemonic : uop &lt;-&gt; string = {
       RISCV_LUI   &lt;-&gt; "lui",
@@ -1747,7 +1760,7 @@ sub-opcode <code>uop</code> to a string and back:</p>
 <p>Then, we add a scattered clause to our previously introduced <code>assembly</code> mapping:</p>
 </div>
 <div class="listingblock">
-<div class="title">From file <code>riscv_insts_base.sail</code></div>
+<div class="title">From file <code>sail-riscv/model/riscv_insts_base.sail</code></div>
 <div class="content">
 <pre>    mapping clause assembly = UTYPE(imm, rd, op)
       &lt;-&gt; utype_mnemonic(op) ^ spc() ^ reg_name(rd) ^ sep() ^ hex_bits_20(imm)</pre>
@@ -1774,7 +1787,7 @@ sub-opcode <code>uop</code> to a string and back:</p>
 BGEU.  We define symbolic names:</p>
 </div>
 <div class="listingblock">
-<div class="title">From file <code>riscv_types.sail</code></div>
+<div class="title">From file <code>sail-riscv/model/riscv_types.sail</code></div>
 <div class="content">
 <pre>    enum bop = {RISCV_BEQ, RISCV_BNE, RISCV_BLT,
                 RISCV_BGE, RISCV_BLTU, RISCV_BGEU}    /* branch ops */</pre>
@@ -1792,7 +1805,7 @@ BGEU.  We define symbolic names:</p>
 <p>Our abstract (decoded) ast view is:</p>
 </div>
 <div class="listingblock">
-<div class="title">From file <code>riscv_insts_base.sail</code></div>
+<div class="title">From file <code>sail-riscv/model/riscv_insts_base.sail</code></div>
 <div class="content">
 <pre>    union clause ast = BTYPE : (bits(13), regidx, regidx, bop)</pre>
 </div>
@@ -1820,7 +1833,7 @@ in the instruction, with 0 appended as the least-significant bit.</p>
 instruction to its abstract names:</p>
 </div>
 <div class="listingblock">
-<div class="title">From file <code>riscv_insts_base.sail</code></div>
+<div class="title">From file <code>sail-riscv/model/riscv_insts_base.sail</code></div>
 <div class="content">
 <pre>    mapping encdec_bop : bop &lt;-&gt; bits(3) = {
       RISCV_BEQ  &lt;-&gt; 0b000,
@@ -1836,7 +1849,7 @@ instruction to its abstract names:</p>
 <p>Then, we add a scattered clause to the <code>encdec</code> mapping:</p>
 </div>
 <div class="listingblock">
-<div class="title">From file <code>riscv_insts_base.sail</code></div>
+<div class="title">From file <code>sail-riscv/model/riscv_insts_base.sail</code></div>
 <div class="content">
 <pre>    mapping clause encdec = BTYPE(imm7_6 @ imm5_0 @ imm7_5_0 @ imm5_4_1 @ 0b0, rs2, rs1, op)
     &lt;-&gt; imm7_6 : bits(1) @ imm7_5_0 : bits(6)
@@ -1856,7 +1869,7 @@ places in the instruction.</p>
 <p>We add a scattered clause to the <code>execute</code> function.  The first part is straightforward:</p>
 </div>
 <div class="listingblock">
-<div class="title">From file <code>riscv_insts_base.sail</code></div>
+<div class="title">From file <code>sail-riscv/model/riscv_insts_base.sail</code></div>
 <div class="content">
 <pre>    function clause execute (BTYPE(imm, rs2, rs1, op)) = {
       let rs1_val = X(rs1);
@@ -1894,7 +1907,7 @@ by adding a sign-extension of the immediate to the PC.</p>
 actions depending on whether the branch is taken or not:</p>
 </div>
 <div class="listingblock">
-<div class="title">From file <code>riscv_insts_base.sail</code></div>
+<div class="title">From file <code>sail-riscv/model/riscv_insts_base.sail</code></div>
 <div class="content">
 <pre>    function clause execute (BTYPE(imm, rs2, rs1, op)) = {
       ...
@@ -1913,7 +1926,7 @@ is <code>RETIRE_SUCCESS</code>.</p>
 <p>If the branch is taken, we first check that the branch target PC is valid.</p>
 </div>
 <div class="listingblock">
-<div class="title">From file <code>riscv_insts_base.sail</code></div>
+<div class="title">From file <code>sail-riscv/model/riscv_insts_base.sail</code></div>
 <div class="content">
 <pre>      if taken then {
         ... &lt;some code elided&gt; ...
@@ -1952,7 +1965,7 @@ target validity that may be required by any other extensions.</p>
 sub-opcode <code>bop</code> to a string and back:</p>
 </div>
 <div class="listingblock">
-<div class="title">From file <code>riscv_insts_base.sail</code></div>
+<div class="title">From file <code>sail-riscv/model/riscv_insts_base.sail</code></div>
 <div class="content">
 <pre>    mapping btype_mnemonic : bop &lt;-&gt; string = {
       RISCV_BEQ  &lt;-&gt; "beq",
@@ -1968,7 +1981,7 @@ sub-opcode <code>bop</code> to a string and back:</p>
 <p>Then, we add a scattered clause to our previously introduced <code>assembly</code> mapping:</p>
 </div>
 <div class="listingblock">
-<div class="title">From file <code>riscv_insts_base.sail</code></div>
+<div class="title">From file <code>sail-riscv/model/riscv_insts_base.sail</code></div>
 <div class="content">
 <pre>    mapping clause assembly = BTYPE(imm, rs2, rs1, op)
       &lt;-&gt; btype_mnemonic(op) ^ spc() ^ reg_name(rs1) ^ sep() ^ reg_name(rs2) ^
@@ -2046,7 +2059,7 @@ an exception).</p>
 <p>The header of the scattered clause of <code>execute</code> to handle memory-load instructions is:</p>
 </div>
 <div class="listingblock">
-<div class="title">From file <code>riscv_insts_base.sail</code></div>
+<div class="title">From file <code>sail-riscv/model/riscv_insts_base.sail</code></div>
 <div class="content">
 <pre>    function clause execute(LOAD(imm, rs1, rd, is_unsigned, width, aq, rl)) = {</pre>
 </div>
@@ -2076,7 +2089,7 @@ the width of the destination register;</p>
 <p>The next step is to compute the actual (virtual) address to be accessed:</p>
 </div>
 <div class="listingblock">
-<div class="title">From file <code>riscv_insts_base.sail</code></div>
+<div class="title">From file <code>sail-riscv/model/riscv_insts_base.sail</code></div>
 <div class="content">
 <pre>      let offset : xlenbits = EXTS(imm);
       match ext_data_get_addr(rs1, offset, Read(Data), width) {
@@ -2100,7 +2113,7 @@ containing the effective virtual address.  We use pattern-matching (a
 <code>match</code> expression) to distinguish these two outcomes.  Next:</p>
 </div>
 <div class="listingblock">
-<div class="title">From file <code>riscv_insts_base.sail</code></div>
+<div class="title">From file <code>sail-riscv/model/riscv_insts_base.sail</code></div>
 <div class="content">
 <pre>          if   check_misaligned(vaddr, width)
           then { handle_mem_exception(vaddr, E_Load_Addr_Align()); RETIRE_FAIL }
@@ -2147,7 +2160,7 @@ are visible in the semantics via the SFENCE.VMA instruction.</p>
 <p>Finally:</p>
 </div>
 <div class="listingblock">
-<div class="title">From file <code>riscv_insts_base.sail</code></div>
+<div class="title">From file <code>sail-riscv/model/riscv_insts_base.sail</code></div>
 <div class="content">
 <pre>          else match translateAddr(vaddr, Read(Data)) {
             TR_Failure(e, _) =&gt; { handle_mem_exception(vaddr, e); RETIRE_FAIL },
@@ -2204,7 +2217,7 @@ component is 64, i.e., it restricts it to RV64.</p>
 are delivered at User, Supervisor or Machine privilege levels:</p>
 </div>
 <div class="listingblock">
-<div class="title">From file <code>riscv_types.sail</code></div>
+<div class="title">From file <code>sail-riscv/model/riscv_types.sail</code></div>
 <div class="content">
 <pre>    enum InterruptType = {  I_U_Software,    I_S_Software,    I_M_Software,
                             I_U_Timer,       I_S_Timer,       I_M_Timer,
@@ -2215,7 +2228,7 @@ are delivered at User, Supervisor or Machine privilege levels:</p>
 <p>This is followed by a function to convert bit-encodings to these symbolic names:</p>
 </div>
 <div class="listingblock">
-<div class="title">From file <code>riscv_types.sail</code></div>
+<div class="title">From file <code>sail-riscv/model/riscv_types.sail</code></div>
 <div class="content">
 <pre>    val interruptType_to_bits : InterruptType -&gt; bits (8)
     function interruptType_to_bits (i) =
@@ -2234,7 +2247,7 @@ decode interrupts/exceptions, we don&#8217;t need the inverse function.</p>
 <p>The different kinds of traps, and converting to bits:</p>
 </div>
 <div class="listingblock">
-<div class="title">From file <code>riscv_types.sail</code></div>
+<div class="title">From file <code>sail-riscv/model/riscv_types.sail</code></div>
 <div class="content">
 <pre>    union ExceptionType = { E_Fetch_Addr_Align   : unit,     E_Fetch_Access_Fault : unit,
                             E_Illegal_Instr      : unit,     E_Breakpoint         : unit,
@@ -2287,7 +2300,7 @@ predefined type:</p>
 additional information.</p>
 </div>
 <div class="listingblock">
-<div class="title">From file <code>riscv_sync_exception.sail</code></div>
+<div class="title">From file <code>sail-riscv/model/riscv_sync_exception.sail</code></div>
 <div class="content">
 <pre>    struct sync_exception = {
       trap    : ExceptionType,
@@ -2309,7 +2322,7 @@ extensions.</p>
 conditional branches with illegal branch targets is:</p>
 </div>
 <div class="listingblock">
-<div class="title">From file <code>riscv_sys_control.sail</code></div>
+<div class="title">From file <code>sail-riscv/model/riscv_sys_control.sail</code></div>
 <div class="content">
 <pre>    function handle_mem_exception(addr : xlenbits, e : ExceptionType) -&gt; unit = {
       let t : sync_exception = struct { trap    = e,
@@ -2328,7 +2341,7 @@ variable <code>t</code>.</p>
 <p>The next line invokes a more general <code>exception_handler</code>.</p>
 </div>
 <div class="listingblock">
-<div class="title">From file <code>riscv_sys_control.sail</code></div>
+<div class="title">From file <code>sail-riscv/model/riscv_sys_control.sail</code></div>
 <div class="content">
 <pre>    function exception_handler(cur_priv : Privilege, ctl : ctl_result,
                                pc: xlenbits) -&gt; xlenbits = {
@@ -2356,7 +2369,7 @@ being delegated to be handled at a different privilege level
 User privilege levels, respectively.</p>
 </div>
 <div class="listingblock">
-<div class="title">From file <code>riscv_sys_control.sail</code></div>
+<div class="title">From file <code>sail-riscv/model/riscv_sys_control.sail</code></div>
 <div class="content">
 <pre>    function trap_handler(del_priv : Privilege, intr : bool, c : exc_code,
                           pc : xlenbits, info : option(xlenbits),
@@ -2426,7 +2439,7 @@ model as a whole (including certain CSRs and registers), and then
 invokes the fetch-execute loop:</p>
 </div>
 <div class="listingblock">
-<div class="title">From file <code>main.sail</code></div>
+<div class="title">From file <code>sail-riscv/model/main.sail</code></div>
 <div class="content">
 <pre>    function main () : unit -&gt; unit = {
       PC = sail_zero_extend(0x1000, sizeof(xlen));
@@ -2441,7 +2454,7 @@ implementation choice by the &#8220;platform&#8221;.  The <code>loop()</code> fu
 turn, repeatedly performs a fetch-execute step:</p>
 </div>
 <div class="listingblock">
-<div class="title">From file <code>riscv_step.sail</code></div>
+<div class="title">From file <code>sail-riscv/model/riscv_step.sail</code></div>
 <div class="content">
 <pre>    function loop () : unit -&gt; unit = {
       while (...) do {
@@ -2455,7 +2468,7 @@ turn, repeatedly performs a fetch-execute step:</p>
 <p>In each iteration of the loop, we perform a <code>step()</code>:</p>
 </div>
 <div class="listingblock">
-<div class="title">From file <code>riscv_step.sail</code></div>
+<div class="title">From file <code>sail-riscv/model/riscv_step.sail</code></div>
 <div class="content">
 <pre>    function step(step_no : int) -&gt; bool = {
       let (retired, stepped) : (Retired, bool) =
@@ -2594,7 +2607,7 @@ binary) and a disassembly (text file) of the test.  Examples:</p>
 <p>Example of ISA test ELF files (RISC-V executables) and disassembly (dump) text files:</p>
 </div>
 <div class="listingblock">
-<div class="title">In your sail-riscv repository clone</div>
+<div class="title">In <code>sail-riscv/</code></div>
 <div class="content">
 <pre>    $ ls -1 test/riscv-tests/rv64ui-p-add*
     test/riscv-tests/rv64ui-p-add.elf
@@ -2612,12 +2625,9 @@ binary) and a disassembly (text file) of the test.  Examples:</p>
 <code>rv64ui-p-add</code> ISA test for the ADD instruction:</p>
 </div>
 <div class="listingblock">
-<div class="title">In your sail-riscv repository clone</div>
+<div class="title">In <code>sail-riscv/</code></div>
 <div class="content">
-<pre>    $ pwd
-    /home/nikhil/git_clones/sail-riscv
-
-    $ ./c_emulator/riscv_sim_RV64  test/riscv-tests/rv64ui-p-add.elf
+<pre>    $ ./c_emulator/riscv_sim_RV64  test/riscv-tests/rv64ui-p-add.elf
     Tue Dec 10 07:37:05 2019
     ...
     Running file test/riscv-tests/rv64ui-p-add.elf.
@@ -2646,12 +2656,9 @@ instructions executed (PC, instruction, assembly).</p>
 in virtual-memory mode:</p>
 </div>
 <div class="listingblock">
-<div class="title">In your sail-riscv repository clone</div>
+<div class="title">In <code>sail-riscv/</code></div>
 <div class="content">
-<pre>    $ pwd
-    /home/nikhil/git_clones/sail-riscv
-
-    $ ./c_emulator/riscv_sim_RV32  test/riscv-tests/rv32um-v-mulhsu.elf
+<pre>    $ ./c_emulator/riscv_sim_RV32  test/riscv-tests/rv32um-v-mulhsu.elf
     Tue Dec 10 07:46:33 2019
     Running file test/riscv-tests/rv32um-v-mulhsu.elf.
     ELF Entry @ 0x80000000
@@ -2800,12 +2807,9 @@ spec:</p>
 <p>Finally, the following will execute all relevant variants of the Compliance test suite:</p>
 </div>
 <div class="listingblock">
-<div class="title">In your riscv-compliance repository clone</div>
+<div class="title">In <code>riscv-compliance/</code></div>
 <div class="content">
-<pre>    $ pwd
-    /home/nikhil/git_clones/riscv-compliance
-
-    $ make RISCV_TARGET=sail-riscv-c all_variant</pre>
+<pre>    $ make RISCV_TARGET=sail-riscv-c all_variant</pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2901,36 +2905,50 @@ sub-opcodes captures this similarity.</p>
 <div class="sect2">
 <h3 id="_case_study_adding_isa_extensions_f_and_d_single_and_double_precision_floating_point">6.1. Case study: adding ISA Extensions F and D (single and double-precision floating point)</h3>
 <div class="paragraph">
-<p><em>This is still in a branch of the repo, nearing final development, will be merged into the main master soon.</em></p>
+<p>The implementation of F and D extensions (single and double-precision
+floating point) in the RISC-V ISA Formal Spec in Sail is somewhat
+atypical in that it is not currently wholly written in Sail.</p>
 </div>
+<div class="ulist">
+<ul>
+<li>
+<p>All the RISC-V-specific parts are indeed written in Sail&#8212;&#8203;everything
+about instruction bit representation, encoding/decoding,
+assembly-language mapping, floating point registers and CSRs, and
+opcode-based dispatching is done in the canonical way in Sail.</p>
 <div class="paragraph">
-<p>You can view the source files by switching to the development branch:</p>
+<p><em>In this section, we only discuss this part.</em></p>
 </div>
-<div class="listingblock">
-<div class="title">In your riscv-compliance repository clone</div>
-<div class="content">
-<pre>    $ git branch --all
-    * master
-      ...
-      remotes/origin/rsnikhil
-
-    $ git checkout  remotes/origin/rsnikhil
-    $ git branch
-    * (HEAD detached at origin/rsnikhil)
-      master</pre>
+</li>
+<li>
+<p>For the actual IEEE arithmetic, we call out to a collection
+of standard external C routines that emulate IEEE Floating Point
+operations.  This is the well known &#8220;Berkeley SoftFloat&#8221; emulation
+of IEEE FP, from
+<a href="https://github.com/ucb-bar/berkeley-softfloat-3.git" class="bare">https://github.com/ucb-bar/berkeley-softfloat-3.git</a>.  Berkeley
+Softfloat is widely used across the industry and has been well
+tested over many years.</p>
+<div class="paragraph">
+<p>In principle, this part could also be coded in Sail, but it is quite a
+lot of work with marginal immediate benefit, since Berkeley softfloat
+has been so very well tested.  Coding in Sail could be a future
+project for some interested party.</p>
 </div>
+</li>
+</ul>
 </div>
 <div class="sect3">
-<h4 id="_new_registers_for_the_f_and_d">6.1.1. New Registers for the F and D</h4>
+<h4 id="_new_registers_for_the_f_and_d_extensions">6.1.1. New Registers for the F and D Extensions</h4>
 <div class="paragraph">
 <p>Since F,D define a new register width <code>FLEN</code>, we created two new files
 by analogy with <code>riscv_xlen32.sail</code> and <code>riscv_xlen64.sail</code>.  (This
 would not be necessary for extensions that don&#8217;t define new widths):</p>
 </div>
 <div class="listingblock">
-<div class="title">In sail-riscv/model</div>
+<div class="title">In <code>sail-riscv/model/</code></div>
 <div class="content">
-<pre>    riscv_flen_F.sail    riscv_flen_D.sail</pre>
+<pre>    riscv_flen_F.sail
+    riscv_flen_D.sail</pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2939,7 +2957,7 @@ with <code>riscv_reg_type.sail</code> and <code>riscv_regs.sail</code>.  (This w
 necessary for extensions that don&#8217;t define new registers):</p>
 </div>
 <div class="listingblock">
-<div class="title">In sail-riscv/model</div>
+<div class="title">In <code>sail-riscv/model/</code></div>
 <div class="content">
 <pre>    riscv_freg_type.sail
     riscv_fdext_regs.sail</pre>
@@ -2951,7 +2969,7 @@ necessary for extensions that don&#8217;t define new registers):</p>
 that don&#8217;t define new CSRs):</p>
 </div>
 <div class="listingblock">
-<div class="title">In sail-riscv/model</div>
+<div class="title">In <code>sail-riscv/model/</code></div>
 <div class="content">
 <pre>    riscv_fdext_control.sail</pre>
 </div>
@@ -2963,14 +2981,27 @@ that don&#8217;t define new CSRs):</p>
 <p>Finally, the semantics of F and D instructions are in two new files:</p>
 </div>
 <div class="listingblock">
-<div class="title">In your riscv-compliance repository clone</div>
+<div class="title">In <code>sail-riscv/model/</code></div>
 <div class="content">
 <pre>    riscv_insts_fext.sail
     riscv_insts_dext.sail</pre>
 </div>
 </div>
 <div class="paragraph">
-<p>They follow the standard pattern:</p>
+<p>The following two files are for the floating point instructions in the
+<code>C</code> (Compressed instructions) ISA extension:</p>
+</div>
+<div class="listingblock">
+<div class="title">In <code>sail-riscv/model/</code></div>
+<div class="content">
+<pre>    riscv_insts_cfext.sail
+    riscv_insts_cdext.sail</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If we study <code>riscv_insts_fext.sail</code>, it starts with a number of
+help-functions.  Then, it goes through each class of F instruction,
+with each class following the standard pattern:</p>
 </div>
 <div class="ulist">
 <ul>
@@ -2992,42 +3023,97 @@ that don&#8217;t define new CSRs):</p>
 </li>
 </ul>
 </div>
+<div class="paragraph">
+<p>For example the first such class is for Floating-point load
+instructions.  It starts with a scattered clause to define the <code>ast</code>:</p>
+</div>
+<div class="listingblock">
+<div class="title">In <code>sail-riscv/model/riscv_insts_fext.sail</code></div>
+<div class="content">
+<pre>    /* FLW and FLD; W/D is encoded in 'word_width' */
+
+    union clause ast = LOAD_FP : (bits(12), regidx, regidx, word_width)</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Then, the scattered clause for the <code>encdec</code> mapping (encode/decode):</p>
+</div>
+<div class="listingblock">
+<div class="title">In <code>sail-riscv/model/riscv_insts_fext.sail</code></div>
+<div class="content">
+<pre>    mapping clause encdec = LOAD_FP(imm, rs1, rd, WORD)          if is_RV32F_or_RV64F()
+                        &lt;-&gt; imm @ rs1 @ 0b010 @ rd @ 0b000_0111  if is_RV32F_or_RV64F()
+
+    mapping clause encdec = LOAD_FP(imm, rs1, rd, DOUBLE)        if is_RV32D_or_RV64D()
+                        &lt;-&gt; imm @ rs1 @ 0b011 @ rd @ 0b000_0111  if is_RV32D_or_RV64D()</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Then, the scattered clause for the <code>execute</code> function (semantics):</p>
+</div>
+<div class="listingblock">
+<div class="title">In <code>sail-riscv/model/riscv_insts_fext.sail</code></div>
+<div class="content">
+<pre>    function clause execute(LOAD_FP(imm, rs1, rd, width)) = {
+      let offset : xlenbits = EXTS(imm);
+      ...</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And, finally, the scattered clause for the <code>assembly</code> notation:</p>
+</div>
+<div class="listingblock">
+<div class="title">In <code>sail-riscv/model/riscv_insts_fext.sail</code></div>
+<div class="content">
+<pre>    mapping clause assembly = LOAD_FP(imm, rs1, rd, width)
+                          &lt;-&gt; "fl" ...</pre>
+</div>
+</div>
 </div>
 <div class="sect3">
 <h4 id="_updating_the_makefiles">6.1.3. Updating the Makefiles</h4>
 <div class="paragraph">
-<p>In addition to writing the Sail code, you have to update the Makefiles
-so that your new files are included.  They look something like this:</p>
+<p>The Sail files described in the previous sections are enough for reading and understanding the spec.</p>
+</div>
+<div class="paragraph">
+<p>In order to incorporate it into the generated simulators (C-based and
+OCaml based), we also need to update the Makefile.  They following display
+shows the key lines updated or added to the Makefile (the lines
+for F,D are marked here with <code>+</code> on the left):</p>
 </div>
 <div class="listingblock">
-<div class="title">In your riscv-compliance repository clone</div>
+<div class="title">In <code>sail-riscv/Makefile</code></div>
 <div class="content">
-<pre>    $ git diff Makefile
-
-    +# Currently, we only have F with RV32, and both F and D with RV64.
-     ifeq ($(ARCH),RV32)
-       SAIL_XLEN := riscv_xlen32.sail
-    +  SAIL_FLEN := riscv_flen_F.sail
-     else ifeq ($(ARCH),RV64)
-       SAIL_XLEN := riscv_xlen64.sail
-    +  SAIL_FLEN := riscv_flen_D.sail
-     else
-       $(error '$(ARCH)' is not a valid architecture, must be one of: RV32, RV64)
-     endif
-
-    +SAIL_DEFAULT_INST += riscv_softfloat_interface.sail  riscv_insts_fext.sail
-    +ifeq ($(ARCH),RV64)
-    +SAIL_DEFAULT_INST +=riscv_insts_dext.sail
-    +endif
-
-    +SAIL_SYS_SRCS += riscv_fdext_regs.sail riscv_fdext_control.sail
-
-    +PRELUDE = prelude.sail prelude_mapping.sail $(SAIL_XLEN) $(SAIL_FLEN) ...
-
-    +SAIL_REGS_SRCS = riscv_reg_type.sail riscv_freg_type.sail riscv_regs.sail ...
-
-    +SAIL_ARCH_SRCS += $(SAIL_FD_SRCS)</pre>
+<pre>+   # Currently, we only have F with RV32, and both F and D with RV64.
+    ifeq ($(ARCH),RV32)
+      SAIL_XLEN := riscv_xlen32.sail
++     SAIL_FLEN := riscv_flen_F.sail
+    else ifeq ($(ARCH),RV64)
+      SAIL_XLEN := riscv_xlen64.sail
++     SAIL_FLEN := riscv_flen_D.sail
+    else
+      $(error '$(ARCH)' is not a valid architecture, must be one of: RV32, RV64)
+    endif
+    ...
+    SAIL_DEFAULT_INST += riscv_insts_fext.sail riscv_insts_cfext.sail
++   ifeq ($(ARCH),RV64)
++   SAIL_DEFAULT_INST += riscv_insts_dext.sail riscv_insts_cdext.sail
++   endif
+    ...
++   SAIL_SYS_SRCS += riscv_softfloat_interface.sail riscv_fdext_regs.sail riscv_fdext_control.sail
+    ...
++   PRELUDE = prelude.sail prelude_mapping.sail $(SAIL_XLEN) $(SAIL_FLEN) ...
+    ...
++   SAIL_REGS_SRCS = riscv_reg_type.sail riscv_freg_type.sail riscv_regs.sail ...
+    ...
+    C_INCS = $(addprefix c_emulator/,riscv_prelude.h riscv_platform_impl.h riscv_platform.h riscv_softfloat.h)
+    C_SRCS = $(addprefix c_emulator/,riscv_prelude.c riscv_platform_impl.c riscv_platform.c riscv_softfloat.c riscv_sim.c)</pre>
 </div>
+</div>
+<div class="paragraph">
+<p>The lines involving <code>softfloat</code> are the links to the external Berkeley
+Softfloat library; such lines will not be necessary for any ISA
+extension coded wholly in Sail.</p>
 </div>
 </div>
 </div>
@@ -3136,7 +3222,7 @@ weak memory model.</p>
 <div id="footer">
 <div id="footer-text">
 Version v0.2<br>
-Last updated 2020-12-10 00:15:23 EST
+Last updated 2020-12-10 10:50:23 EST
 </div>
 </div>
 </body>
