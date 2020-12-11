@@ -18,8 +18,22 @@ Rishiyur S. Nikhil, Bluespec, Inc. (c) 2019-2020
 This is an introductory tutorial for the RISC-V ISA Formal
 Specification.  The Formal Spec is intended to be the official and
 definitive description of the RISC-V ISA, i.e., the standard against
-which the functional correctness of all other implementations will be
+which the functional correctness of all other implementations are
 measured (including hardware implementations and software simulators).
+
+This document is in the following repository:
+https://github.com/rsnikhil/RISCV_ISA_Spec_Tour[], in the following files:
+----
+    Tutorial.adoc    (Asciidoc source)
+    Tutorial.html    (generated HTML)
+----
+
+Please view it either by visiting the GitHub link and clicking on the
+`.adoc` version (GitHub will render it automatically for your
+browser), or by downloading the `.html` version and opening it in your
+browser.
+
+Formal specifications have a reputation of being intimidating/difficult for most people.  However:
 
 ====
 [quote]
@@ -62,7 +76,7 @@ If you wish to dive right into the tutorial you can skip to Section <<downloadin
 * RVIA has stated that the Formal Spec is intended to be the _official
     and definitive_ description of the RISC-V ISA, i.e., the standard
     against which the functional correctness of all other
-    implementations will be measured (including hardware
+    implementations are measured (including hardware
     implementations and software simulators).
 
 * The RISC-V ISA is evolving. The base Unprivileged and Privileged
@@ -118,7 +132,7 @@ The formal spec of the RISC-V ISA is intended to be:
 
 * the _authoritative and definitive reference_ for RISC-V instructions:
 
-  ** Encoding
+  ** Encoding (in bits)
 
   ** Execution semantics (what executing each instruction is supposed to do).
         It is intended to be more authoritative than the English prose
@@ -141,9 +155,10 @@ The formal spec of the RISC-V ISA is intended to be:
 
 People are already using and will use the ISA formal spec in various ways.
 
-* As a reading reference to clarify the intended semantics of
-      each type of instruction (enabling this is the primary goal of
-      this tutorial).
+* As a reading reference to clarify the intended semantics of each
+  type of instruction.
++
+_(Enabling this is the primary goal of this tutorial)._
 
 * As a "`golden reference model`" against which to compare functional
       correctness other implementations (simulators and hardware
@@ -1593,7 +1608,7 @@ As a result, you should now have the following executables in your sail-riscv re
 
 ----
 $ pwd; ls c_emulator/riscv_sim_RV*
-/home/nikhil/git_clones/sail-riscv
+/home/nikhil/git_clones/ISA_Formal_Spec/sail-riscv
 c_emulator/riscv_sim_RV32*  c_emulator/riscv_sim_RV64*
 ----
 
@@ -1760,8 +1775,8 @@ spec:
 Spot check that you have the RISC-V Formal Spec's C simulators:
 ----
     $ which riscv_sim_RV32  riscv_sim_RV64 
-    /home/nikhil/git_clones/sail-riscv/c_emulator/riscv_sim_RV32
-    /home/nikhil/git_clones/sail-riscv/c_emulator/riscv_sim_RV64
+    /home/nikhil/git_clones/ISA_Formal_Spec/sail-riscv/c_emulator/riscv_sim_RV32
+    /home/nikhil/git_clones/ISA_Formal_Spec/sail-riscv/c_emulator/riscv_sim_RV64
 ----
 
 // SUBSECTION ================================================================
