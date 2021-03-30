@@ -1,7 +1,7 @@
 = README for "`A Tour of the RISC-V ISA Formal Specification`"
-Rishiyur S. Nikhil, Bluespec, Inc. (c) 2019-2020
+Rishiyur S. Nikhil, Bluespec, Inc. (c) 2019-2021
 :revnumber: v0.2
-:revdate: 2020-12-10
+:revdate: 2021-03-30
 :revremark: Converted to Asciidoc from LaTeX Beamer
 :sectnums:
 :toc:
@@ -37,6 +37,9 @@ practical purposes, such as:
 The RISC-V ISA Formal Specification is written in Sail, a
 Domain-Specific Language (DSL) for specifying ISAs.  No prior
 knowledge of Sail is assumed in this tutorial.
+
+There is also a slide deck for a 1-hour presentation providing an
+general introduction to the ISA Formal Spec.
 
 // SECTION ================================================================
 == Contents of this repo
